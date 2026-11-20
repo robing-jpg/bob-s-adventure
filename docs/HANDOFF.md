@@ -42,7 +42,7 @@ Read this file first. It replaces the long history of the first project ("AI" pr
 2. Vercel deployment (import the repo, default settings).
 3. Accessibility audit with a screen reader.
 4. Optional: more Incoterm-dependent questions; CPT/CIP door variant; flat rack cargo shown in step 11.
-5. Set `CONFIG.resultsEndpoint` once the Google Sheet is deployed; agree the GDPR retention rule.
+5. `CONFIG.resultsEndpoint` set (Google Sheet web app, 20 Nov 2026); agree the GDPR retention rule.
 6. Cross-browser check on Firefox and Safari (v0.5 was tested headless in Chrome only: Firefox/WebKit could not be downloaded in the build environment).
 
 ## Testing
