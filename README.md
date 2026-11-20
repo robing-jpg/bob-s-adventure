@@ -10,6 +10,9 @@ An interactive onboarding game for new joiners at an ocean carrier. **Bob**, a s
 - **3 routes** — Shanghai → Le Havre (direct), Ho Chi Minh City → Singapore → Le Havre (transshipment), Guayaquil/Posorja → Antwerp-Bruges (reefer)
 - **11 Incoterms 2020** — risk ▲ and cost ● transfer points shown along the journey
 - Documents to read and check (scored 1 / 0.5 / 0), "What happens next?" questions, final quiz and summary
+- Full-screen **risk / cost transfer moment** when the container passes the Incoterm point (Level 1 plays with FOB, set for the learner)
+- Discreet **€ and CO₂ counters** (indicative, sourced, split seller / buyer by Incoterm)
+- **Nickname and results**: scores and "points to work on" saved on the device, sent to a Google Sheet if configured (`docs/RESULTS_SETUP.md`), CSV download
 
 ## Project structure
 ```
@@ -22,7 +25,7 @@ src/build.py            merges engine + content → dist/container-journey_v0.3.
 
 ## Editing
 1. Change texts in `src/content/*.json` (no code needed). Mini-syntax: `[[term]]` glossary link, `[TO VERIFY:vNN]` verification flag, `**bold**`, `{pol}` / `{cargo}` / `{incoterm}` … placeholders.
-2. Rebrand in the `CONFIG` block of `src/engine.html` (company name, logo text, colours, game title, Bob's name).
+2. Rebrand in the `CONFIG` block of `src/engine.html` (company name, logo text, colours, game title, Bob's name, results endpoint, Level 1 Incoterm).
 3. Rebuild: `python3 src/build.py`, then copy `dist/container-journey_v0.3.html` to `index.html`.
 
 The build checks that every `[TO VERIFY]` id exists in the verification list and every `[[term]]` exists in the glossary.
