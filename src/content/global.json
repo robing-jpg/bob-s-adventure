@@ -2081,7 +2081,7 @@
     "1": "How do I travel to the port?",
     "2": "Pre-carriage mode to {polTerminal}"
    },
-   "unavailable": "Other modes are not available for this terminal in this module. [TO VERIFY:v39]",
+   "unavailable": "Rail pre-carriage is not offered at this port in this module: none of our three origin terminals has an on-dock rail link (Yangshan is reached by road bridge; Cat Lai and Posorja have no rail connection). Other ports do — Rotterdam or Hamburg, for example. [TO VERIFY:v39]",
    "options": [
     {
      "id": "truck",
@@ -2719,8 +2719,8 @@
   },
   {
    "id": "v39",
-   "claim": "Inland access per terminal: Yangshan by road (Donghai Bridge) or water; Cat Lai by road or river barge; Posorja by road.",
-   "source": "Port authorities; local forwarders"
+   "claim": "Pre-carriage modes offered per route: no rail from our three origin ports (Yangshan is on an island linked by the Donghai road bridge; Cat Lai and Posorja have no rail link). Barge is offered at Shanghai and Ho Chi Minh City (river terminals), truck everywhere. Many other ports do have on-dock rail.",
+   "source": "Port authority and terminal infrastructure pages (Yangshan / Shanghai, Cat Lai, Posorja); carrier inland service maps"
   },
   {
    "id": "v40",

@@ -1849,6 +1849,8 @@ const CONFIG = {
     <linearGradient id="gCraneR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E4EAEE"/><stop offset=".5" stop-color="#C3CFD8"/><stop offset="1" stop-color="#93A6B4"/></linearGradient>
     <linearGradient id="gGirder" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9EEF2"/><stop offset="1" stop-color="#A9B8C3"/></linearGradient>
     <linearGradient id="gHullR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F4352"/><stop offset=".6" stop-color="#1E2C37"/><stop offset="1" stop-color="#131D25"/></linearGradient>
+    <linearGradient id="gInside" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6E5A43"/><stop offset=".45" stop-color="#8E7352"/><stop offset="1" stop-color="#5E4B38"/></linearGradient>
+    <linearGradient id="gField" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#AFC48C"/><stop offset="1" stop-color="#83A068"/></linearGradient>
     <linearGradient id="gQuay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C8CDD0"/><stop offset=".35" stop-color="#B2B8BC"/><stop offset="1" stop-color="#8F979D"/></linearGradient>
     <linearGradient id="gReflFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000"/><stop offset=".62" stop-color="#000"/><stop offset="1" stop-color="#fff"/></linearGradient>
     <linearGradient id="gWaveShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".12"/><stop offset=".08" stop-color="#000" stop-opacity="0"/><stop offset=".35" stop-color="#06233A" stop-opacity=".25"/></linearGradient>
@@ -1925,7 +1927,7 @@ const CONFIG = {
     const num = (fill) => `<text x="${small ? w / 2 - 10 : w / 2 - 30}" y="30" text-anchor="middle" font-size="${small ? 14 : 20}" font-weight="800" fill="${fill}" opacity=".92" letter-spacing="${small ? 1 : 2}">${esc(CONTAINER_NO)}</text>`;
     const plate = o.plate === false ? '' : `<g><rect x="10" y="${h - 54}" width="${small ? 112 : 126}" height="44" rx="3" fill="#fff" opacity=".92"/>
       <text x="16" y="${h - 40}" font-size="10" fill="#1B2631">MAX GROSS ${fmt(c.mgm)} KG</text><text x="16" y="${h - 27}" font-size="10" fill="#1B2631">TARE ${fmt(c.tare)} KG</text><text x="16" y="${h - 14}" font-size="10" fill="#1B2631">${esc(c.iso)} · ${esc(c.short)}</text></g>`;
-    let g = '', fx = w - (f === 'reefer' ? 130 : 80), fy = h * .4;
+    let g = '', wallFace = false, fx = w - (f === 'reefer' ? 130 : 80), fy = h * .4;
     if (t === '40FR') {
       g += `<rect x="0" y="${h - 18}" width="${w}" height="18" fill="#5B6670" stroke="#3F4750"/><rect x="0" y="0" width="14" height="${h}" fill="var(--c-box-dark)"/><rect x="${w - 14}" y="0" width="14" height="${h}" fill="var(--c-box-dark)"/>`;
       if (o.cargo !== false) g += `<g ${o.cargoAttr || ''}>${machine(70, 18, w - 140, h - 36)}
@@ -1941,7 +1943,10 @@ const CONFIG = {
         <text x="${w / 2 + 20}" y="${h - 22}" text-anchor="middle" font-size="11" font-weight="800" fill="#33424F">${esc(CONTAINER_NO)}</text>`;
       fx = w - 70; fy = h * .42;
     } else {
-      g += `<rect x="0" y="0" width="${w}" height="${h}" rx="3" fill="#2A3036"/>${o.inside || ''}`;
+      // v1.0 fix (24 Nov): the open box shows a lit plywood interior (floor, side wall, ceiling), not a black hole
+      g += `<g><rect x="0" y="0" width="${w}" height="${h}" rx="2" fill="url(#gInside)"/><rect x="0" y="${h - 9}" width="${w}" height="9" fill="#9A7B52"/><rect x="0" y="${h - 9}" width="${w}" height="1.5" fill="#C8A878"/>
+        ${Array.from({ length: 9 }, (_, i) => `<rect x="${(i * w / 9).toFixed(1)}" y="0" width="1" height="${h - 9}" fill="#000" opacity=".07"/>`).join('')}
+        <rect x="0" y="0" width="${w}" height="7" fill="#000" opacity=".3"/><rect x="0" y="0" width="7" height="${h}" fill="#000" opacity=".16"/><rect x="${w - 7}" y="0" width="7" height="${h}" fill="#000" opacity=".16"/></g>${o.inside || ''}`;
       const wallFill = f === 'reefer' ? 'url(#gReefer)' : 'url(#gBox)', pat = f === 'reefer' ? 'url(#ribs)' : 'url(#corr)';
       // v1.0 (retour 2/6): corrugated steel with top/bottom rails, corner posts, light grime and dirt towards the bottom
       const rail = f === 'reefer' ? '#A9B5BF' : 'var(--c-box-dark)';
@@ -1950,18 +1955,21 @@ const CONFIG = {
         <rect x="0" y="0" width="${w}" height="7" fill="${rail}" opacity=".75"/><rect x="0" y="7" width="${w}" height="1.4" fill="#000" opacity=".22"/>
         <rect x="0" y="${h - 9}" width="${w}" height="9" fill="${rail}" opacity=".8"/><rect x="0" y="${h - 10.4}" width="${w}" height="1.4" fill="#fff" opacity=".16"/>
         <rect x="0" y="0" width="9" height="${h}" fill="${rail}" opacity=".7"/><rect x="${w - 9}" y="0" width="9" height="${h}" fill="${rail}" opacity=".7"/>
-        <rect x="0" y="0" width="${w}" height="${h}" rx="2" fill="none" stroke="${f === 'reefer' ? '#8996A2' : 'var(--c-box-dark)'}" stroke-width="1.5"/></g>`;
+        <rect x="0" y="0" width="${w}" height="${h}" rx="2" fill="none" stroke="${f === 'reefer' ? '#8996A2' : 'var(--c-box-dark)'}" stroke-width="1.5"/>
+        ${num(f === 'reefer' ? '#33424F' : '#fff')}${plate}${o.face === false ? '' : faceSVG(fx, (o.faceK ? h * .47 : fy), (small ? .8 : 1) * (o.faceK || 1), f === 'reefer' ? '#E2E8ED' : 'var(--c-box)')}</g>`;
       g += wall(o.wallAttr) + (o.wall2Attr ? wall(o.wall2Attr) : '');
-      g += num(f === 'reefer' ? '#33424F' : '#fff') + plate + corners;
+      if (o.faceOpenAttr && o.face !== false) g += `<g ${o.faceOpenAttr}>${faceSVG(fx, fy, small ? .8 : 1, '#7A6248')}</g>`;
+      g += corners;
+      wallFace = true;
       if (f === 'reefer') g += `<g><rect x="${w - 62}" y="4" width="58" height="${h - 8}" rx="4" fill="#5B6670" stroke="#3F4750"/>
         <g class="fan"><circle cx="${w - 33}" cy="${h * .3}" r="15" fill="#3F4750"/><path d="M${w - 33} ${h * .3 - 13} l4 13 l-8 0 z M${w - 46} ${h * .3 + 8} l13 -6 l2 8 z M${w - 20} ${h * .3 + 8} l-13 -6 l-2 8 z" fill="#9AA5AF"/></g>
         <rect x="${w - 56}" y="${h * .58}" width="46" height="22" rx="3" fill="#0F1A22"/><text x="${w - 33}" y="${h * .58 + 15}" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="#7CF0A8">${esc(plain('{setPoint}')) || 'SET'}</text>
         <circle class="blink" cx="${w - 15}" cy="${h - 16}" r="3.5" fill="#7CF0A8"/></g>`;
       if (t === '40OT') g += `<path class="tarp" ${o.tarpAttr || ''} d="M0 2 Q${w / 4} -16 ${w / 2} -6 T${w} 2 L${w} 12 L0 12 Z" fill="#3E6E9E" stroke="#24486B" stroke-width="2"/>`;
     }
-    const lid = f === 'reefer' ? '#E2E8ED' : f === 'tank' ? '#C3CDD5' : t === '40FR' ? '#DDA82A' : 'var(--c-box)';
+    const lid = f === 'tank' ? '#C3CDD5' : t === '40FR' ? '#DDA82A' : 'var(--c-box)';
     if (o.faceK) fy = h * .47;
-    return `<g class="body">${g}${o.face === false ? '' : faceSVG(fx, fy, (small ? .8 : 1) * (o.faceK || 1), lid)}</g>`;
+    return `<g class="body">${g}${wallFace || o.face === false ? '' : faceSVG(fx, fy, (small ? .8 : 1) * (o.faceK || 1), lid)}</g>`;
   }
   // Small container for landscape and map scenes.
   function miniBox(c, x, y, w, h) {
@@ -2137,14 +2145,24 @@ const CONFIG = {
   // cartonSlots() gives every carton's place inside the box (box drawn at x=320, top y) and its place in the
   // warehouse stock (4 columns × 3 tiers behind the open dock). Cartons move between the two ONLY while the
   // truck is parked (stuff / unstuff beats) and are hidden before the truck moves again, so nothing trails behind it.
+  // v1.0 fix (24 Nov): carton size is derived from the box, so the stack never sticks out of the container.
+  // 2 tiers inside the usable height (h − floor − roof); the warehouse stock uses the same size.
+  function cartonSize(h) { const ch = Math.floor((h - 14) / 2) - 3; return { ch, cw: Math.round(ch * 1.16) }; }
   function cartonSlots(w, h, y) {
-    const cols = Math.floor((w - 32) / 74), rowsY = [h - 74, h - 140], out = [];
-    for (let tier = 0; tier < 2; tier++) for (let col = 0; col < cols; col++) out.push({ bx: 320 + 16 + col * 74, by: y + rowsY[tier], order: (cols - 1 - col) * 2 + tier });
+    const { ch, cw } = cartonSize(h), pitch = cw + 4, cols = Math.max(1, Math.floor((w - 24) / pitch)), out = [];
+    const x0 = 320 + Math.round((w - cols * pitch) / 2) + 2, base = h - 8;
+    for (let tier = 0; tier < 2; tier++) for (let col = 0; col < cols; col++) out.push({ bx: x0 + col * pitch, by: y + base - (tier + 1) * (ch + 3), order: (cols - 1 - col) * 2 + tier });
     out.sort((a, b) => a.order - b.order);
-    out.forEach((c, k) => { c.sx = 24 + (k % 4) * 70; c.sy = GY - 64 * (Math.floor(k / 4) + 1); });
+    const perRow = 4;
+    out.forEach((c, k) => { c.sx = 30 + (k % perRow) * pitch; c.sy = GY - 10 - (Math.floor(k / perRow) + 1) * (ch + 6); c.ch = ch; c.cw = cw; });
     return out;
   }
-  const carton = (x, y) => `<rect x="${x}" y="${y}" width="68" height="58" rx="3" fill="url(#gCarton)" stroke="#7A5A2E"/><line x1="${x}" y1="${y + 20}" x2="${x + 68}" y2="${y + 20}" stroke="#7A5A2E" opacity=".5"/><line x1="${x + 34}" y1="${y}" x2="${x + 34}" y2="${y + 58}" stroke="#7A5A2E" opacity=".5"/><rect x="${x}" y="${y + 58}" width="68" height="6" fill="#8B6A3E"/>`;
+  const carton = (x, y, cw, ch) => { cw = cw || 68; ch = ch || 58;
+    return `<g><rect x="${x}" y="${y}" width="${cw}" height="${ch}" rx="2" fill="url(#gCarton)" stroke="#7A5A2E" stroke-width="1"/>
+      <rect x="${x}" y="${y}" width="${cw}" height="${ch}" fill="url(#gTopLit)" opacity=".55"/>
+      <line x1="${x}" y1="${(y + ch * .34).toFixed(1)}" x2="${x + cw}" y2="${(y + ch * .34).toFixed(1)}" stroke="#7A5A2E" opacity=".5"/>
+      <line x1="${(x + cw / 2).toFixed(1)}" y1="${y}" x2="${(x + cw / 2).toFixed(1)}" y2="${(y + ch * .34).toFixed(1)}" stroke="#7A5A2E" opacity=".5"/>
+      <rect x="${(x + cw * .18).toFixed(1)}" y="${(y + ch * .5).toFixed(1)}" width="${(cw * .46).toFixed(1)}" height="${(ch * .22).toFixed(1)}" rx="1" fill="#F2EADA" opacity=".75"/></g>`; };
   // Inside view of the warehouse (open front) so the stock reads as "in the warehouse", not floating in front of it.
   const dockInterior = () => `<rect x="24" y="168" width="282" height="200" rx="4" fill="#3A4652"/><rect x="24" y="168" width="282" height="8" fill="#2B3540"/><rect x="24" y="360" width="282" height="8" fill="#55616D"/>`;
   SCENES.warehouse = s => {
@@ -2152,9 +2170,9 @@ const CONFIG = {
     const open = f === 'dry' || f === 'reefer' || t === '40OT';
     const cartons = open && t !== '40OT', slots = cartons ? cartonSlots(w, h, y) : [];
     // static cartons inside the box (in the truck group): shown once the doors are closed, so they ride along hidden
-    const inside = cartons ? `<g data-at="seal">${slots.map(c => carton(c.bx - 320, c.by - y)).join('')}</g>` : '';
+    const inside = cartons ? `<g data-at="seal">${slots.map(c => carton(c.bx - 320, c.by - y, c.cw, c.ch)).join('')}</g>` : '';
     // loose cartons (NOT in the truck group): warehouse stock → into the box during "stuff", then hidden
-    const loose = cartons ? `<g data-until="stuff">${slots.map((c, k) => `<g data-tx="start:${c.sx - c.bx},${c.sy - c.by};stuff:0,0@${k * 160}~900">${carton(c.bx, c.by)}</g>`).join('')}</g>` : '';
+    const loose = cartons ? `<g data-until="stuff">${slots.map((c, k) => `<g data-tx="start:${c.sx - c.bx},${c.sy - c.by};stuff:0,0@${k * 160}~900">${carton(c.bx, c.by, c.cw, c.ch)}</g>`).join('')}</g>` : '';
     let loader = '';
     if (t === '40OT' || t === '40FR') loader = `<g><rect x="${330 + w / 2 - 6}" y="20" width="12" height="40" fill="#E8C33A"/><line x1="${330 + w / 2}" y1="0" x2="${330 + w / 2}" y2="40" stroke="#3F4750" stroke-width="3"/>
         <g data-tx="start:0,-230;stuff:0,0~1800" data-at="stuff"><line x1="${330 + w / 2}" y1="${y - 200}" x2="${330 + w / 2}" y2="${y + 10}" stroke="#3F4750" stroke-width="3" data-until="stuff"/>${t === '40OT' ? `<g transform="translate(320 ${y})" data-until="stuff">${machine(70, 4, w - 140, h - 20)}</g>` : ''}</g>
@@ -2182,100 +2200,131 @@ const CONFIG = {
   };
 
   /* --- Steps 3 & 10: inland transport landscapes --- */
-  /* v1.0 (retour 4) — inland legs drawn terminal to terminal (steps 3 and 10).
-     Truck: door → port terminal (step 3) or port terminal → door (step 10) in one go.
-     Rail / barge: the train or the barge runs the WHOLE way between two terminals. A gantry crane moves the box between the
-     truck and the wagon / barge; a truck does the first mile (step 3) or the last mile (step 10 — the usual case: few
-     consignees have their own rail siding [TO VERIFY:v99]). The box is ONE object whose moves are nested (chain), so it rides
-     the truck, is lifted, then rides the train or the barge without ever jumping between copies.
-     Depth (back → front): buildings (base y 214) · rail (y 250) · road (y 294) · river / sea (y > 318). */
+  /* v1.0 (retours 4 + 6, reviewed 24 Nov) — inland legs, realistic and to scale (S2 = 5.1 px per metre: a 40' box = 62 px,
+     a truck 16.5 m = 84 px, a locomotive 21 m = 107 px, a 60' wagon 100 px, an inland barge 55 m = 280 px).
+     Step 3 (pre-carriage): truck or barge only (no rail at our three origin ports — team decision, 24 Nov): door → export
+     terminal, or truck to a river terminal then barge to the terminal's barge berth.
+     Step 10 (on-carriage): the train leaves from the quay, under the ship-to-shore crane, and runs to an inland rail terminal;
+     the barge runs from the port's barge berth to an inland river terminal; a gantry then puts the box on a truck for the last
+     mile [TO VERIFY:v99]. The box is ONE object moved by nested chains (it rides the truck / wagon / barge, is lifted, set down).
+     Depth (back → front): sky · far hills (aerial perspective) · port basin and ship · rail (y 290) · road (y 332) · river (y > 350). */
+  const S2 = 5.1;
   function inland(s, o) {
     const c = container(), r = route(), key = o.key, pre = key === 'mode', T = o.travel;
-    const bw = c.len === 20 ? 32 : 62, bh = 21, BOXY = { road: 261, rail: 211, water: 315 };
+    const bw = c.len === 20 ? 31 : 62, bh = (c.hc ? 2.9 : 2.59) * S2, RAIL = 290, ROAD = 332, RIV = 352;
+    const BOX = { road: ROAD - 6.6 - bh, rail: RAIL - 6 - bh, water: RIV + 6 - bh };
     const box = (x, y) => `<g>${miniBox(c, x, y, bw, bh)}</g>`;
-    const generic = (x, y, i) => `<rect x="${x}" y="${y}" width="62" height="${bh}" fill="${PALETTE[i % PALETTE.length]}" stroke="#55616D"/><rect x="${x}" y="${y}" width="62" height="${bh}" fill="url(#corr)"/>`;
-    const truck = (tx, attrs) => `<g ${attrs || ''}><g transform="translate(${tx} 0)" class="rig"><rect x="30" y="282" width="74" height="4" fill="#3F4750"/><rect x="28" y="281" width="3" height="5" fill="#C0392B"/>
-        <path d="M102 287 V268 q0 -4 4 -4 h11 q4 0 5 4 l3 11 v8 z" fill="url(#gCab)" stroke="#06293A" stroke-width="1"/><path d="M113 267 h5 q2 0 3 3 l2 8 h-10 z" fill="url(#gGlass)"/><rect x="103" y="258" width="2" height="8" fill="#55616D"/>
-        ${wheel(40, 288, 5)}${wheel(52, 288, 5)}${wheel(108, 288, 5)}${wheel(120, 288, 5)}</g></g>`;
-    const wagon = (x, load) => `<rect x="${x}" y="232" width="66" height="4" fill="#3F4750"/><rect x="${x + 4}" y="236" width="58" height="3" fill="#2B3238"/>${load || ''}${wheel(x + 9, 245, 4)}${wheel(x + 19, 245, 4)}${wheel(x + 47, 245, 4)}${wheel(x + 57, 245, 4)}`;
-    const loco = x => `<path d="M${x} 236 V214 h34 l10 8 v14 z" fill="var(--c-primary)" stroke="#06293A"/><rect x="${x + 30}" y="217" width="8" height="7" fill="url(#gGlass)"/><rect x="${x + 4}" y="219" width="22" height="3" fill="#fff" opacity=".35"/>${wheel(x + 9, 245, 4)}${wheel(x + 21, 245, 4)}${wheel(x + 33, 245, 4)}`;
-    const barge = (x, ours) => `<polygon points="${x},336 ${x + 230},336 ${x + 218},356 ${x + 12},356" fill="#3C4A55"/><rect x="${x}" y="333" width="230" height="4" fill="#55616D"/>
-        <rect x="${x + 202}" y="306" width="22" height="27" fill="#E4EEF4" stroke="#55616D"/><rect x="${x + 206}" y="311" width="14" height="6" fill="url(#gGlass)"/>
-        ${generic(x + 8, BOXY.water, 3)}${ours ? '' : generic(x + 74, BOXY.water, 1)}${generic(x + 140, BOXY.water, 5)}`;
-    const gantry = (x1, x2, foot, label, ch) => `<g ${ch ? `data-ch="${ch}"` : ''}><rect x="${x1}" y="124" width="8" height="${foot - 124}" fill="#E8C33A" stroke="#6B5410"/><rect x="${x2}" y="124" width="8" height="${foot - 124}" fill="#E8C33A" stroke="#6B5410"/>
-        <rect x="${x1 - 10}" y="116" width="${x2 - x1 + 28}" height="12" fill="#E8C33A" stroke="#6B5410"/><rect x="${x1 - 4}" y="${foot - 8}" width="20" height="8" fill="#2B3238"/><rect x="${x2 - 4}" y="${foot - 8}" width="20" height="8" fill="#2B3238"/>
-        <text x="${(x1 + x2) / 2 + 4}" y="110" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(label)}</text></g>`;
-    // the box and the crane's spreader follow the same nested moves; the spreader goes back up once the box is set down
+    const gen = (x, y, i, w) => ctrQ(x, y, w || 62, 14.8, QPAL[i % QPAL.length]);
+    // articulated truck: skeletal 40' chassis (x … x+66) + cab-over tractor (x+60 … x+93); wheels touch the road at ROAD
+    const truck = (tx, attrs) => `<g ${attrs || ''}><g class="rig" transform="translate(${tx} 0)"><ellipse cx="47" cy="${ROAD + .8}" rx="50" ry="1.8" fill="#0F1A22" opacity=".3"/>
+        <rect x="0" y="${ROAD - 6.6}" width="66" height="2.4" fill="#2B3238"/><rect x="2" y="${ROAD - 4.4}" width="60" height="1.2" fill="#1B2024"/><rect x="-1" y="${ROAD - 6}" width="2" height="3" fill="#B3261E"/>
+        ${wheel(6, ROAD - 2.6, 2.6)}${wheel(12, ROAD - 2.6, 2.6)}${wheel(18, ROAD - 2.6, 2.6)}<rect x="54" y="${ROAD - 9}" width="2" height="4" fill="#55616D"/>
+        <rect x="60" y="${ROAD - 6}" width="34" height="2.6" fill="#2B3238"/>
+        <path d="M73 ${ROAD - 5} V${ROAD - 24} q0 -2 2 -2 h14 q3 0 4 3 l1 6 v14 z" fill="url(#gCab)" stroke="#06293A" stroke-width=".6"/><path d="M85 ${ROAD - 24.5} h4 q2 0 2.6 2.6 l.8 4.6 h-7.4 z" fill="url(#gGlass)"/>
+        <rect x="75" y="${ROAD - 23}" width="7" height="6" rx=".6" fill="url(#gGlass)" opacity=".85"/><rect x="74" y="${ROAD - 10}" width="18" height="1" fill="#fff" opacity=".25"/><rect x="71" y="${ROAD - 26}" width="1.4" height="14" fill="#3F4750"/>
+        <rect x="92.6" y="${ROAD - 8}" width="1.6" height="2" fill="#FFE08A"/>${wheel(68, ROAD - 2.6, 2.6)}${wheel(76, ROAD - 2.6, 2.6)}${wheel(89, ROAD - 2.6, 2.6)}</g></g>`;
+    // electric locomotive (21 m) and 60' flat wagons; pantograph on the catenary
+    const loco = x => `<g><path d="M${x} ${RAIL - 5} V${RAIL - 22} q0 -2 2 -2 h96 l8 6 v13 z" fill="#C9CFD4" stroke="#55616D" stroke-width=".6"/><rect x="${x}" y="${RAIL - 15}" width="106" height="4" fill="var(--c-primary)"/>
+        <path d="M${x + 98} ${RAIL - 23} l6 5 h-6 z" fill="url(#gGlass)"/><rect x="${x + 3}" y="${RAIL - 21}" width="6" height="4" fill="url(#gGlass)"/>${[0, 1, 2, 3, 4].map(i => `<rect x="${x + 18 + i * 14}" y="${RAIL - 20}" width="9" height="3" fill="#8D98A1"/>`).join('')}
+        <path d="M${x + 30} ${RAIL - 24} l8 -14 l8 14 M${x + 34} ${RAIL - 38} h8" stroke="#3F4750" stroke-width=".9" fill="none"/><path d="M${x + 66} ${RAIL - 24} l8 -10 l8 10" stroke="#3F4750" stroke-width=".9" fill="none"/>
+        <rect x="${x + 4}" y="${RAIL - 6}" width="98" height="2" fill="#2B3238"/>${[10, 22, 80, 92].map(dx => wheel(x + dx, RAIL - 2.4, 2.4)).join('')}</g>`;
+    const wagon = (x, load) => `<g><rect x="${x}" y="${RAIL - 6}" width="100" height="2.4" fill="#4A3F36"/><rect x="${x + 6}" y="${RAIL - 3.6}" width="88" height="1" fill="#2B3238"/>${load || ''}
+        ${[8, 16, 84, 92].map(dx => wheel(x + dx, RAIL - 2.2, 2.2)).join('')}<rect x="${x + 99}" y="${RAIL - 5.5}" width="4" height="1.2" fill="#2B3238"/></g>`;
+    const barge = (x, ours) => `<g><polygon points="${x},${RIV + 6} ${x + 280},${RIV + 6} ${x + 272},${RIV + 14} ${x + 6},${RIV + 14}" fill="#2E3A44"/><rect x="${x}" y="${RIV + 4}" width="280" height="2.4" fill="#55616D"/>
+        <rect x="${x + 250}" y="${RIV - 24}" width="24" height="28" fill="#E4EAEE" stroke="#7C8B97" stroke-width=".6"/><rect x="${x + 253}" y="${RIV - 20}" width="18" height="5" fill="url(#gGlass)"/><rect x="${x + 262}" y="${RIV - 32}" width="2" height="8" fill="#55616D"/>
+        ${gen(x + 6, BOX.water, 2)}${gen(x + 6, BOX.water - 15.2, 5)}${ours ? '' : gen(x + 70, BOX.water, 1)}${gen(x + 70, BOX.water - 15.2, 7)}${gen(x + 134, BOX.water, 3)}${gen(x + 134, BOX.water - 15.2, 0)}${gen(x + 198, BOX.water, 6, 31)}
+        <path d="M${x + 282} ${RIV + 9} q10 -2 18 2" stroke="#fff" stroke-width="1.2" fill="none" opacity=".6" class="wake"/></g>`;
+    // ship-to-shore crane seen from the land side (legs 27 m apart along the quay, girder ≈ 50 m, boom pointing over the ship)
+    const stsFront = (x, foot) => { const top = foot - 50 * S2, w = 27 * S2;
+      return `<g><rect x="${x}" y="${top}" width="9" height="${foot - top}" fill="url(#gCraneR)"/><rect x="${x + w - 9}" y="${top}" width="9" height="${foot - top}" fill="url(#gCraneR)"/>
+        <rect x="${x - 4}" y="${top - 18}" width="${w + 8}" height="20" fill="url(#gGirder)" stroke="#5F7686" stroke-width=".8"/><rect x="${x + w / 2 - 16}" y="${top - 16}" width="32" height="16" fill="#E9EEF2" stroke="#8CA0AF" stroke-width=".6"/>
+        <rect x="${x}" y="${foot - 18 * S2}" width="${w}" height="7" fill="url(#gCraneR)"/><path d="M${x + 9} ${top + 2} L${x + w - 9} ${foot - 18 * S2} M${x + w - 9} ${top + 2} L${x + 9} ${foot - 18 * S2}" stroke="#A9B8C3" stroke-width="2.2"/>
+        <polygon points="${x + 10},${top - 18} ${x + w / 2},${top - 95} ${x + w - 10},${top - 18} ${x + w - 18},${top - 18} ${x + w / 2},${top - 80} ${x + 18},${top - 18}" fill="url(#gCraneR)"/>
+        ${[x - 4, x + w - 13].map(lx => `<rect x="${lx}" y="${foot - 5}" width="17" height="5" rx="1" fill="#55707F"/>`).join('')}<circle class="blink" cx="${x + w / 2}" cy="${top - 97}" r="2" fill="#FF5A4A"/></g>`; };
+    // rail-mounted / rubber-tyred gantry at an inland terminal, front view (≈ 26 m high); spreader handled with the box
+    const gantry = (x1, x2, foot, label, ch) => { const top = TOPG;
+      return `<g ${ch ? `data-ch="${ch}"` : ''}><rect x="${x1}" y="${top}" width="8" height="${foot - top}" fill="#E3B82E" stroke="#6B5410" stroke-width=".6"/><rect x="${x2}" y="${top}" width="8" height="${foot - top}" fill="#E3B82E" stroke="#6B5410" stroke-width=".6"/>
+        <rect x="${x1 - 8}" y="${top - 12}" width="${x2 - x1 + 24}" height="13" fill="#E8C33A" stroke="#6B5410" stroke-width=".6"/><rect x="${x1 - 8}" y="${top - 12}" width="${x2 - x1 + 24}" height="3" fill="#fff" opacity=".35"/>
+        <rect x="${x1 - 6}" y="${foot - 5}" width="20" height="5" rx="1" fill="#2B3238"/><rect x="${x2 - 6}" y="${foot - 5}" width="20" height="5" rx="1" fill="#2B3238"/>
+        <text x="${(x1 + x2) / 2 + 4}" y="${top - 18}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1B2631" stroke="#F2F4EF" stroke-width="3" paint-order="stroke">${esc(label)}</text></g>`; };
     const moves = (list, inner) => chain(list.map(m => 'start:0,0;' + m), inner);
-    const spreader = (x, y) => `<rect x="${x - 2}" y="${y - 6}" width="${bw + 4}" height="5" fill="#2B3238"/><line x1="${x + bw / 2 - 6}" y1="${y - 6}" x2="${x + bw / 2 - 6}" y2="${y - 400}" stroke="#2B3238" stroke-width="1.5"/><line x1="${x + bw / 2 + 6}" y1="${y - 6}" x2="${x + bw / 2 + 6}" y2="${y - 400}" stroke="#2B3238" stroke-width="1.5"/>`;
+    const spreader = (x, y) => `<rect x="${x - 1.5}" y="${y - 3.6}" width="${bw + 3}" height="3" rx=".6" fill="#E3B82E" stroke="#6B5410" stroke-width=".4"/><path d="M${x + bw / 2 - 4} ${y - 3.6} V${y - 400} M${x + bw / 2 + 4} ${y - 3.6} V${y - 400}" stroke="#2B3238" stroke-width=".9"/>`;
+    const LY = 230, TOPG = 221;   // lift height of the box (just under the gantry beam) · gantry beam level
 
     // ---------- terrain ----------
-    const bridge = !!o.bridge, landR = bridge ? 300 : 1660;
-    let terr = `<rect x="-700" y="206" width="2360" height="270" fill="url(#gSea)"/>
-      <g class="waves" opacity=".5">${Array.from({ length: 14 }, (_, i) => `<rect x="${-200 + (i * 173) % 1500}" y="${330 + (i * 37) % 120}" width="${60 + (i * 29) % 90}" height="1.6" rx=".8" fill="#fff"/>`).join('')}</g>
-      <polygon points="-700,200 ${landR},200 ${landR + (bridge ? 26 : 0)},318 -700,318" fill="url(#gGrass)"/><rect x="-700" y="316" width="${landR + 700 + (bridge ? 26 : 0)}" height="5" fill="#8C8A6E"/>
-      <rect x="-700" y="286" width="${bridge ? 1000 : 2360}" height="9" fill="#5B6670"/><rect x="-700" y="289.5" width="${bridge ? 1000 : 2360}" height="1" fill="#E8E8E0" opacity=".6"/>
-      <g>${Array.from({ length: bridge ? 56 : 132 }, (_, i) => `<rect x="${-700 + i * 18}" y="249" width="3" height="4" fill="#6E5A44"/>`).join('')}</g>
-      <rect x="-700" y="249" width="${bridge ? 1000 : 2360}" height="1.6" fill="#4B555E"/><rect x="-700" y="252" width="${bridge ? 1000 : 2360}" height="1.6" fill="#4B555E"/>`;
-    if (bridge) terr += `<rect x="300" y="286" width="500" height="8" fill="#5B6670"/>${Array.from({ length: 8 }, (_, i) => `<rect x="${318 + i * 64}" y="294" width="6" height="${60 + i * 2}" fill="#7D8891"/>`).join('')}`;
+    const bridge = !!o.bridge;
+    const hills = `<g opacity=".55"><path d="M-800 262 Q-560 228 -320 250 T160 244 T620 236 T1100 248 T1700 240 V270 H-800 Z" fill="#9FB3BE"/></g>
+      <g opacity=".8"><path d="M-800 266 Q-700 252 -600 262 T-400 258 T-200 263 T0 256 T200 262 T400 255 T600 262 T800 256 T1000 262 T1200 257 T1700 262 V274 H-800 Z" fill="#7F9C78"/></g>`;
+    const fields = `<rect x="-800" y="262" width="2560" height="100" fill="url(#gField)"/>${Array.from({ length: 9 }, (_, i) => `<path d="M-800 ${268 + i * 3.2} H1760" stroke="#fff" stroke-width=".5" opacity="${(.12 - i * .01).toFixed(2)}"/>`).join('')}`;
+    const road = (x0, x1) => `<rect x="${x0}" y="${ROAD - 10}" width="${x1 - x0}" height="12" fill="#5B6268"/><rect x="${x0}" y="${ROAD - 10}" width="${x1 - x0}" height="1" fill="#E9EBE6" opacity=".8"/><rect x="${x0}" y="${ROAD + 1}" width="${x1 - x0}" height="1" fill="#E9EBE6" opacity=".8"/>
+      <path d="M${x0} ${ROAD - 4.3} H${x1}" stroke="#F2F2EA" stroke-width=".9" stroke-dasharray="10 8" opacity=".85"/>`;
+    const rail = (x0, x1) => `<rect x="${x0}" y="${RAIL - 1}" width="${x1 - x0}" height="7" fill="#8C8376"/><path d="${Array.from({ length: Math.ceil((x1 - x0) / 5) }, (_, i) => `M${x0 + i * 5} ${RAIL + .5} v3`).join('')}" stroke="#5A4A3A" stroke-width="2"/>
+      <rect x="${x0}" y="${RAIL - 1.2}" width="${x1 - x0}" height="1.4" fill="#9AA2A8"/>${Array.from({ length: Math.ceil((x1 - x0) / 140) }, (_, i) => { const px = x0 + 40 + i * 140;
+        return `<rect x="${px}" y="${RAIL - 46}" width="1.6" height="46" fill="#7C858C"/><rect x="${px - 10}" y="${RAIL - 44}" width="12" height="1.2" fill="#7C858C"/>`; }).join('')}
+      <path d="M${x0} ${RAIL - 38.6} H${x1}" stroke="#3F4750" stroke-width=".6" opacity=".8"/>`;
+    const river = (x0) => `<rect x="${x0}" y="${RIV - 4}" width="${1760 - x0}" height="140" fill="url(#gHarbour)"/><rect x="${x0}" y="${RIV - 4}" width="${1760 - x0}" height="3" fill="#6E7A62" opacity=".7"/><g class="ripples" opacity=".7">${harbourRipples(RIV)}</g>`;
+    const warehouse = (x, label) => `<g><polygon points="${x - 6},210 ${x + 70},186 ${x + 146},210" fill="url(#gRoof)"/><rect x="${x}" y="208" width="140" height="${ROAD - 14 - 208}" fill="url(#gWall)" stroke="#97A4AF" stroke-width=".6"/>
+        ${Array.from({ length: 13 }, (_, i) => `<rect x="${x + 6 + i * 10.5}" y="210" width=".6" height="${ROAD - 26 - 208}" fill="#000" opacity=".08"/>`).join('')}
+        <rect x="${x + 88}" y="${ROAD - 52}" width="34" height="38" fill="#55616D"/><rect x="${x + 86}" y="${ROAD - 55}" width="38" height="4" fill="#2B3238"/><rect x="${x + 10}" y="220" width="70" height="14" rx="2" fill="#fff" stroke="#97A4AF" stroke-width=".6"/>
+        <text x="${x + 45}" y="230.5" text-anchor="middle" font-size="8.5" font-weight="800" fill="#1B2631">${esc(label)}</text><rect x="${x}" y="${ROAD - 16}" width="140" height="3" fill="#000" opacity=".12"/></g>`;
 
-    // ---------- ends of the scene ----------
-    const warehouse = (x, label) => `<g><polygon points="${x - 6},150 ${x + 60},112 ${x + 126},150" fill="url(#gRoof)"/><rect x="${x}" y="150" width="120" height="64" fill="url(#gWall)" stroke="#97A4AF"/>
-        <rect x="${x + 70}" y="176" width="34" height="38" fill="#55616D"/><text x="${x + 60}" y="168" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(label)}</text></g>`;
-    const portLeft = label => `<g><rect x="-700" y="198" width="940" height="120" fill="#C6CFD7"/><rect x="-700" y="198" width="940" height="3" fill="#fff" opacity=".4"/>
-        ${[0, 1, 2, 3].map(k => `${generic(-40 + k * 66, 156, k)}${generic(-40 + k * 66, 177, k + 2)}`).join('')}
-        <text x="70" y="146" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(label)}</text></g>`;
-    const portRight = label => `<g><polygon points="${bridge ? 780 : 796},250 1660,250 1660,470 ${bridge ? 800 : 816},470" fill="#C6CFD7"/><rect x="${bridge ? 780 : 796}" y="250" width="864" height="5" fill="#55616D"/>
-        ${[0, 1, 2, 3, 4, 5].map(i => generic(830 + (i % 3) * 66, 228 - Math.floor(i / 3) * 21, i)).join('')}
-        ${[880, 1010].map(x => `<rect x="${x}" y="120" width="6" height="130" fill="#3F4750"/><rect x="${x + 30}" y="120" width="6" height="130" fill="#3F4750"/><rect x="${x - 60}" y="114" width="150" height="8" fill="#3F4750"/>`).join('')}
-        <text x="900" y="276" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(label)}</text></g>`;
-
-    let ends, vehicles;
+    let scene, vehicles;
     if (pre) {
-      // STEP 3 — shipper (left) → export terminal (right). Barge / rail: first mile by truck to a river / rail terminal (x 170–320).
-      const dxT = 180, dxB = 400, dxR = 520;
-      ends = warehouse(6, o.leftLabel) + portRight(o.rightLabel)
-        + gantry(170, 320, 318, plain(C.ui.riverTerminal || 'RIVER TERMINAL'), `${key}:barge`)
-        + gantry(170, 320, 300, plain(C.ui.railTerminal || 'RAIL TERMINAL'), `${key}:rail`);
+      // ---------- STEP 3: shipper (left) → export terminal (right); barge: river terminal near the shipper → terminal barge berth ----------
+      const portX = bridge ? 760 : 790, sea = bridge ? `<rect x="300" y="250" width="${portX - 300}" height="140" fill="url(#gHarbour)"/><g class="ripples">${harbourRipples(262)}</g>` : '';
+      const bridgeDeck = bridge ? `<rect x="290" y="${ROAD - 10}" width="${portX - 290}" height="12" fill="#6A7176"/><rect x="290" y="${ROAD + 2}" width="${portX - 290}" height="5" fill="#8A9298"/>
+        ${Array.from({ length: 7 }, (_, i) => `<rect x="${318 + i * 66}" y="${ROAD + 7}" width="7" height="${RIV - ROAD + 10}" fill="#7D8891"/>`).join('')}<path d="M290 ${ROAD - 12} H${portX}" stroke="#B9C2C9" stroke-width="1"/>` : '';
+      const port = `<rect x="${portX}" y="250" width="1000" height="${RIV - 250}" fill="url(#gQuay)"/><rect x="${portX}" y="250" width="1000" height="2" fill="#fff" opacity=".4"/>
+        <rect x="${portX - 20}" y="200" width="1000" height="52" fill="url(#gHarbour)"/>
+        <g transform="translate(${portX + 70} 240) scale(.735)">${shipQ({ tiers: [6, 7, 8, 8, 0, 8, 7, 8, 8, 7], funnelBay: 4, name: '' }).svg}</g><rect x="${portX - 20}" y="238" width="1000" height="14" fill="url(#gQuay)"/>
+        ${stsFront(portX + 90, 300)}${stsFront(portX + 300, 300)}
+        <g><rect x="${portX + 8}" y="${ROAD - 40}" width="4" height="40" fill="#55616D"/><rect x="${portX + 54}" y="${ROAD - 40}" width="4" height="40" fill="#55616D"/><rect x="${portX + 4}" y="${ROAD - 44}" width="58" height="6" fill="#1B2631"/>
+          <text x="${portX + 33}" y="${ROAD - 39.4}" text-anchor="middle" font-size="4.5" font-weight="800" fill="#fff">GATE · OCR</text></g>
+        <text x="${portX + 150}" y="${RIV - 6}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1B2631" stroke="#E7EAEC" stroke-width="3" paint-order="stroke">${esc(o.rightLabel)}</text>`;
+      scene = `${hills}${fields}${sea}${river(-800)}${port}${road(-800, bridge ? 300 : portX + 300)}${bridgeDeck}${warehouse(-110, o.leftLabel)}
+        ${gantry(196, 300, RIV, plain(C.ui.riverTerminal || 'RIVER TERMINAL'), `${key}:barge`)}`;
+      const dxT = 230, dxB = 380;
       vehicles = `
-        <g data-ch="${key}:truck">${truck(0, `data-tx="start:0,0;${T}:640,0~3000"`)}<g data-tx="start:0,0;${T}:640,0~3000">${box(34, BOXY.road)}</g></g>
+        <g data-ch="${key}:truck">${truck(-20, `data-tx="start:0,0;${T}:700,0~3200"`)}<g data-tx="start:0,0;${T}:700,0~3200">${box(-18, BOX.road)}</g></g>
         <g data-ch="${key}:barge">
-          <g data-tx="start:0,0;${T}:${dxB},0@2600~2400"><g class="bob">${barge(140, true)}</g></g>
-          ${truck(0, `data-tx="start:0,0;${T}:${dxT},0~1100"`)}
-          ${moves([`${T}:${dxT},0~1100`, `${T}:0,-50@1150~500`, `${T}:0,104@1700~800`, `${T}:${dxB},0@2600~2400`], box(34, BOXY.road))}
-          ${moves([`${T}:${dxT},0~1100`, `${T}:0,-50@1150~500`, `${T}:0,104@1700~800`, `${T}:0,-170@2550~600`], `<g data-at="${T}" clip-path="url(#inlClip)">${spreader(34, BOXY.road)}</g>`)}</g>
-        <g data-ch="${key}:rail">
-          <g data-tx="start:0,0;${T}:${dxR},0@2400~2600">${wagon(190, '')}${loco(258)}</g>
-          ${truck(0, `data-tx="start:0,0;${T}:${dxT},0~1100"`)}
-          ${moves([`${T}:${dxT},0~1100`, `${T}:0,-60@1150~500`, `${T}:-22,10@1700~600`, `${T}:${dxR},0@2400~2600`], box(34, BOXY.road))}</g>
-        ${tag(250, 380, plain(C.ui.firstMile || 'FIRST MILE BY TRUCK'), `data-ch="${key}:barge|rail" data-at="${T}" data-until="${T}"`, '#0B4F6C')}`;
+          <g data-tx="start:0,0;${T}:${dxB},0@2700~2300"><g class="bob">${barge(146, true)}</g></g>
+          ${truck(-20, `data-tx="start:0,0;${T}:${dxT},0~1200"`)}
+          ${moves([`${T}:${dxT},0~1200`, `${T}:0,-${(BOX.road - LY).toFixed(1)}@1250~600`, `${T}:${(146 + 70 - (-18 + dxT)).toFixed(1)},${(BOX.water - LY).toFixed(1)}@1900~700`, `${T}:${dxB},0@2700~2300`], box(-18, BOX.road))}
+          ${moves([`${T}:${dxT},0~1200`, `${T}:0,-${(BOX.road - LY).toFixed(1)}@1250~600`, `${T}:${(146 + 70 - (-18 + dxT)).toFixed(1)},${(BOX.water - LY).toFixed(1)}@1900~700`, `${T}:0,-${(BOX.water - LY + 8).toFixed(1)}@2650~500`], `<g data-at="${T}" clip-path="url(#inlClip)">${spreader(-18, BOX.road)}</g>`)}
+          ${tag(250, 400, plain(C.ui.firstMile || 'FIRST MILE BY TRUCK'), `data-at="${T}" data-until="${T}"`, '#0B4F6C')}</g>`;
     } else {
-      // STEP 10 — import terminal (left) → consignee (right). Rail / barge run to an inland terminal (x 520–690), then the last mile by truck.
-      const dxR = 540, dxB = 540, dxL = 180;
-      ends = portLeft(o.leftLabel) + warehouse(840, o.rightLabel)
-        + gantry(520, 690, 300, plain(C.ui.inlandRail || 'INLAND RAIL TERMINAL'), `${key}:rail`)
-        + gantry(520, 690, 318, plain(C.ui.inlandRiver || 'INLAND RIVER TERMINAL'), `${key}:barge`);
-      const lastTruck = truck(522, `data-tx="start:0,0;deliver:${dxL},0@1500~1300"`);
+      // ---------- STEP 10: import terminal quay (left, ship + crane, rail under the crane) → inland terminal (x 430–610) → consignee ----------
+      const portR = 330;
+      const port = `<rect x="-800" y="200" width="${portR + 820}" height="66" fill="url(#gHarbour)"/>
+        <g transform="translate(300 268) scale(-.735 .735)">${shipQ({ tiers: [7, 8, 8, 0, 8, 8, 7, 8, 8, 7, 8], funnelBay: 3, name: '' }).svg}</g>
+        <polygon points="-800,262 ${portR},262 ${portR + 40},${RIV - 4} -800,${RIV - 4}" fill="url(#gQuay)"/><rect x="-800" y="262" width="${portR + 800}" height="2" fill="#fff" opacity=".45"/>
+        ${stsFront(-120, 300)}${stsFront(70, 300)}
+        <text x="140" y="${RIV - 8}" text-anchor="middle" font-size="10.5" font-weight="800" fill="#1B2631" stroke="#E7EAEC" stroke-width="3" paint-order="stroke">${esc(o.leftLabel)}</text>`;
+      scene = `${hills}${fields}${river(-800)}${port}${rail(-800, 1760)}${road(-800, 1760)}${warehouse(850, o.rightLabel)}
+        ${gantry(430, 610, ROAD + 4, plain(C.ui.inlandRail || 'INLAND RAIL TERMINAL'), `${key}:rail`)}${gantry(430, 610, RIV + 2, plain(C.ui.inlandRiver || 'INLAND RIVER TERMINAL'), `${key}:barge`)}`;
+      const dxR = 560, dxB = 600, dxL = 290, tL = 472;
+      const lastTruck = truck(tL, `data-tx="start:0,0;deliver:${dxL},0@1500~1500"`);
       vehicles = `
-        <g data-ch="${key}:truck">${truck(20, `data-tx="start:0,0;${T}:690,0~3000"`)}<g data-tx="start:0,0;${T}:690,0~3000">${box(54, BOXY.road)}</g></g>
+        <g data-ch="${key}:truck">${truck(-10, `data-tx="start:0,0;${T}:760,0~3200"`)}<g data-tx="start:0,0;${T}:760,0~3200">${box(-8, BOX.road)}</g></g>
         <g data-ch="${key}:rail">
-          <g data-tx="start:0,0;${T}:${dxR},0~3000">${wagon(-60, generic(-58, BOXY.rail, 2))}${wagon(10, '')}${loco(80)}</g>
+          <g data-tx="start:0,0;${T}:${dxR},0~3400">${wagon(-190, gen(-188, BOX.rail, 4) + gen(-124, BOX.rail, 8, 31))}${wagon(-88, gen(-22, BOX.rail, 2, 31))}${loco(14)}</g>
           ${lastTruck}
-          ${moves([`${T}:${dxR},0~3000`, 'deliver:0,-40~600', 'deliver:4,90@650~800', `deliver:${dxL},0@1500~1300`], box(12, BOXY.rail))}
-          ${moves([`${T}:${dxR},0~3000`, 'deliver:0,-40~600', 'deliver:4,90@650~800', 'deliver:0,-118@1500~600'], `<g data-at="deliver" clip-path="url(#inlClip)">${spreader(12, BOXY.rail)}</g>`)}</g>
+          ${moves([`${T}:${dxR},0~3400`, `deliver:0,-${(BOX.rail - LY).toFixed(1)}~600`, `deliver:${(tL + 2 - (-86 + dxR)).toFixed(1)},${(BOX.road - LY).toFixed(1)}@650~800`, `deliver:${dxL},0@1500~1500`], box(-86, BOX.rail))}
+          ${moves([`${T}:${dxR},0~3400`, `deliver:0,-${(BOX.rail - LY).toFixed(1)}~600`, `deliver:${(tL + 2 - (-86 + dxR)).toFixed(1)},${(BOX.road - LY).toFixed(1)}@650~800`, `deliver:0,-${(BOX.road - LY + 8).toFixed(1)}@1500~500`], `<g data-at="deliver" clip-path="url(#inlClip)">${spreader(-86, BOX.rail)}</g>`)}</g>
         <g data-ch="${key}:barge">
-          <g data-tx="start:0,0;${T}:${dxB},0~3000"><g class="bob">${barge(-60, true)}</g></g>
+          <g data-tx="start:0,0;${T}:${dxB},0~3400"><g class="bob">${barge(-210, true)}</g></g>
           ${lastTruck}
-          ${moves([`${T}:${dxB},0~3000`, 'deliver:0,-100~700', 'deliver:0,46@750~700', `deliver:${dxL},0@1500~1300`], box(16, BOXY.water))}
-          ${moves([`${T}:${dxB},0~3000`, 'deliver:0,-100~700', 'deliver:0,46@750~700', 'deliver:0,-120@1500~600'], `<g data-at="deliver" clip-path="url(#inlClip)">${spreader(16, BOXY.water)}</g>`)}</g>
-        ${tag(700, 380, plain(C.ui.lastMile || 'LAST MILE BY TRUCK'), `data-ch="${key}:barge|rail" data-at="deliver"`, '#0B4F6C')}`;
+          ${moves([`${T}:${dxB},0~3400`, `deliver:0,-${(BOX.water - LY).toFixed(1)}~700`, `deliver:${(tL + 2 - (-140 + dxB)).toFixed(1)},${(BOX.road - LY).toFixed(1)}@750~700`, `deliver:${dxL},0@1500~1500`], box(-140, BOX.water))}
+          ${moves([`${T}:${dxB},0~3400`, `deliver:0,-${(BOX.water - LY).toFixed(1)}~700`, `deliver:${(tL + 2 - (-140 + dxB)).toFixed(1)},${(BOX.road - LY).toFixed(1)}@750~700`, `deliver:0,-${(BOX.road - LY + 8).toFixed(1)}@1500~500`], `<g data-at="deliver" clip-path="url(#inlClip)">${spreader(-140, BOX.water)}</g>`)}</g>
+        ${tag(700, 420, plain(C.ui.lastMile || 'LAST MILE BY TRUCK'), `data-ch="${key}:barge|rail" data-at="deliver"`, '#0B4F6C')}`;
     }
-    return `${svgOpen(s)}<defs><clipPath id="inlClip"><rect x="-700" y="126" width="2400" height="400"/></clipPath></defs>${terr}${ends}${vehicles}${o.extra || ''}
+    return `${svgOpen(s, 'data-sky="own"')}<defs><clipPath id="inlClip"><rect x="-800" y="${TOPG + 2}" width="2600" height="400"/></clipPath></defs>
+      ${realSky(262)}${scene}${vehicles}${o.extra || ''}
       ${tag(o.tagX || 711, 228, o.tagText, `data-at="${o.tagAt}"`)}
     </svg>`;
   }
-  SCENES.precarriage = s => { const r = route(); return inland(s, { key: 'mode', travel: 'travel', bridge: !!r.bridge, leftLabel: plain(C.ui.shipper), rightLabel: r.polTerminal, tagAt: 'approach', tagText: plain(C.ui.preAdvice),
-    extra: (r.modes || []).includes('barge') ? `<text x="420" y="420" font-size="11" font-weight="800" fill="#fff" data-ch="mode:barge">${esc(plain(C.ui.bargeRoute))}</text>` : '' }); };
+  SCENES.precarriage = s => { const r = route(); return inland(s, { key: 'mode', travel: 'travel', bridge: !!r.bridge, leftLabel: plain(C.ui.shipper), rightLabel: r.polTerminal, tagAt: 'approach', tagText: plain(C.ui.preAdvice), tagX: 760,
+    extra: (r.modes || []).includes('barge') ? `<text x="420" y="440" font-size="11" font-weight="800" fill="#fff" data-ch="mode:barge">${esc(plain(C.ui.bargeRoute))}</text>` : '' }); };
   SCENES.oncarriage = s => { const r = route(); return inland(s, { key: 'onMode', travel: 'travel', leftLabel: r.podTerminal, rightLabel: plain(C.ui.consignee), tagAt: 'deliver', tagText: plain(C.ui.delivered), tagX: 900 }); };
 
   /* --- Steps 4 & 9: the "paper journey" as 4 illustrated stations; the container walks from one to the next --- */
@@ -2607,18 +2656,32 @@ const CONFIG = {
   /* --- Step 11: unstuffing at the consignee, empty return to the depot --- */
   SCENES.unstuff = s => {
     const c = container(), { w, h } = boxDims(c), f = c.family, t = c.id, y = GY - (h + 33);
+    const depotGround = `<rect x="-700" y="${GY}" width="2360" height="120" fill="url(#gQuay)"/><rect x="-700" y="${GY}" width="2360" height="2.5" fill="#fff" opacity=".45"/>
+      ${Array.from({ length: 16 }, (_, i) => `<rect x="${-200 + i * 80}" y="${GY + 16}" width="46" height="1.4" fill="#E3B82E" opacity=".6"/>`).join('')}`;
     const open = f === 'dry' || f === 'reefer';
     const slots = open ? cartonSlots(w, h, y) : [];
     // loose cartons (NOT in the truck group): in the open box → into the consignee's warehouse; hidden before the truck leaves
-    const loose = open ? `<g data-until="unstuff">${slots.slice().reverse().map((c, k) => `<g data-tx="start:0,0;unstuff:${c.sx - c.bx},${c.sy - c.by}@${k * 140}~900">${carton(c.bx, c.by)}</g>`).join('')}</g>` : '';
-    let bg = ''; [430, 546, 662, 778].forEach((x, i) => { for (let k = 0; k < 3; k++) bg += `<rect x="${x}" y="${314 - k * 56}" width="112" height="54" fill="${PALETTE[(i + k) % 5]}" stroke="#6E7C88"/>`; });
-    return `${svgOpen(s)}${ground()}
+    const loose = open ? `<g data-until="unstuff">${slots.slice().reverse().map((c, k) => `<g data-tx="start:0,0;unstuff:${c.sx - c.bx},${c.sy - c.by}@${k * 140}~900">${carton(c.bx, c.by, c.cw, c.ch)}</g>`).join('')}</g>` : '';
+    // v1.0 (24 Nov): the depot is drawn with real empty stacks (4 high), a reach stacker and a workshop bay
+    const DTH = 40, dbox = (x, y, wq) => ctr(x, y, wq, DTH - 1.5, QPAL[(x + y) % QPAL.length]);
+    let bg = '';
+    [[404, 4], [578, 5], [752, 4], [926, 3]].forEach(([x, n], i) => { for (let k = 0; k < n; k++) { const y = GY - (k + 1) * DTH;
+      bg += (i + k) % 3 === 0 ? dbox(x, y, 80) + dbox(x + 82, y, 80) : dbox(x, y, 162); } });
+    const stacker = `<g opacity=".95"><rect x="252" y="${GY - 112}" width="7" height="112" fill="#E3B82E"/><rect x="252" y="${GY - 118}" width="54" height="7" rx="2" fill="#E3B82E"/>
+      <path d="M258 ${GY - 60} L300 ${GY - 30}" stroke="#E3B82E" stroke-width="9"/><rect x="286" y="${GY - 44}" width="52" height="26" rx="3" fill="#E3B82E" stroke="#6B5410"/>
+      <rect x="296" y="${GY - 40}" width="22" height="13" fill="url(#gGlass)"/><rect x="276" y="${GY - 18}" width="76" height="10" rx="3" fill="#2B3238"/>${wheel(292, GY - 6, 7)}${wheel(340, GY - 6, 7)}</g>`;
+    return `${svgOpen(s, 'data-sky="own"')}${realSky(GY - 30)}${depotGround}
       ${warehouseSVG(20, plain(C.ui.consigneeWarehouse), { attrs: 'data-until="unstuff"' })}<g data-until="unstuff">${dockInterior()}</g>
-      <g data-at="return" opacity=".9"><g opacity=".55">${bg}</g><rect x="20" y="20" width="236" height="30" rx="6" fill="#fff" stroke="#97A4AF"/><text x="138" y="41" text-anchor="middle" font-size="14" font-weight="800" fill="#1B2631">EMPTY DEPOT · ${esc(route().pod.toUpperCase())}</text>
-        <rect x="80" y="${GY - 120}" width="140" height="120" fill="#D3DBE1" stroke="#97A4AF"/><text x="150" y="${GY - 96}" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${f === 'reefer' ? 'WASH + PTI' : f === 'tank' ? 'TANK CLEANING' : 'M&amp;R WORKSHOP'}</text></g>
+      <g data-at="return">${bg}${stacker}
+        <g><polygon points="56,${GY - 150} 150,${GY - 182} 244,${GY - 150}" fill="url(#gRoof)"/><rect x="62" y="${GY - 152}" width="176" height="152" fill="url(#gWall)" stroke="#97A4AF" stroke-width=".8"/>
+          <rect x="146" y="${GY - 104}" width="86" height="104" fill="#3A4652"/><rect x="144" y="${GY - 108}" width="90" height="5" fill="#2B3540"/>
+          ${[0, 1, 2].map(i => `<rect x="${74 + i * 22}" y="${GY - 128}" width="16" height="14" fill="url(#gGlass)"/>`).join('')}
+          <rect x="70" y="${GY - 146}" width="118" height="17" rx="3" fill="#fff" stroke="#97A4AF" stroke-width=".8"/>
+          <text x="129" y="${GY - 134}" text-anchor="middle" font-size="10" font-weight="800" fill="#1B2631">${f === 'reefer' ? 'WASH + PTI' : f === 'tank' ? 'TANK CLEANING' : 'M&amp;R WORKSHOP'}</text></g>
+        <g><rect x="396" y="24" width="250" height="28" rx="5" fill="#fff" stroke="#97A4AF" stroke-width=".8"/><text x="521" y="43" text-anchor="middle" font-size="13" font-weight="800" fill="#1B2631">EMPTY DEPOT · ${esc(route().pod.toUpperCase())}</text></g></g>
       ${t === '40OT' || t === '40FR' ? `<g data-at="unstuff" data-until="unstuff"><line x1="${320 + w / 2}" y1="0" x2="${320 + w / 2}" y2="${y + 10}" stroke="#3F4750" stroke-width="3"/>${tag(320 + w / 2, 40, 'CRANE LIFTS THE CARGO OUT')}</g>` : ''}
       ${f === 'tank' ? `<g data-at="unstuff" data-until="unstuff"><path d="M${320 + w / 2} ${y + 6} C 260 ${y - 40}, 220 300, 160 300" stroke="#1B2631" stroke-width="7" fill="none"/>${tag(320 + w / 2 + 60, y - 40, 'DISCHARGING…', '', '#0B4F6C')}</g>` : ''}
-      ${rig(c, { attrs: 'data-tx="start:0,0;return:1200,0~2400"', boxOpts: { wallAttr: open ? 'data-until="start"' : '', wall2Attr: open ? 'data-at="return"' : '', plate: true, cargo: false } })}${loose}
+      ${rig(c, { attrs: 'data-tx="start:0,0;return:1200,0~2400"', boxOpts: { wallAttr: open ? 'data-until="start"' : '', wall2Attr: open ? 'data-at="return"' : '', faceOpenAttr: open ? 'data-at="unstuff" data-until="unstuff"' : '', plate: true, cargo: false } })}${loose}
       ${rig(c, { attrs: 'data-tx="start:-1200,0;gatein:0,0~2400;depart:1200,0~2600"', boxOpts: { plate: true, cargo: false } })}
       ${inset(470, 14, 232, 112, 'EIR — EMPTY RETURN', [`Container ${CONTAINER_NO}`, 'Empty, clean ✓', 'Damage: none recorded', 'Detention clock: STOP'], 'data-at="gatein" data-delay="2400"')}
       ${tag(782, 150, '⏱ IMPORT DETENTION STOPS', 'data-at="gatein" data-delay="2600"', '#1D7048')}
