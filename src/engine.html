@@ -599,7 +599,19 @@ const CONFIG = {
      to the team's Google Sheet (see docs/RESULTS_SETUP.md). Empty = results stay on this device (+ CSV download). */
   resultsEndpoint: "https://script.google.com/macros/s/AKfycbwUqQ-FjL1PRoQ0ytlaZW6nftz_G1AM5Wvy1ANZD5DfGiY1dtpYMc_LphF8iwYjdale/exec",
   resultsToken: "",                       // optional shared secret, must match the TOKEN script property
-  level1Incoterm: "FOB"                   // Level 1 does not choose: this rule is set for the learner (see HANDOFF)
+  level1Incoterm: "FOB",                  // Level 1 does not choose: this rule is set for the learner (see HANDOFF)
+  /* v1.1 — ONE graphic charter for every scene (reference: the step-5 terminal). Flat shapes, clear fills, thin outlines,
+     the CSS sky (colors.skyTop / skyBottom + sun + simple clouds) behind every scene, discreet flat shadows.
+     Retune the whole look here; the style kit in the engine ("STYLE KIT") reads only these values. */
+  style: {
+    faceMin: 19,                          // Bob's face: minimum height on screen, in scene units (≈ 25 px at 1280×800). Never smaller.
+    line: 1,                              // one outline width for every drawn object (scene units)
+    ink: "#1B2631", shadow: .14,          // outline / small dark parts · opacity of the flat cast shadows
+    containers: ["#3B8ED8", "#E5534B", "#34A46B", "#F2C230", "#8C6BD1", "#1FB0B0", "#E46FA4", "#5E86B5", "#9CC94A"],   // bright, flat; no orange (Bob)
+    crane: "#E8C33A", craneDark: "#6B5410", steel: "#55616D",          // every lifting machine and terminal vehicle
+    water: "#4C93C3", waterLight: "#8CC3E3", hull: "#2E4A60", boot: "#B5452F",
+    wall: "#EEF2F5", wallLine: "#97A4AF", roof: "#8FA2B2", glass: "#CFE3EE", leaf: "#6FA36A", leafDark: "#5C9157"
+  }
 };
 </script>
 
@@ -1829,9 +1841,7 @@ const CONFIG = {
     <linearGradient id="gReefer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBFCFD"/><stop offset="1" stop-color="#C9D3DB"/></linearGradient>
     <linearGradient id="gTank" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4F7F9"/><stop offset=".45" stop-color="#C3CDD5"/><stop offset="1" stop-color="#8996A2"/></linearGradient>
     <!-- v1.0: trapezoidal corrugation (pitch ≈ 0.28 m at the 40' = 470 px scale), lit from the top-left -->
-    <pattern id="corr" width="11" height="10" patternUnits="userSpaceOnUse"><rect width="11" height="10" fill="#000" opacity=".05"/><rect x="0" width="1.6" height="10" fill="#fff" opacity=".28"/><rect x="1.6" width="3.6" height="10" fill="#fff" opacity=".07"/><rect x="5.2" width="1.6" height="10" fill="#000" opacity=".26"/><rect x="6.8" width="4.2" height="10" fill="#000" opacity=".1"/></pattern>
-    <pattern id="grime" width="97" height="61" patternUnits="userSpaceOnUse"><g fill="#5A2A0C"><ellipse cx="14" cy="9" rx="3" ry="1.4" opacity=".16"/><ellipse cx="61" cy="33" rx="5" ry="1.8" opacity=".12"/><ellipse cx="83" cy="12" rx="1.6" ry="2.6" opacity=".14"/><ellipse cx="33" cy="49" rx="4" ry="1.3" opacity=".12"/><circle cx="47" cy="20" r="1.2" opacity=".2"/><circle cx="90" cy="52" r="1.4" opacity=".18"/></g><g fill="#fff"><rect x="22" y="27" width="9" height=".8" opacity=".12"/><rect x="70" y="44" width="6" height=".8" opacity=".1"/></g></pattern>
-    <linearGradient id="gDirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B2414" stop-opacity="0"/><stop offset="1" stop-color="#3B2414" stop-opacity=".28"/></linearGradient>
+    <pattern id="corr" width="11" height="10" patternUnits="userSpaceOnUse"><rect x="5" width="1.6" height="10" fill="#000" opacity=".13"/></pattern>
     <clipPath id="eyeClip" clipPathUnits="objectBoundingBox"><ellipse cx=".5" cy=".5" rx=".5" ry=".5"/></clipPath>
     <radialGradient id="gIris" cx=".42" cy=".38" r=".62"><stop offset="0" stop-color="#8A6A45"/><stop offset=".55" stop-color="#5A3D24"/><stop offset="1" stop-color="#24170D"/></radialGradient>
     <radialGradient id="gSclera" cx=".5" cy=".42" r=".62"><stop offset=".55" stop-color="#FBFAF6"/><stop offset="1" stop-color="#D7D1C6"/></radialGradient>
@@ -1844,7 +1854,8 @@ const CONFIG = {
     <linearGradient id="gHarbour" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9DBACB"/><stop offset=".25" stop-color="#5E8BA6"/><stop offset="1" stop-color="#1E4A66"/></linearGradient>
     <linearGradient id="gHarbourNear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B5E7E" stop-opacity=".2"/><stop offset="1" stop-color="#163A52" stop-opacity=".95"/></linearGradient>
     <linearGradient id="gOpenSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB6CE"/><stop offset=".3" stop-color="#4E85AA"/><stop offset="1" stop-color="#173F5E"/></linearGradient>
-    <pattern id="corrS" width="2.2" height="4" patternUnits="userSpaceOnUse"><rect width=".5" height="4" fill="#fff" opacity=".22"/><rect x="1.1" width=".6" height="4" fill="#000" opacity=".22"/></pattern>
+    <pattern id="corrS" width="3" height="4" patternUnits="userSpaceOnUse"><rect x="1.2" width=".6" height="4" fill="#000" opacity=".13"/></pattern>
+    <linearGradient id="gShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity="0"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".16"/></linearGradient>
     <linearGradient id="gTopLit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>
     <linearGradient id="gCraneR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E4EAEE"/><stop offset=".5" stop-color="#C3CFD8"/><stop offset="1" stop-color="#93A6B4"/></linearGradient>
     <linearGradient id="gGirder" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9EEF2"/><stop offset="1" stop-color="#A9B8C3"/></linearGradient>
@@ -1878,7 +1889,120 @@ const CONFIG = {
   // (display:none) — so cartons, cab, sea and hull rendered empty/transparent. Now there is exactly one copy, mounted once
   // in #svgDefs (never display:none), and scene re-renders never touch it.
   function mountDefs() { const d = document.getElementById('svgDefs'); if (d && !d.firstChild) d.innerHTML = DEFS; }
-  const PALETTE = ['#8FA3B3', '#9DB59A', '#B9A58F', '#A9A0BE', '#8FB1B0', '#C49A8A', '#7F9BB8'];
+  /* =====================================================================
+     v1.1 STYLE KIT — the single set of drawing functions every scene uses (reference look: step 5, terminal).
+     Flat fills, one outline width (ST.line), one shadow style (kShadow), one water (kWater), one way to draw
+     containers (kCtr), buildings (kBuilding), trees (kTree), lifting gear (kSpreader, kTrolley, kSTS) and vehicles
+     (kTractor). The sky is the CSS sky of the stage (never redrawn in a scene). All values come from CONFIG.style.
+     Real-scale scenes are drawn at M px per metre; Bob's face never drops below ST.faceMin (see boxSVG).
+     ===================================================================== */
+  const ST = CONFIG.style;
+  const PALETTE = ST.containers;
+  // mix a #rrggbb colour towards black (f < 0) or white (f > 0)
+  const shade = (hex, f) => { const n = parseInt(hex.slice(1), 16), t = f < 0 ? 0 : 255, a = Math.abs(f), m = v => Math.round(v + (t - v) * a);
+    return '#' + ((1 << 24) + (m(n >> 16) << 16) + (m(n >> 8 & 255) << 8) + m(n & 255)).toString(16).slice(1); };
+  const kShadow = (cx, y, rx, ry) => `<ellipse cx="${(+cx).toFixed(1)}" cy="${(+y).toFixed(1)}" rx="${(+rx).toFixed(1)}" ry="${(ry || Math.max(1.5, rx * .07)).toFixed(1)}" fill="${ST.ink}" opacity="${ST.shadow}"/>`;
+  // Container seen from the side: flat colour, thin outline in a darker shade, vertical ribs, top/bottom rails, 4 corner castings
+  function kCtr(x, y, w, h, fill) {
+    const d = shade(fill, -.32), n = Math.max(3, Math.round(w / 8.5)), cs = Math.max(1.6, Math.min(4, h * .12));
+    let ribs = ''; for (let i = 1; i < n; i++) ribs += `M${(x + i * w / n).toFixed(1)} ${(y + cs).toFixed(1)}V${(y + h - cs).toFixed(1)}`;
+    return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${d}" stroke-width="${ST.line}"/>
+      <path d="${ribs}" stroke="${d}" stroke-width="${Math.max(.5, w / 300).toFixed(2)}" opacity=".45"/>
+      <rect x="${x}" y="${y}" width="${w}" height="${cs * .7}" fill="${d}" opacity=".5"/><rect x="${x}" y="${y + h - cs * .7}" width="${w}" height="${cs * .7}" fill="${d}" opacity=".5"/>
+      ${[[x, y], [x + w - cs, y], [x, y + h - cs], [x + w - cs, y + h - cs]].map(([a, b]) => `<rect x="${a.toFixed(1)}" y="${b.toFixed(1)}" width="${cs}" height="${cs}" fill="${ST.ink}" opacity=".75"/>`).join('')}</g>`;
+  }
+  // Water (sea, harbour, river): one flat colour, a light band at the surface, a few short static highlights
+  function kWater(y0, x0, x1) {
+    x0 = x0 == null ? -800 : x0; x1 = x1 == null ? 1760 : x1; let d = '';
+    for (let i = 0; i < 18; i++) { const y = y0 + 12 + (i % 5) * 13, x = x0 + 20 + ((i * 197) % Math.max(60, x1 - x0 - 60)); d += `M${x} ${y}h${14 + (i % 3) * 9}`; }
+    return `<g><rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${600 - y0}" fill="${ST.water}"/><rect x="${x0}" y="${y0}" width="${x1 - x0}" height="4" fill="${ST.waterLight}"/>
+      <path d="${d}" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".4"/></g>`;
+  }
+  const kTree = (x, y, s) => { s = s || 1; return `<g><rect x="${x - 2.5 * s}" y="${y - 16 * s}" width="${5 * s}" height="${16 * s}" fill="#7A5A3A"/><circle cx="${x}" cy="${y - 26 * s}" r="${14 * s}" fill="${ST.leaf}"/><circle cx="${x + 7 * s}" cy="${y - 20 * s}" r="${9 * s}" fill="${ST.leafDark}"/></g>`; };
+  const kBush = (x, y, s) => { s = s || 1; return `<g><ellipse cx="${x}" cy="${y - 8 * s}" rx="${22 * s}" ry="${12 * s}" fill="${ST.leaf}"/><ellipse cx="${x + 14 * s}" cy="${y - 5 * s}" rx="${13 * s}" ry="${8 * s}" fill="${ST.leafDark}"/></g>`; };
+  // Building: flat wall, flat roof, rows of windows, optional sign
+  function kBuilding(x, y, w, h, o) {
+    o = o || {}; const rows = Math.max(1, Math.floor((h - 14) / 16)), cols = Math.max(1, Math.floor((w - 10) / 18));
+    let win = ''; if (o.windows !== false) for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) win += `<rect x="${x + 7 + c * 18}" y="${y + 9 + r * 16}" width="11" height="7" fill="${ST.glass}"/>`;
+    return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${o.fill || ST.wall}" stroke="${ST.wallLine}" stroke-width="${ST.line}"/><rect x="${x - 2}" y="${y - 4}" width="${w + 4}" height="5" fill="${ST.roof}"/>${win}
+      ${o.label ? `<rect x="${x + 6}" y="${y + 6}" width="${o.label.length * 6.4 + 12}" height="15" rx="3" fill="#fff" stroke="${ST.wallLine}"/><text x="${x + 12}" y="${y + 17}" font-size="9" font-weight="800" fill="${ST.ink}" letter-spacing=".5">${esc(o.label)}</text>` : ''}</g>`;
+  }
+  // Spreader, drawn relative to the top-left corner of the box it holds (bw = box width on screen, M = px per metre).
+  // Its twistlocks sit IN the two visible top corner castings of the box; the head block carries the hoist ropes.
+  function kSpreader(bw, M) {
+    const t = Math.max(3, .42 * M), hb = Math.max(4, .55 * M), lk = Math.max(2, .26 * M), hw = Math.max(14, 2.6 * M);
+    return `<g class="spreader"><rect x="${(bw - hw) / 2}" y="${-t - hb}" width="${hw}" height="${hb}" rx="1.5" fill="${ST.steel}" stroke="${ST.ink}" stroke-width="${ST.line * .8}"/>
+      <rect x="-1" y="${-t}" width="${bw + 2}" height="${t}" fill="${ST.crane}" stroke="${ST.craneDark}" stroke-width="${ST.line * .8}"/>
+      <path d="M-1 ${-t} l${-lk * 1.2} ${-lk * 1.6} h${lk * 1.2} z M${bw + 1} ${-t} l${lk * 1.2} ${-lk * 1.6} h${-lk * 1.2} z" fill="${ST.craneDark}"/>
+      <rect x=".5" y="-.5" width="${lk}" height="${lk + 1}" fill="${ST.ink}"/><rect x="${bw - lk - .5}" y="-.5" width="${lk}" height="${lk + 1}" fill="${ST.ink}"/></g>`;
+  }
+  // Hoist ropes from the head block straight up; the scene clips them at the trolley's sheaves, so they always start at
+  // the trolley and shorten / lengthen as the spreader moves. Same origin as kSpreader.
+  function kRopes(bw, M) {
+    const t = Math.max(3, .42 * M), hb = Math.max(4, .55 * M), g = Math.max(4, .7 * M);
+    return `<g stroke="${ST.ink}" stroke-width="${Math.max(1, .12 * M).toFixed(2)}"><line x1="${bw / 2 - g}" y1="${-t - hb}" x2="${bw / 2 - g}" y2="-900"/><line x1="${bw / 2 + g}" y1="${-t - hb}" x2="${bw / 2 + g}" y2="-900"/></g>`;
+  }
+  // Crane trolley under a girder (top at y), centred on cx; returns the svg and the y where the ropes leave the sheaves
+  function kTrolley(cx, y, M) {
+    const tw = 5 * M, th = 1.4 * M, cw = 2.4 * M, ch = 2.2 * M;
+    return { ropeY: y + th, svg: `<g><rect x="${cx - tw / 2}" y="${y}" width="${tw}" height="${th}" rx="1.5" fill="${ST.steel}" stroke="${ST.ink}" stroke-width="${ST.line}"/>
+      <rect x="${cx - tw / 2 - cw - 1}" y="${y + 1}" width="${cw}" height="${ch}" rx="2" fill="${ST.crane}" stroke="${ST.craneDark}" stroke-width="${ST.line}"/>
+      <rect x="${cx - tw / 2 - cw + 1}" y="${y + 3}" width="${cw - 4}" height="${ch * .45}" fill="${ST.glass}"/>
+      <circle cx="${cx - .7 * M}" cy="${y + th}" r="${.45 * M}" fill="${ST.ink}"/><circle cx="${cx + .7 * M}" cy="${y + th}" r="${.45 * M}" fill="${ST.ink}"/></g>` };
+  }
+  // Terminal tractor + trailer at M px/m (tractor ≈ 6 m, bed 1.3 m above the ground); box left edge at bx, width bw
+  function kTractor(bx, bw, M, attrs) {
+    const bed = GY - 1.3 * M, r = Math.max(3, .5 * M), x0 = bx + bw + .4 * M, L = 6 * M;
+    return `<g class="rig" ${attrs || ''}>${kShadow(bx + (bw + L) / 2, GY + 1, (bw + L) / 2 + 6)}
+      <rect x="${bx - .3 * M}" y="${bed}" width="${bw + .9 * M}" height="${.35 * M}" fill="${ST.steel}" stroke="${ST.ink}" stroke-width="${ST.line * .6}"/>
+      ${wheel(bx + .7 * M, GY - r, r)}${wheel(bx + 1.8 * M, GY - r, r)}
+      <rect x="${x0}" y="${GY - 1.3 * M}" width="${L}" height="${.4 * M}" fill="${ST.steel}"/>
+      <path d="M${x0 + 2.2 * M} ${GY - 1.1 * M} V${GY - 3 * M} q0 -.4 .4 -.4 h${2.6 * M} q.6 0 .7 .5 l.4 ${1.4 * M} v${.9 * M} z" fill="${ST.crane}" stroke="${ST.craneDark}" stroke-width="${ST.line}"/>
+      <rect x="${x0 + 3.4 * M}" y="${GY - 2.9 * M}" width="${1.2 * M}" height="${.9 * M}" rx="1" fill="${ST.glass}"/>
+      <rect x="${x0 + 1.4 * M}" y="${GY - 3.2 * M}" width="${.25 * M}" height="${2 * M}" fill="${ST.steel}"/>
+      ${wheel(x0 + 1.2 * M, GY - r, r)}${wheel(x0 + 4.9 * M, GY - r, r)}</g>`;
+  }
+  // Ship-to-shore crane, side elevation at M px/m: landside leg at xL, rail gauge 30.5 m, lift height ST (lift m under the
+  // girder), outreach 68 m, backreach 22 m. The space between the legs stays clear (upper portal beam + knee braces only).
+  function kSTS(xL, M, lift) {
+    const lw = 1.2 * M, g = 30.5 * M, xW = xL + g, gb = GY - lift * M, gt = gb - 2.6 * M, out = xW + 68 * M, back = xL - 22 * M, ax = xL + g * .5, ay = gt - 30 * M, C = ST.crane, D = ST.craneDark, l = ST.line;
+    return { xW, gb, gt, out, back,
+      shadow: `${kShadow(xL + lw / 2 + 8, GY + 2, 22, 3)}${kShadow(xW + lw / 2 + 8, GY + 2, 22, 3)}`,
+      svg: `<g>
+      <g stroke="${D}" stroke-width="${Math.max(1, .18 * M)}" fill="none"><path d="M${ax} ${ay} L${out - 4} ${gt}"/><path d="M${ax} ${ay} L${xW + 34 * M} ${gt}"/><path d="M${ax} ${ay} L${back + 6} ${gt}"/></g>
+      <g stroke="${C}" stroke-width="${.9 * M}" stroke-linecap="square"><path d="M${ax} ${ay} L${xL + lw / 2} ${gt}"/><path d="M${ax} ${ay} L${xW + lw / 2} ${gt}"/></g>
+      <rect x="${ax - .9 * M}" y="${ay - 1.2 * M}" width="${1.8 * M}" height="${1.4 * M}" fill="${D}"/>
+      <rect x="${back}" y="${gt}" width="${out - back}" height="${gb - gt}" fill="${C}" stroke="${D}" stroke-width="${l}"/><rect x="${back}" y="${gb - .5 * M}" width="${out - back}" height="${.5 * M}" fill="${D}" opacity=".45"/>
+      <path d="M${out} ${gt} l${1.4 * M} ${.6 * M} v${1.4 * M} l${-1.4 * M} ${.6 * M} z" fill="${D}"/>
+      <g><rect x="${back + 1.5 * M}" y="${gt - 3.2 * M}" width="${xL - back + 2 * M}" height="${3.2 * M}" fill="${ST.wall}" stroke="${ST.wallLine}" stroke-width="${l}"/>
+        ${[0, 1, 2, 3].map(i => `<rect x="${back + 3 * M + i * 3 * M}" y="${gt - 2.4 * M}" width="${1.6 * M}" height="${.8 * M}" fill="${ST.glass}"/>`).join('')}</g>
+      <rect x="${xL}" y="${gb}" width="${lw}" height="${GY - gb - .9 * M}" fill="${C}" stroke="${D}" stroke-width="${l}"/><rect x="${xW}" y="${gb}" width="${lw}" height="${GY - gb - .9 * M}" fill="${C}" stroke="${D}" stroke-width="${l}"/>
+      <rect x="${xL}" y="${gb}" width="${g + lw}" height="${1.4 * M}" fill="${C}" stroke="${D}" stroke-width="${l}"/>
+      <path d="M${xL + lw} ${gb + 1.4 * M} h${3.2 * M} l${-3.2 * M} ${3.2 * M} z M${xW} ${gb + 1.4 * M} h${-3.2 * M} l${3.2 * M} ${3.2 * M} z" fill="${C}" stroke="${D}" stroke-width="${l}"/>
+      ${[xL, xW].map(x => `<rect x="${x - 1.2 * M}" y="${GY - 1 * M}" width="${lw + 2.4 * M}" height="${.75 * M}" rx="1.5" fill="${ST.steel}" stroke="${ST.ink}" stroke-width="${l}"/>${[0, 1, 2, 3].map(i => `<circle cx="${x - .8 * M + i * .95 * M}" cy="${GY - .25 * M}" r="${.25 * M}" fill="${ST.ink}"/>`).join('')}`).join('')}
+      <circle class="blink" cx="${out + .8 * M}" cy="${gt - .4 * M}" r="${.28 * M}" fill="#FF5A4A"/></g>` };
+  }
+  // Container ship, side elevation at M px/m, stern at x = 0 on the waterline (y = 0), bow off-frame to the right.
+  // tiers[b] = boxes on deck in bay b; 0 = the deckhouse (bridge), which is one tier above the highest stack.
+  function kShip(o, M) {
+    const fb = (o.freeboard || 8) * M, deck = -fb, coam = deck - 1.5 * M, TQ = 2.9 * M, bayP = 13.6 * M, b0 = .6 * M, bayX = b => b0 + b * bayP, w40 = 12.19 * M, w20 = 6.06 * M;
+    const L = bayX(o.tiers.length) + 300, top = Math.max(...o.tiers);
+    let stacks = '', bridges = '';
+    o.tiers.forEach((n, b) => { const x = bayX(b);
+      if (!n) { const dw = bayP - 2 * M, dt = coam - (top + 1) * TQ;     // deckhouse: white block, bridge windows, one coloured band
+        stacks += `<g><rect x="${x + M}" y="${dt}" width="${dw}" height="${deck - dt}" fill="${ST.wall}" stroke="${ST.wallLine}" stroke-width="${ST.line}"/>
+          <rect x="${x - .5 * M}" y="${dt}" width="${dw + 3 * M}" height="${1.4 * M}" fill="${ST.ink}"/>${Array.from({ length: Math.floor((deck - dt) / (2.6 * M)) - 1 }, (_, r) => `<rect x="${x + 2 * M}" y="${dt + 3 * M + r * 2.6 * M}" width="${dw - 2 * M}" height="${.7 * M}" fill="${ST.glass}"/>`).join('')}
+          <rect x="${x + M}" y="${dt + 1.4 * M}" width="${dw}" height="${.6 * M}" fill="var(--c-primary)"/><rect x="${x + dw / 2 + M}" y="${dt - 3.5 * M}" width="${.3 * M}" height="${3.5 * M}" fill="${ST.ink}"/></g>`; return; }
+      stacks += `<rect x="${x}" y="${coam}" width="${w40}" height="${1.5 * M}" fill="${ST.steel}" stroke="${ST.ink}" stroke-width="${ST.line * .6}"/>`;
+      const pb = o.pairs && o.pairs[b] != null ? o.pairs[b] : [2, 0, 1, 0, 3, 1, 0, 2][b % 8];   // 20' pairs only in the lower tiers (never 20' on 40')
+      for (let t = 0; t < n; t++) { const y = coam - (t + 1) * TQ + .5, k = b * 7 + t * 3 + 1, P = PALETTE;
+        stacks += t < pb ? kCtr(x, y, w20, TQ - .5, P[k % P.length]) + kCtr(x + w40 - w20, y, w20, TQ - .5, P[(k + 4) % P.length]) : kCtr(x, y, w40, TQ - .5, P[k % P.length]); }
+      if (b) bridges += `<g fill="${ST.steel}"><rect x="${x - .6 * M}" y="${coam - 2 * TQ}" width="${.4 * M}" height="${2 * TQ}"/><rect x="${x - .9 * M}" y="${coam - 2 * TQ}" width="${M}" height="${.25 * M}"/><rect x="${x - .9 * M}" y="${coam - TQ}" width="${M}" height="${.25 * M}"/></g>`; });
+    const hull = `<path d="M${-1.5 * M} ${deck} H${L} V0 H${2.5 * M} Q0 0 ${-1.5 * M} ${deck * .4} Z" fill="${ST.hull}" stroke="${ST.ink}" stroke-width="${ST.line}"/>
+      <rect x="${-1.5 * M}" y="${deck}" width="${L + 1.5 * M}" height="${.5 * M}" fill="#fff" opacity=".85"/><path d="M${.8 * M} ${-1.3 * M} H${L} V0 H${2.5 * M} Q${.9 * M} 0 ${.8 * M} ${-1.3 * M} Z" fill="${ST.boot}"/>
+      <text x="${bayX(1) + 30}" y="${deck + fb * .55}" font-size="${(1.5 * M).toFixed(1)}" font-weight="800" fill="#fff" letter-spacing="3">${esc(o.name || '')}</text>`;
+    return { bayX, deck, coam, TQ, L, w40, svg: `<g>${hull}${stacks}${bridges}</g>` };
+  }
   function svgOpen(s, attrs) {
     return `<svg id="scene" viewBox="0 0 960 460" preserveAspectRatio="xMidYMax meet" role="img" aria-labelledby="sT sD" focusable="false" ${attrs || ''}>
       <title id="sT">Step ${s.id}: ${esc(plain(s.title))}</title><desc id="sD">${esc(plain(s.sceneDesc))}</desc>`;
@@ -1932,6 +2056,20 @@ const CONFIG = {
     const plate = o.plate === false ? '' : `<g><rect x="12" y="${h - ph - 11}" width="${pw}" height="${ph}" rx="2" fill="#F4F2EC" opacity=".93"/>
       ${[`MAX GROSS ${fmt(c.mgm)} KG`, `TARE ${fmt(c.tare)} KG`, `${c.iso} · ${c.short}`].map((l, i) => `<text x="17" y="${(h - ph - 11 + ph / 3 * (i + .78)).toFixed(1)}" font-size="${Math.min(ph / 3.9, pw / 11.4).toFixed(1)}" fill="#1B2631">${esc(l)}</text>`).join('')}</g>`;
     let g = '', wallFace = false, fx = Math.max(12 + pw + 41 * fk + 6, w - (f === 'reefer' ? 128 : small ? 62 : 80)), fy = h * .45;
+    // v1.1 — Bob stays readable everywhere. The face sits in a free zone on the right of the side wall (never under a
+    // marking, the reefer unit, the tank frame or the flat-rack cargo) and is scaled so that its height on screen
+    // (box scale o.scale × face scale × 72 face units) is never below CONFIG.style.faceMin. If the zone is too small for
+    // that, the markings (number, plate) are dropped on this box: the face always wins. o.faceK asks for a bigger face.
+    let marks = o.marks !== false;
+    const numW = CONTAINER_NO.length * (small ? 12 : 18) * .62 + CONTAINER_NO.length * (small ? .5 : 2);
+    const zone = t === '40FR' ? [34 + Math.round(w * .52) + 18, 4, w - 16, h - 20] : f === 'tank' ? [(small ? 52 : 70) + 36, 12, w - 14, h - 12]
+      : [Math.max(14 + numW, 12 + pw) + 8, 10, w - (f === 'reefer' ? 66 : 11), h - 11];
+    const fitK = z => Math.min((z[3] - z[1]) / 72, (z[2] - z[0]) / 100);
+    let fK = Math.max(fk * (o.faceK || 1), ST.faceMin / (72 * (o.scale || 1)));
+    if (fK > fitK(zone) && marks && t !== '40FR' && f !== 'tank') { marks = false; zone[0] = 11; }
+    fK = Math.min(fK, fitK(zone));
+    const placeFace = x => { fx = Math.max(zone[0] + 50 * fK, Math.min(zone[2] - 50 * fK, x)); fy = (zone[1] + zone[3]) / 2 - 8 * fK; };
+    placeFace(fx);
     if (t === '40FR') {
       g += `<rect x="0" y="${h - 18}" width="${w}" height="18" fill="#5B6670" stroke="#3F4750"/><rect x="0" y="0" width="14" height="${h}" fill="var(--c-box-dark)"/><rect x="${w - 14}" y="0" width="14" height="${h}" fill="var(--c-box-dark)"/>`;
       // v1.0 fix (24 Nov): the cargo is lashed on the LEFT half, so Bob's face has a clear stretch of deck on the right
@@ -1939,33 +2077,33 @@ const CONFIG = {
       if (o.cargo !== false) g += `<g ${o.cargoAttr || ''}>${machine(34, 14, cw0, h - 32)}
         <g stroke="#2B3238" stroke-width="2.5" stroke-dasharray="6 3"><line x1="20" y1="${h - 18}" x2="${44}" y2="${h - 54}"/><line x1="${34 + cw0 + 18}" y1="${h - 18}" x2="${34 + cw0 - 10}" y2="${h - 54}"/>
           <line x1="52" y1="${h - 18}" x2="${90}" y2="${h - 34}"/><line x1="${34 + cw0 - 10}" y1="${h - 18}" x2="${34 + cw0 - 48}" y2="${h - 34}"/></g></g>`;
-      g += `<text x="20" y="${h - 5}" font-size="10" font-weight="800" fill="#fff" opacity=".9">${esc(CONTAINER_NO)} · ${esc(c.iso)}</text>`;
-      fx = w - 74; fy = h - 58;
+      if (marks) g += `<text x="20" y="${h - 5}" font-size="10" font-weight="800" fill="#fff" opacity=".9">${esc(CONTAINER_NO)} · ${esc(c.iso)}</text>`;
+      placeFace(w - 74);
     } else if (f === 'tank') {
       g += `<rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="#5B6670" stroke-width="10"/><line x1="0" y1="${h / 2}" x2="${w}" y2="${h / 2}" stroke="#5B6670" stroke-width="4" opacity=".4"/>
         <rect x="14" y="14" width="${w - 28}" height="${h - 28}" rx="${(h - 28) / 2}" fill="url(#gTank)" stroke="#6E7B86" stroke-width="2"/>
         <rect x="${w / 2 - 14}" y="6" width="28" height="10" rx="3" fill="#6E7B86"/>
         <g transform="translate(${small ? 52 : 70} ${h / 2}) rotate(45)"><rect x="-22" y="-22" width="44" height="44" fill="#E2432F" stroke="#fff" stroke-width="3"/></g>
         <text x="${small ? 52 : 70}" y="${h / 2 + 9}" text-anchor="middle" font-size="22" font-weight="900" fill="#fff">3</text>
-        <text x="22" y="${h - 7}" font-size="10" font-weight="800" fill="#33424F">${esc(CONTAINER_NO)} · ${esc(c.iso)}</text>`;
-      fx = w - (small ? 58 : 76); fy = h * .44;
+        ${marks ? `<text x="22" y="${h - 7}" font-size="10" font-weight="800" fill="#33424F">${esc(CONTAINER_NO)} · ${esc(c.iso)}</text>` : ''}`;
+      placeFace(w - (small ? 58 : 76));
     } else {
       // v1.0 fix (24 Nov): the open box shows a lit plywood interior (floor, side wall, ceiling), not a black hole
       g += `<g><rect x="0" y="0" width="${w}" height="${h}" rx="2" fill="url(#gInside)"/><rect x="0" y="${h - 9}" width="${w}" height="9" fill="#9A7B52"/><rect x="0" y="${h - 9}" width="${w}" height="1.5" fill="#C8A878"/>
         ${Array.from({ length: 9 }, (_, i) => `<rect x="${(i * w / 9).toFixed(1)}" y="0" width="1" height="${h - 9}" fill="#000" opacity=".07"/>`).join('')}
         <rect x="0" y="0" width="${w}" height="7" fill="#000" opacity=".3"/><rect x="0" y="0" width="7" height="${h}" fill="#000" opacity=".16"/><rect x="${w - 7}" y="0" width="7" height="${h}" fill="#000" opacity=".16"/></g>${o.inside || ''}`;
-      const wallFill = f === 'reefer' ? 'url(#gReefer)' : 'url(#gBox)', pat = f === 'reefer' ? 'url(#ribs)' : 'url(#corr)';
-      // v1.0 (retour 2/6): corrugated steel with top/bottom rails, corner posts, light grime and dirt towards the bottom
+      const wallFill = f === 'reefer' ? 'url(#gReefer)' : 'var(--c-box)', pat = f === 'reefer' ? 'url(#ribs)' : 'url(#corr)';
+      // v1.1: flat side wall (charter) — box colour, light ribs, rails, corner posts, a soft shade at the bottom; no grime
       const rail = f === 'reefer' ? '#A9B5BF' : 'var(--c-box-dark)';
       const wall = attr => `<g class="wall" ${attr || ''}><rect x="0" y="0" width="${w}" height="${h}" rx="2" fill="${wallFill}"/><rect x="0" y="0" width="${w}" height="${h}" fill="${pat}"/>
-        <rect x="0" y="0" width="${w}" height="${h}" fill="url(#grime)" opacity="${f === 'reefer' ? .35 : 1}"/><rect x="0" y="${h * .5}" width="${w}" height="${h * .5}" fill="url(#gDirt)" opacity="${f === 'reefer' ? .5 : 1}"/>
+        <rect x="0" y="0" width="${w}" height="${h}" fill="url(#gShade)"/>
         <rect x="0" y="0" width="${w}" height="7" fill="${rail}" opacity=".75"/><rect x="0" y="7" width="${w}" height="1.4" fill="#000" opacity=".22"/>
         <rect x="0" y="${h - 9}" width="${w}" height="9" fill="${rail}" opacity=".8"/><rect x="0" y="${h - 10.4}" width="${w}" height="1.4" fill="#fff" opacity=".16"/>
         <rect x="0" y="0" width="9" height="${h}" fill="${rail}" opacity=".7"/><rect x="${w - 9}" y="0" width="9" height="${h}" fill="${rail}" opacity=".7"/>
         <rect x="0" y="0" width="${w}" height="${h}" rx="2" fill="none" stroke="${f === 'reefer' ? '#8996A2' : 'var(--c-box-dark)'}" stroke-width="1.5"/>
-        ${num(f === 'reefer' ? '#33424F' : '#fff')}${plate}${o.face === false ? '' : faceSVG(fx, (o.faceK ? h * .47 : fy), (small ? .8 : 1) * (o.faceK || 1), f === 'reefer' ? '#E2E8ED' : 'var(--c-box)')}</g>`;
+        ${marks ? num(f === 'reefer' ? '#33424F' : '#fff') + plate : ''}${o.face === false ? '' : faceSVG(fx, fy, fK, f === 'reefer' ? '#E2E8ED' : 'var(--c-box)')}</g>`;
       g += wall(o.wallAttr) + (o.wall2Attr ? wall(o.wall2Attr) : '');
-      if (o.faceOpenAttr && o.face !== false) g += `<g ${o.faceOpenAttr}>${faceSVG(fx, fy, small ? .8 : 1, '#7A6248')}</g>`;
+      if (o.faceOpenAttr && o.face !== false) g += `<g ${o.faceOpenAttr}>${faceSVG(fx, fy, fK, '#7A6248')}</g>`;
       g += corners;
       wallFace = true;
       if (f === 'reefer') g += `<g><rect x="${w - 62}" y="4" width="58" height="${h - 8}" rx="4" fill="#5B6670" stroke="#3F4750"/>
@@ -1975,8 +2113,7 @@ const CONFIG = {
       if (t === '40OT') g += `<path class="tarp" ${o.tarpAttr || ''} d="M0 2 Q${w / 4} -16 ${w / 2} -6 T${w} 2 L${w} 12 L0 12 Z" fill="#3E6E9E" stroke="#24486B" stroke-width="2"/>`;
     }
     const lid = f === 'tank' ? '#C3CDD5' : t === '40FR' ? '#DDA82A' : 'var(--c-box)';
-    if (o.faceK) fy = h * .47;
-    return `<g class="body">${g}${wallFace || o.face === false ? '' : faceSVG(fx, fy, (small ? .8 : 1) * (o.faceK || 1), lid)}</g>`;
+    return `<g class="body">${g}${wallFace || o.face === false ? '' : faceSVG(fx, fy, fK, lid)}</g>`;
   }
   // Small container for landscape and map scenes.
   function miniBox(c, x, y, w, h) {
@@ -2066,16 +2203,15 @@ const CONFIG = {
   const K = 0.35;              // scale of containers in quay and yard scenes: 40' = 165 px, so stacks and our box match
   const TH = 40;               // v1.0: height of one stack tier at that scale (a 9'6" box = 112 × 0.35 + a 1 px gap)
   // A container seen from the side (stacks on ships and in yards), drawn at the same scale as our box.
-  function ctr(x, y, w, h, fill) {
-    return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#3F4A54" stroke-width="1"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#corr)" opacity=".7"/>
-      <rect x="${x}" y="${y}" width="${w}" height="3" fill="#000" opacity=".2"/><rect x="${x}" y="${y + h - 3}" width="${w}" height="3" fill="#000" opacity=".2"/>
-      ${[[x, y], [x + w - 4, y], [x, y + h - 4], [x + w - 4, y + h - 4]].map(([a, b]) => `<rect x="${a}" y="${b}" width="4" height="4" fill="#2B3238"/>`).join('')}</g>`;
-  }
+  function ctr(x, y, w, h, fill) { return kCtr(x, y, w, h, fill); }   // v1.1: style kit
+
   // A row of 40' stacks (or pairs of 20') starting at x, with the given number of tiers per bay.
-  function stackRow(x, tiers, seed) {
+  // v1.1 stacking rule: a pair of 20' never stands on a 40' (no support at mid-length), so 20' pairs only fill the LOWER
+  // tiers of a stack (pairs[b] = number of 20' tiers in bay b; default: from the seed).
+  function stackRow(x, tiers, seed, pairs) {
     let o = '';
-    tiers.forEach((n, b) => { const bx = x + b * 171; for (let t = 0; t < n; t++) { const y = GY - (t + 1) * TH + 1, k = (seed || 0) + b * 3 + t;
-      o += k % 3 === 0 ? ctr(bx, y, 82, TH - 1, PALETTE[k % 7]) + ctr(bx + 83, y, 82, TH - 1, PALETTE[(k + 3) % 7]) : ctr(bx, y, 165, TH - 1, PALETTE[k % 7]); } });
+    tiers.forEach((n, b) => { const bx = x + b * 171, pb = pairs && pairs[b] != null ? pairs[b] : ((seed || 0) + b) % 3; for (let t = 0; t < n; t++) { const y = GY - (t + 1) * TH + 1, k = (seed || 0) + b * 3 + t;
+      o += t < pb ? ctr(bx, y, 82, TH - 1, PALETTE[k % 7]) + ctr(bx + 83, y, 82, TH - 1, PALETTE[(k + 3) % 7]) : ctr(bx, y, 165, TH - 1, PALETTE[k % 7]); } });
     return o;
   }
   // Nested movers: each data-tx string adds its movement to the others, so one object can go up, across and down in one beat.
@@ -2392,7 +2528,7 @@ const CONFIG = {
     const spreader = `<g transform="translate(${bx0} ${by0})">${spreaderSVG(bw)}</g>`;
     return `${svgOpen(s)}<defs><clipPath id="rtgClip"><rect x="-700" y="146" width="2400" height="400"/></clipPath></defs>${ground()}${skyline([[300, 236, 44], [360, 252, 50], [990, 230, 46]])}
       <g opacity=".55" transform="translate(0 -26) scale(1 1)">${stackRow(300, [2, 3, 3, 2], 5)}</g>
-      ${stackRow(460, [2, 3], 1)}
+      ${stackRow(460, [2, 3], 1, c.len === 20 ? [2] : [0])}
       <g><rect x="16" y="150" width="226" height="16" rx="3" fill="#1B2631"/><rect x="24" y="166" width="10" height="202" fill="#55616D"/><rect x="226" y="166" width="10" height="202" fill="#55616D"/>
         <text x="129" y="163" text-anchor="middle" font-size="11" font-weight="800" fill="#fff" letter-spacing="1">GATE IN · OCR</text><circle class="blink" cx="129" cy="180" r="4" fill="#7CF0A8"/>
         <rect x="236" y="250" width="34" height="50" rx="3" fill="#EEF2F5" stroke="#97A4AF"/><rect x="241" y="257" width="24" height="14" fill="url(#gGlass)"/></g>
@@ -2448,14 +2584,9 @@ const CONFIG = {
       <g class="ripples">${rip}</g><g class="ripples r2" opacity=".6">${rip}</g>`;
   }
   // A container seen from the side at quay scale: base colour, top-lit gradient, fine corrugation, rails, castings
-  function ctrQ(x, y, w, h, fill) {
-    return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#corrS)"/>
-      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#gTopLit)"/>
-      <rect x="${x}" y="${y}" width="${w}" height="1.4" fill="#000" opacity=".28"/><rect x="${x}" y="${y + h - 1.6}" width="${w}" height="1.6" fill="#000" opacity=".32"/>
-      <rect x="${x}" y="${y}" width="1.6" height="${h}" fill="#000" opacity=".25"/><rect x="${x + w - 1.6}" y="${y}" width="1.6" height="${h}" fill="#000" opacity=".25"/>
-      <rect x="${x}" y="${y + h - 2}" width="2" height="2" fill="#15181B"/><rect x="${x + w - 2}" y="${y + h - 2}" width="2" height="2" fill="#15181B"/></g>`;
-  }
-  const QPAL = ['#7E2F2A', '#2F5E8C', '#8B9297', '#3D6B4F', '#C9CED2', '#A3562C', '#28435E', '#6E6A5E', '#B88A2E', '#5D7587'];
+  function ctrQ(x, y, w, h, fill) { return kCtr(x, y, w, h, fill); }  // v1.1: style kit
+
+  const QPAL = PALETTE;   // v1.1: the dull v1.0 palette is gone — one bright container palette (CONFIG.style.containers)
   // Terminal tractor + trailer at real scale (tractor 6 m, trailer 12.5 m, bed 1.3 m); box left edge at bx, width bw
   function tractorQ(bx, bw, attrs) {
     const bed = GY - 9, r = 3.4;
@@ -2526,57 +2657,61 @@ const CONFIG = {
     return { bayX, deck, coam, L, svg: `<g>${hull}${funnel}${stacks}${bridges}</g>` };
   }
 
-  /* --- Steps 6 & 8: quay operations (load / discharge), v1.0 real-scale pilot ---
-     Same beats and moves as v0.5: berth → load (lift, trolley across, lower) → lash → docs; arrive → discharge → yard. */
+  /* --- Steps 6 & 8: quay operations (load / discharge) — v1.1, style kit (flat charter of step 5) ---
+     Real proportions at QM2 = 10 px per metre: 40' box 122 px, 9'6" tier 29 px; STS crane rail gauge 30.5 m,
+     lift height 39 m under the girder, outreach 68 m; ship freeboard 8 m, 6–7 tiers on deck. At this scale Bob's face
+     keeps at least CONFIG.style.faceMin (it is enlarged inside the box's free zone).
+     Lifting cycle (load): the spreader waits at lifting height, comes DOWN onto the box when the truck stops, the box goes
+     up, the trolley and the box travel together (trolley always vertically above the box), the box goes down into its slot,
+     then the spreader unlocks and goes back up. Ropes are clipped at the trolley's sheaves, so they always start at the
+     trolley and shorten / lengthen with the spreader. Discharge plays the same cycle the other way. */
   function quay(s, mode) {
-    const c = container(), r = route(), { w, h } = boxDims(c), bw = w * KQ, bh = h * KQ, load = mode === 'load';
-    const xL = 46, Q = stsQ(xL), quayEdge = Q.xW + 22, SX = quayEdge + 16;
-    const tiers = [5, 6, 0, 7, 8, 8, 9, 8, 9, 9];          // bay 2 = funnel casing
-    const SH = shipQ({ tiers, funnelBay: 2, name: r.vessel });
-    const bx0 = xL + 22, by0 = GY - 9 - bh, lift = Q.gb + 36;
-    const slotX = SX + SH.bayX(1) + (c.len === 20 ? 0 : 0), slotY = QWL + SH.coam - (tiers[1] + 1) * QTH + .6 + (QTH - .6 - bh), dx = slotX - bx0;
-    const shipMoves = load ? 'start:1500,0;berth:0,0~2600;depart:1500,0~4200' : 'start:1500,0;arrive:0,0~3200';
-    const loadChain = ['start:0,0;load:0,' + (lift - by0).toFixed(1) + '~900', `start:0,0;load:${dx.toFixed(1)},0@900~1300`, 'start:0,0;load:0,' + (slotY - lift).toFixed(1) + '@2300~900'];
-    const disChain = [`start:${dx.toFixed(1)},0;discharge:0,0@900~1300`, 'start:0,' + (slotY - lift).toFixed(1) + ';discharge:0,0~900', 'start:0,' + (lift - by0).toFixed(1) + ';discharge:0,0@2300~900'];
-    const g0 = load ? 'start:-640,0;berth:0,0~2200;depart:1500,0~4200' : 'start:1500,0;arrive:0,0~3200;yard:-760,0~2000';
-    const lifts = load ? loadChain : disChain;
-    const boxBody = `<g transform="translate(${bx0} ${by0}) scale(${KQ})">${boxSVG(c, { plate: false, faceK: 1.35 })}</g>`;
-    // hoist ropes (clipped under the trolley, so they shorten / lengthen) and a spreader with its twistlocks
-    const cables = `<g transform="translate(${bx0} ${by0})" stroke="#2B3238" stroke-width="1.1"><line x1="${bw / 2 - 5}" y1="-9" x2="${bw / 2 - 5}" y2="-600"/><line x1="${bw / 2 + 5}" y1="-9" x2="${bw / 2 + 5}" y2="-600"/></g>`;
-    const spreader = `<g transform="translate(${bx0} ${by0})"><rect x="${bw / 2 - 7}" y="-10" width="14" height="4" rx="1" fill="#3F4750"/><path d="M${bw / 2 - 5} -6 L3 -3 M${bw / 2 + 5} -6 L${bw - 3} -3" stroke="#2B3238" stroke-width=".9"/>
-      <rect x="-1.5" y="-4" width="${bw + 3}" height="4" rx="1" fill="#E3B82E" stroke="#6B5410" stroke-width=".6"/><rect x="-1.5" y="0" width="3" height="1.6" fill="#1B2024"/><rect x="${bw - 1.5}" y="0" width="3" height="1.6" fill="#1B2024"/></g>`;
-    const spAttrs = load ? 'data-until="load"' : 'data-until="discharge"';
-    const trolleyTx = load ? `start:0,0;load:${dx.toFixed(1)},0@900~1300` : `start:${dx.toFixed(1)},0;discharge:0,0@900~1300`;
-    const truckTx = load ? 'start:-640,0;berth:0,0~2200;load:-760,0@3400~1800' : 'start:-640,0;discharge:0,0~1400;yard:-760,0~2000';
-    // quay: concrete apron with lane markings, cope with bollards, rubber fenders on the quay face, crane rails, lighting mast
-    const quaySvg = `<rect x="-800" y="${GY}" width="${quayEdge + 800}" height="120" fill="url(#gQuay)"/><rect x="-800" y="${GY}" width="${quayEdge + 800}" height="2.5" fill="#fff" opacity=".45"/>
-      <rect x="-800" y="${GY + 12}" width="${quayEdge + 790}" height="1.6" fill="#E3B82E" opacity=".85"/><rect x="-800" y="${GY + 24}" width="${quayEdge + 790}" height="1.4" fill="#F4F4EE" opacity=".7"/>
-      ${Array.from({ length: 14 }, (_, i) => `<rect x="${-300 + i * 44}" y="${GY + 4}" width="1" height="30" fill="#000" opacity=".08"/>`).join('')}
-      <rect x="${quayEdge - 2}" y="${GY}" width="6" height="120" fill="#7C858C"/><rect x="${quayEdge - 6}" y="${GY - 1}" width="10" height="4" fill="#C9CED2"/>
-      ${[0, 1].map(i => `<g transform="translate(${quayEdge - 16 - i * 120} ${GY})"><rect x="-3" y="-7" width="6" height="7" fill="#2B3238"/><ellipse cx="0" cy="-7" rx="4.5" ry="1.6" fill="#3F4750"/></g>`).join('')}
-      ${[GY + 6, GY + 22].map(y => `<rect x="${quayEdge + 3}" y="${y}" width="6" height="11" rx="1.5" fill="#15181B"/><rect x="${quayEdge + 3}" y="${y}" width="2" height="11" fill="#fff" opacity=".12"/>`).join('')}
-      <g opacity=".95"><rect x="-6" y="${GY - 245}" width="4" height="245" fill="#8A97A1"/><rect x="-16" y="${GY - 250}" width="24" height="6" fill="#55616D"/>${[0, 1, 2, 3].map(i => `<rect x="${-15 + i * 6}" y="${GY - 244}" width="4" height="3" fill="#FFF1B8"/>`).join('')}</g>`;
-    // far shore (aerial perspective): another terminal's cranes, masts and a hazy skyline, all pale and low-contrast
-    const far = `<g opacity=".55"><rect x="-800" y="312" width="2560" height="8" fill="#AFC1CE"/>
-      ${[[420, 232, 26], [470, 248, 20], [1010, 236, 30], [1060, 252, 24], [1120, 228, 18]].map(([x, y, w]) => `<rect x="${x}" y="${y}" width="${w}" height="${320 - y}" fill="#B8C8D4"/>`).join('')}
-      ${[560, 700, 840].map(x => `<g fill="#A9BBC8"><rect x="${x}" y="226" width="3" height="90"/><rect x="${x + 26}" y="226" width="3" height="90"/><rect x="${x - 10}" y="222" width="80" height="5"/><path d="M${x + 10} 222 l6 -30 l6 30 z"/></g>`).join('')}</g>`;
-    // ship + its reflection in the calm water (mirror image, faded and broken by the ripple highlights)
-    const shipG = `<g transform="translate(${SX} ${QWL})">${SH.svg}</g>`;
-    const refl = `<g transform="translate(${SX} ${QWL}) scale(1 -1)" opacity=".28" mask="url(#mRefl)">${SH.svg}</g>`;
-    return `${svgOpen(s, 'data-sky="own"')}<defs><clipPath id="cableClip"><rect x="-700" y="${Q.gb + 10}" width="2400" height="500"/></clipPath></defs>
-      <g transform="translate(0 -38)">${realSky(318)}${far}
-      ${harbourWater(318, quayEdge - 40)}
-      <g data-tx="${shipMoves}">${refl}${shipG}</g>
-      <rect x="${quayEdge}" y="${QWL}" width="1800" height="110" fill="url(#gHarbourNear)" opacity=".5"/><g class="ripples r2" opacity=".5">${harbourRipples(QWL)}</g>
-      ${quaySvg}${Q.shadow}${Q.svg}
-      <g data-tx="${trolleyTx}"><g transform="translate(${bx0 + bw / 2 - 16} ${Q.gb})"><rect x="0" y="0" width="32" height="8" rx="1.5" fill="#55707F"/>${wheel(6, 0, 2.4)}${wheel(26, 0, 2.4)}
-        <rect x="-15" y="9" width="15" height="13" rx="1.5" fill="#E3B82E" stroke="#6B5410" stroke-width=".6"/><rect x="-13" y="11" width="11" height="6" fill="url(#gGlass)"/><line x1="-7.5" y1="8" x2="-7.5" y2="9" stroke="#3F4750" stroke-width="2"/></g></g>
-      <g ${spAttrs}><g clip-path="url(#cableClip)">${chain(lifts, cables)}</g>${chain(lifts, spreader)}</g>
-      ${chain([truckTx], tractorQ(bx0, bw))}
+    const M = 10, KB = M / (470 / 12.19), c = container(), r = route(), { w, h } = boxDims(c), bw = w * KB, bh = h * KB, load = mode === 'load';
+    const xL = 40, Q = kSTS(xL, M, 39), quayEdge = Q.xW + 3 * M, SX = quayEdge + 1.5 * M, WL = GY + 3.5 * M;
+    const tiers = [5, 6, 0, 7, 7, 6, 7, 7];
+    const SH = kShip({ tiers, name: r.vessel, freeboard: 8, pairs: { 1: c.len === 20 ? tiers[1] : 0 } }, M);   // a 20' Bob lands on 20' boxes
+    const T = kTrolley(0, Q.gb, M);
+    const bx0 = xL + 4 * M, by0 = GY - 1.3 * M - bh;
+    const top = n => WL + SH.coam - n * SH.TQ;                                   // top of a stack of n tiers in the frame
+    const liftY = Math.min(top(tiers[0]), top(tiers[1])) - 1.5 * M - bh;        // box top while travelling: clear of the stacks
+    const slotX = SX + SH.bayX(1), slotY = top(tiers[1] + 1) + (SH.TQ - .5 - bh), dx = slotX - bx0;
+    const up = (liftY - by0).toFixed(1), down = (slotY - liftY).toFixed(1);
+    const shipMoves = load ? 'start:1600,0;berth:0,0~2600;depart:1600,0~4200' : 'start:1600,0;arrive:0,0~3200';
+    // box path (nested movers): lift, travel with the trolley, lower
+    const lifts = load
+      ? [`start:0,0;load:0,${up}~900`, `start:0,0;load:${dx.toFixed(1)},0@900~1300`, `start:0,0;load:0,${down}@2300~900`]
+      : [`start:${dx.toFixed(1)},0;discharge:0,0@1700~1300`, `start:0,${down};discharge:0,0@800~900`, `start:0,${up};discharge:0,0@3000~900`];
+    // spreader only: waits at lifting height, comes down onto the box, goes back up after unlocking
+    const spr = load ? `start:0,${up};berth:0,0@2300~800;lash:0,${(liftY - slotY).toFixed(1)}~800`
+                     : `start:0,${(liftY - slotY).toFixed(1)};discharge:0,0~700;yard:0,${up}~800`;
+    const g0 = load ? 'start:-700,0;berth:0,0~2200;depart:1600,0~4200' : 'start:1600,0;arrive:0,0~3200;yard:-800,0@800~2000';
+    const truckTx = load ? 'start:-700,0;berth:0,0~2200;load:-800,0@3400~1800' : 'start:-700,0;discharge:0,0~1400;yard:-800,0@800~2000';
+    const trolleyTx = load ? `start:0,0;load:${dx.toFixed(1)},0@900~1300` : `start:${dx.toFixed(1)},0;discharge:0,0@1700~1300`;
+    const boxBody = `<g transform="translate(${bx0} ${by0}) scale(${KB.toFixed(4)})">${boxSVG(c, { plate: false, marks: false, faceK: 1.3, scale: KB })}</g>`;
+    const at = inner => `<g transform="translate(${bx0} ${by0})">${inner}</g>`;
+    // quay apron (same ground as step 5), quay wall, fenders, bollards
+    const bol = [quayEdge - 1.6 * M, quayEdge - 13 * M];
+    const apron = `<rect x="-800" y="${GY}" width="${quayEdge + 800}" height="140" fill="url(#gGround)"/><rect x="-800" y="${GY}" width="${quayEdge + 800}" height="4" fill="#fff" opacity=".35"/>
+      <rect x="-800" y="${GY + 14}" width="${quayEdge + 790}" height="3" fill="${ST.crane}" opacity=".8"/>
+      <rect x="${quayEdge - 4}" y="${GY}" width="6" height="140" fill="${ST.steel}" opacity=".55"/>
+      ${bol.map(x => `<rect x="${x - 3}" y="${GY - 6}" width="6" height="6" fill="${ST.ink}"/><rect x="${x - 4.5}" y="${GY - 8}" width="9" height="2.5" rx="1" fill="${ST.ink}"/>`).join('')}
+      ${[GY + 8, GY + 26].map(y => `<rect x="${quayEdge + 1}" y="${y}" width="${.8 * M}" height="${1.2 * M}" rx="2" fill="${ST.ink}"/>`).join('')}`;
+    const shipG = `<g transform="translate(${SX} ${WL})">${SH.svg}</g>`;
+    const moor = `<g fill="none" stroke="${ST.ink}" stroke-width="1" ${load ? 'data-at="berth" data-until="docs" data-delay="2600"' : 'data-at="arrive" data-delay="3200"'}>
+      ${bol.map((x, i) => `<path d="M${x} ${GY - 7} Q${(x + SX) / 2 + 8} ${GY + 4 - i * 4} ${SX + (1 + i) * M} ${WL + SH.deck - 2}"/>`).join('')}</g>`;
+    return `${svgOpen(s)}<defs><clipPath id="cableClip"><rect x="-700" y="${T.ropeY}" width="2400" height="600"/></clipPath></defs>
+      ${skyline([[470, 262, 40], [520, 278, 46], [880, 256, 44], [930, 272, 36]])}
+      ${kWater(WL, quayEdge - 10)}
+      <g data-tx="${shipMoves}">${shipG}</g>
+      ${apron}${Q.shadow}${Q.svg}
+      <g data-tx="${trolleyTx}"><g transform="translate(${bx0 + bw / 2} 0)">${T.svg}</g></g>
+      <g clip-path="url(#cableClip)">${chain([spr].concat(lifts), at(kRopes(bw, M)))}</g>
+      ${chain([truckTx], kTractor(bx0, bw, M))}
       ${chain([g0].concat(lifts), boxBody)}
-      <g fill="none" stroke="#1B2024" stroke-width="1" ${load ? 'data-at="berth" data-until="docs" data-delay="2600"' : 'data-at="arrive" data-delay="3200"'}><path d="M${quayEdge - 16} ${GY - 7} Q${quayEdge + 4} ${GY - 2} ${SX + 18} ${QWL + SH.deck - 4}"/><path d="M${quayEdge - 136} ${GY - 7} Q${quayEdge - 40} ${GY + 2} ${SX + 30} ${QWL + SH.deck - 4}"/></g></g>
-      ${load ? tag(640, 84, `ETD ${plain('{etd}')} · ${r.vessel} ${r.voyage}`, 'data-at="docs" data-delay="600"') : tag(640, 84, plain(C.ui.arrivalNotice), 'data-at="yard" data-delay="1800"')}
-      ${c.family === 'reefer' ? tag(420, 84, load ? 'PLUGGED ON BOARD ⚡ ' + plain('{setPoint}') : 'PLUGGED IN REEFER RACK ⚡', `data-at="${load ? 'lash' : 'yard'}" data-delay="1600"`, '#0B4F6C') : ''}
+      ${chain([spr].concat(lifts), at(kSpreader(bw, M)))}
+      ${moor}
+      ${load ? tag(640, 40, `ETD ${plain('{etd}')} · ${r.vessel} ${r.voyage}`, 'data-at="docs" data-delay="600"') : tag(640, 40, plain(C.ui.arrivalNotice), 'data-at="yard" data-delay="1800"')}
+      ${c.family === 'reefer' ? tag(420, 40, load ? 'PLUGGED ON BOARD ⚡ ' + plain('{setPoint}') : 'PLUGGED IN REEFER RACK ⚡', `data-at="${load ? 'lash' : 'yard'}" data-delay="1600"`, '#0B4F6C') : ''}
     </svg>`;
   }
   SCENES.loading = s => quay(s, 'load');
@@ -2718,7 +2853,7 @@ const CONFIG = {
   renderIntro();
 
   // Test/debug hook (console only).
-  window.__cj = { state: () => S, C, renderIntro, goStep, go, openQuestion, startQuiz, renderSummary, renderMenu, consult,
+  window.__cj = { state: () => S, C, renderIntro, openJourney, goStep, go, openQuestion, startQuiz, renderSummary, renderMenu, consult,
     answerRight: () => { const s = step(); answer(R(s.question).options.find(o => o.correct).id); },
     consultAll: () => { essentials(step()).forEach(h => { const arr = S.consulted[S.step] || (S.consulted[S.step] = []); if (!arr.includes(h.id)) arr.push(h.id); }); save(); renderHs(); renderBar(); },
     footprint: () => footprint(), meter: () => meterTotals(), depart: () => depart(), openMeter: () => openMeter(), nudgeNow: () => nudgeNow(), closeXfer, resultItems: () => resultItems(), results: () => loadResults(),

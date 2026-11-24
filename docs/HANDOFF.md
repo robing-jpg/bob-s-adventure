@@ -2,7 +2,7 @@
 
 Read this file first. It replaces the long history of the first project ("AI" project, Oct–Nov 2026).
 
-## State (24 Nov 2026, v1.0 in progress — final delivery 26 Nov)
+## State (24 Nov 2026, v1.0 final pass: one graphic charter — final delivery 26 Nov)
 - Playable game: `index.html` (single file, offline). Source in `src/` — edit the JSON, not the built file.
 - v1.0 work plan and progress: see "v1.0 — progress" below (read it first when resuming). v0.5 changes: further down.
 - Build: `python3 src/build.py` → `dist/container-journey_v0.3.html` → copy to `index.html`, commit, push. The build fails if a `[TO VERIFY:vNN]` id or a `[[term]]` is missing.
@@ -26,6 +26,26 @@ Read this file first. It replaces the long history of the first project ("AI" pr
 - Cartons and vehicles are separate objects: loose cargo moves only while the vehicle is parked and is hidden before it leaves.
 - When asked for a change, edit files and show only the modified parts.
 - End every answer with an approximate token usage line (input / output / models).
+
+## Final pass — one graphic charter (brief: project doc `claude/09_prompt-v1.1-charte-graphique-finale.md`)
+Reference look = **step 5 (terminal)**: flat shapes, clear fills, thin outlines, the CSS sky behind every scene, discreet flat shadows. No photo textures, grime, haze, reflections or multi-layer swell. Keep from the realism pass only: proportions, correct machine structure, simple shadows.
+
+| Block | Content | Status |
+|---|---|---|
+| 0 | **Style kit** (`STYLE KIT` in `engine.html`, values in `CONFIG.style`) + step 6 | **done, pushed 24 Nov — waiting for the team's OK (2 screenshots)** |
+| 1 | Steps 8 (done with 6, same `quay()`), 3, 10 | to do after OK |
+| 2 | Steps 11, 1, 2 | to do |
+| 3 | Steps 7 (map), 4, 9 (stations) | to do |
+| 4 | Intro, menu, summary; v1.0 in CONFIG / README / HANDOFF; credits; 4 test journeys | to do |
+
+### Block 0 — what changed
+- `CONFIG.style`: `faceMin` (Bob's minimum face height, 19 scene units ≈ 25 px at 1280×800), one `line` width, `ink`, `shadow` opacity, **bright container palette** (`containers`, no orange so Bob stands out; replaces the dull `QPAL` and the old `PALETTE`), crane / water / hull / building / leaf colours.
+- Style kit functions: `shade`, `kShadow`, `kCtr` (flat container), `kWater` (one water), `kTree`, `kBush`, `kBuilding`, `kSpreader` + `kRopes` (twistlocks in the corner castings, ropes clipped at the trolley sheaves), `kTrolley`, `kTractor`, `kSTS`, `kShip`. `ctr()` and `ctrQ()` now call `kCtr`.
+- Box: flat wall (box colour + soft bottom shade, light ribs); grime / dirt patterns removed. **Face rule** in `boxSVG`: the face sits in a free zone on the right (never under the number, plate, reefer unit, tank frame or flat-rack cargo) and is scaled so that `o.scale × face scale × 72 ≥ faceMin`; if the zone is too small the markings are dropped on that box. Pass `scale` (the box's render scale) from every scene.
+- Stacking rule: a pair of 20' never stands on a 40' (`stackRow(…, pairs)`, `kShip({pairs})`); a 20' Bob lands on 20' boxes (steps 5, 6, 8).
+- **Steps 6 and 8** (`quay()`) redrawn with the kit at 10 px/m: STS (gauge 30.5 m, lift 39 m, outreach 68 m, clear space between the legs), ship (freeboard 8 m, 5–7 tiers, deckhouse), terminal tractor. Cycle: spreader waits at lifting height → comes down onto the box → lift → trolley and box travel together → lower → unlock → spreader goes back up. CSS sky (no own sky), no reflection, no haze. Hotspot coordinates unchanged.
+- Test hook: `__cj.openJourney()` (console only).
+- Tested: 11 steps × 7 container / route / level sets, 0 console errors; step 6 / 8 frame checks (40HC, 20DV, 40RF, 40FR) at 1280×800 and 1920×1080.
 
 ## v1.0 — progress (brief: project doc `claude/07_prompt-v1.0-design-and-fixes.md`)
 | Block | Content | Status |
