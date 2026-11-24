@@ -106,6 +106,18 @@ button.jdot{cursor:pointer}
 .scene.map{background:linear-gradient(180deg,#9FD0EA,#CFE7F3)}
 .sun{position:absolute;right:7%;top:8%;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#FFF6CF 0 38%,rgba(255,240,180,.55) 52%,rgba(255,240,180,0) 70%)}
 .scene.map .sun,.scene.map #clouds{display:none}
+.scene.own-sky .sun,.scene.own-sky #clouds{display:none}
+/* v1.0 realism (retour 6): slow cloud drift, harbour ripples, open-sea swell layers, sun glitter */
+.drift-slow{animation:cloudDrift 160s linear infinite alternate}.drift-slower{animation:cloudDrift 240s linear infinite alternate-reverse}
+@keyframes cloudDrift{from{transform:translateX(0)}to{transform:translateX(-180px)}}
+.ripples{animation:ripple 9s ease-in-out infinite alternate}.ripples.r2{animation-duration:13s;animation-direction:alternate-reverse}
+@keyframes ripple{from{transform:translateX(0)}to{transform:translateX(-26px)}}
+.introbg .w{animation:swell linear infinite;will-change:transform}
+@keyframes swell{from{transform:translateX(0)}to{transform:translateX(var(--L))}}
+.introbg .gl{animation:twinkle 3s ease-in-out infinite;opacity:.15}
+@keyframes twinkle{0%,100%{opacity:.12}50%{opacity:.85}}
+.introbg .i-ship{animation:sail 120s linear infinite}
+@keyframes sail{from{transform:translateX(-60px)}to{transform:translateX(160px)}}
 .cloud{position:absolute;height:28px;border-radius:30px;background:#fff;opacity:.85;filter:drop-shadow(0 4px 6px rgba(40,90,130,.15));animation:drift linear infinite}
 .cloud::before,.cloud::after{content:"";position:absolute;background:#fff;border-radius:50%}
 .cloud::before{width:44%;height:180%;left:16%;top:-90%}
@@ -724,51 +736,82 @@ const CONFIG = {
      INTRO — Bob introduces himself (shown on the first visit; "Meet Bob again" in the menu)
      ===================================================================== */
   let introIdx = 0, typer = null;
-  /* v1.0 — Bob in the intro (retour 2): a real 20' box (6.06 × 2.59 m, ratio 2.34) seen in a 3/4 view — corrugated side
-     with the face, roof, door end with four locking bars, cam keepers, handles and the CSC plate, corner castings, light wear,
-     contact and cast shadows (light from the top-left). Same name, colour and number as everywhere in the game. */
+  /* v1.0 — Bob in the intro (retours 2 + 6): a real 40' high cube (12.19 × 2.90 m, ratio 4.2, type 45G1, as the intro text says)
+     in a 3/4 view on the end of a pier: corrugated side with the face, roof, door end with four locking bars, cam keepers,
+     handles and the CSC plate, corner castings, light wear; contact and cast shadows (sun top-left). Same name, colour, number. */
   function bobSVG() {
-    const W = 270, H = 116, X = 26, Y = 92;                       // side wall
-    const ribsDoor = [0, 1, 2, 3, 4].map(i => `<rect x="2" y="${14 + i * 21}" width="105" height="3" fill="#000" opacity=".14"/><rect x="2" y="${17 + i * 21}" width="105" height="1.5" fill="#fff" opacity=".14"/>`).join('');
-    const bar = x => `<rect x="${x - 2.6}" y="6" width="5.2" height="104" rx="2.6" fill="#3A210E"/><rect x="${x - 2.2}" y="6" width="1.6" height="104" fill="#fff" opacity=".3"/>
-      <rect x="${x - 3.5}" y="4" width="7" height="6" rx="1" fill="#4A2A12"/><rect x="${x - 3.5}" y="106" width="7" height="6" rx="1" fill="#4A2A12"/>
-      <rect x="${x - 1}" y="60" width="9" height="3" rx="1.5" fill="#3E2310"/><rect x="${x + 6}" y="57" width="3" height="9" rx="1" fill="#4A2A12"/>`;
-    const door = `<g transform="matrix(0.48 -0.165 0 1 ${X + W} ${Y})">
-      <rect x="0" y="0" width="109" height="${H}" fill="url(#bobGrad)"/><rect x="0" y="0" width="109" height="${H}" fill="#000" opacity=".16"/>${ribsDoor}
-      <rect x="0" y="0" width="109" height="7" fill="var(--c-box-dark)" opacity=".8"/><rect x="0" y="${H - 9}" width="109" height="9" fill="var(--c-box-dark)" opacity=".85"/>
-      <rect x="0" y="0" width="7" height="${H}" fill="var(--c-box-dark)" opacity=".8"/><rect x="102" y="0" width="7" height="${H}" fill="var(--c-box-dark)" opacity=".8"/>
-      <rect x="53.8" y="7" width="1.4" height="${H - 16}" fill="#1B1F22" opacity=".7"/>
-      ${bar(17)}${bar(40)}${bar(69)}${bar(92)}
-      <g><rect x="9" y="68" width="24" height="15" rx="1" fill="#D9DEE2" stroke="#6E7881" stroke-width=".8"/><text x="21" y="74" text-anchor="middle" font-size="3.6" font-weight="800" fill="#1B2631">CSC SAFETY</text><text x="21" y="78.5" text-anchor="middle" font-size="3.6" font-weight="800" fill="#1B2631">APPROVAL</text><rect x="12" y="80" width="18" height="1" fill="#6E7881"/></g>
-      <text x="80" y="22" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fff" opacity=".9">${esc(CONTAINER_NO)}</text><text x="80" y="31" text-anchor="middle" font-size="6.5" font-weight="800" fill="#fff" opacity=".85">22G1</text>
-      <text x="14" y="94" font-size="4.6" fill="#fff" opacity=".85">MAX GROSS 30,480 KG</text><text x="14" y="100" font-size="4.6" fill="#fff" opacity=".85">TARE 2,200 KG</text>
-      ${[[0, 0], [99, 0], [0, H - 10], [99, H - 10]].map(([x, y]) => `<rect x="${x}" y="${y}" width="10" height="10" rx="1" fill="url(#gCast)"/><ellipse cx="${x + 5}" cy="${y + 5}" rx="2.2" ry="3" fill="#15181B"/>`).join('')}</g>`;
-    const roof = `<path d="M${X} ${Y} L${X + 52} ${Y - 18} L${X + W + 52} ${Y - 18} L${X + W} ${Y} Z" fill="var(--c-box)"/><path d="M${X} ${Y} L${X + 52} ${Y - 18} L${X + W + 52} ${Y - 18} L${X + W} ${Y} Z" fill="#fff" opacity=".22"/>
-      ${Array.from({ length: 24 }, (_, i) => `<path d="M${X + 12 + i * 10.8} ${Y} l52 -18" stroke="#000" stroke-width="1" opacity=".08"/>`).join('')}`;
+    const W = 330, H = 79, X = 34, Y = 112, DW = 66, c40 = (C.containers || []).find(x => x.id === '40HC') || { mgm: 30480, tare: 3900, iso: '45G1' };
+    const sx = .48, ky = .165, dx = DW * sx, dy = DW * ky;                 // door end projected: 32 px wide, rising 11 px
+    const bar = x => `<rect x="${x - 1.5}" y="5" width="3" height="${H - 10}" rx="1.5" fill="#3A210E"/><rect x="${x - 1.3}" y="5" width="1" height="${H - 10}" fill="#fff" opacity=".3"/>
+      <rect x="${x - 2.6}" y="3" width="5.2" height="4" rx=".8" fill="#4A2A12"/><rect x="${x - 2.6}" y="${H - 7}" width="5.2" height="4" rx=".8" fill="#4A2A12"/>
+      <rect x="${x - .6}" y="${H * .55}" width="6" height="2" rx="1" fill="#2E1A0B"/><rect x="${x + 4}" y="${H * .55 - 2.5}" width="2.2" height="7" rx=".8" fill="#4A2A12"/>`;
+    const door = `<g transform="matrix(${sx} ${-ky} 0 1 ${X + W} ${Y})">
+      <rect x="0" y="0" width="${DW}" height="${H}" fill="url(#bobGrad)"/><rect x="0" y="0" width="${DW}" height="${H}" fill="#000" opacity=".2"/>
+      ${[0, 1, 2, 3].map(i => `<rect x="2" y="${11 + i * 16}" width="${DW - 4}" height="2.4" fill="#000" opacity=".16"/><rect x="2" y="${13.4 + i * 16}" width="${DW - 4}" height="1" fill="#fff" opacity=".14"/>`).join('')}
+      <rect x="0" y="0" width="${DW}" height="5" fill="var(--c-box-dark)" opacity=".85"/><rect x="0" y="${H - 6}" width="${DW}" height="6" fill="var(--c-box-dark)" opacity=".9"/>
+      <rect x="0" y="0" width="5" height="${H}" fill="var(--c-box-dark)" opacity=".85"/><rect x="${DW - 5}" y="0" width="5" height="${H}" fill="var(--c-box-dark)" opacity=".85"/>
+      <rect x="${DW / 2 - .5}" y="5" width="1" height="${H - 11}" fill="#1B1F22" opacity=".75"/>
+      ${bar(11)}${bar(24)}${bar(42)}${bar(55)}
+      <g><rect x="6" y="${H * .62}" width="14" height="9" rx=".6" fill="#D9DEE2" stroke="#6E7881" stroke-width=".5"/><rect x="7.5" y="${H * .62 + 2}" width="11" height="1" fill="#55616D"/><rect x="7.5" y="${H * .62 + 4.2}" width="11" height="1" fill="#55616D"/><rect x="7.5" y="${H * .62 + 6.4}" width="7" height="1" fill="#55616D"/></g>
+      <text x="${DW - 8}" y="13" text-anchor="end" font-size="5" font-weight="800" fill="#fff" opacity=".9">${esc(CONTAINER_NO)}</text><text x="${DW - 8}" y="19" text-anchor="end" font-size="4.4" font-weight="800" fill="#fff" opacity=".85">${esc(c40.iso)}</text>
+      <text x="7" y="${H - 14}" font-size="3.4" fill="#fff" opacity=".85">MAX GR ${fmt(c40.mgm)} KG</text><text x="7" y="${H - 10}" font-size="3.4" fill="#fff" opacity=".85">TARE ${fmt(c40.tare)} KG</text>
+      ${[[0, 0], [DW - 7, 0], [0, H - 7], [DW - 7, H - 7]].map(([x, y]) => `<rect x="${x}" y="${y}" width="7" height="7" rx=".8" fill="url(#gCast)"/><ellipse cx="${x + 3.5}" cy="${y + 3.5}" rx="1.4" ry="2.1" fill="#15181B"/>`).join('')}</g>`;
+    const roof = `<path d="M${X} ${Y} L${X + dx} ${Y - dy} L${X + W + dx} ${Y - dy} L${X + W} ${Y} Z" fill="var(--c-box)"/><path d="M${X} ${Y} L${X + dx} ${Y - dy} L${X + W + dx} ${Y - dy} L${X + W} ${Y} Z" fill="#fff" opacity=".24"/>
+      <path d="${Array.from({ length: 44 }, (_, i) => `M${(X + 6 + i * 7.4).toFixed(1)} ${Y} l${dx.toFixed(1)} ${(-dy).toFixed(1)}`).join(' ')}" stroke="#000" stroke-width=".7" opacity=".09"/>`;
     const side = `<rect x="${X}" y="${Y}" width="${W}" height="${H}" fill="url(#bobGrad)"/><rect x="${X}" y="${Y}" width="${W}" height="${H}" fill="url(#corr)"/>
       <rect x="${X}" y="${Y}" width="${W}" height="${H}" fill="url(#grime)"/><rect x="${X}" y="${Y + H * .5}" width="${W}" height="${H * .5}" fill="url(#gDirt)"/>
-      <rect x="${X}" y="${Y}" width="${W}" height="7" fill="var(--c-box-dark)" opacity=".75"/><rect x="${X}" y="${Y + 7}" width="${W}" height="1.4" fill="#000" opacity=".22"/>
-      <rect x="${X}" y="${Y + H - 9}" width="${W}" height="9" fill="var(--c-box-dark)" opacity=".85"/>
-      <rect x="${X}" y="${Y}" width="9" height="${H}" fill="var(--c-box-dark)" opacity=".7"/><rect x="${X + W - 9}" y="${Y}" width="9" height="${H}" fill="var(--c-box-dark)" opacity=".7"/>
-      ${[[X, Y], [X + W - 10, Y], [X, Y + H - 10], [X + W - 10, Y + H - 10]].map(([x, y]) => `<rect x="${x}" y="${y}" width="10" height="10" rx="1" fill="url(#gCast)"/><ellipse cx="${x + 5}" cy="${y + 5}" rx="2.9" ry="1.7" fill="#15181B"/>`).join('')}
-      <text x="${X + 22}" y="${Y + 34}" font-size="21" font-weight="900" fill="#fff" opacity=".93" letter-spacing="3">${esc(CONFIG.heroName.toUpperCase())}</text>
-      <text x="${X + W - 16}" y="${Y + 22}" text-anchor="end" font-size="9" font-weight="800" fill="#fff" opacity=".85" letter-spacing=".5">${esc(CONTAINER_NO)} · 22G1</text>`;
-    return `<svg id="bob" class="mood-smile" viewBox="0 0 380 250" role="img" aria-label="${esc(CONFIG.heroName)}, an orange 20-foot shipping container with a friendly face">
-      <rect x="-2000" y="${Y + H - 36}" width="4380" height="96" fill="url(#bobPave)"/><rect x="-2000" y="${Y + H - 36}" width="4380" height="2" fill="#fff" opacity=".45"/>
-      <path d="M-2000 ${Y + H + 32} H2380" stroke="#F2F2EE" stroke-width="3" stroke-dasharray="40 30" opacity=".7"/>
-      <path d="M${X + W} ${Y + H} L${X + W + 52} ${Y + H - 18} L${X + W + 128} ${Y + H - 14} L${X + W + 64} ${Y + H + 5} Z" fill="#1C2A33" opacity=".2"/>
-      <rect x="${X - 2}" y="${Y + H - 2}" width="${W + 4}" height="5" rx="2" fill="#0E151A" opacity=".45"/>
-      <g class="bob-body">${roof}${door}${side}${faceSVG(X + W * .52, Y + H * .5, 1.12)}</g></svg>`;
+      <rect x="${X}" y="${Y}" width="${W}" height="5" fill="var(--c-box-dark)" opacity=".75"/><rect x="${X}" y="${Y + 5}" width="${W}" height="1.2" fill="#000" opacity=".22"/>
+      <rect x="${X}" y="${Y + H - 6}" width="${W}" height="6" fill="var(--c-box-dark)" opacity=".85"/>
+      <rect x="${X}" y="${Y}" width="6" height="${H}" fill="var(--c-box-dark)" opacity=".7"/><rect x="${X + W - 6}" y="${Y}" width="6" height="${H}" fill="var(--c-box-dark)" opacity=".7"/>
+      ${[[X, Y], [X + W - 7, Y], [X, Y + H - 7], [X + W - 7, Y + H - 7]].map(([x, y]) => `<rect x="${x}" y="${y}" width="7" height="7" rx=".8" fill="url(#gCast)"/><ellipse cx="${x + 3.5}" cy="${y + 3.5}" rx="2" ry="1.2" fill="#15181B"/>`).join('')}
+      <text x="${X + 18}" y="${Y + 25}" font-size="17" font-weight="900" fill="#fff" opacity=".93" letter-spacing="3">${esc(CONFIG.heroName.toUpperCase())}</text>
+      <text x="${X + W - 12}" y="${Y + 15}" text-anchor="end" font-size="7.2" font-weight="800" fill="#fff" opacity=".85" letter-spacing=".5">${esc(CONTAINER_NO)} · ${esc(c40.iso)}</text>`;
+    // the pier Bob stands on: concrete deck seen at a grazing angle, front wall with fenders, a bollard; the sea shows around it
+    const PT = Y + H, PE = X + W + 104;
+    const pier = `<polygon points="-2000,${PT - 26} ${PE + 14},${PT - 26} ${PE},${PT + 16} -2000,${PT + 16}" fill="url(#bobPave)"/><rect x="-2000" y="${PT - 26}" width="${PE + 2014}" height="1.6" fill="#fff" opacity=".45"/>
+      <path d="M-2000 ${PT + 6} H${PE - 30}" stroke="#E3B82E" stroke-width="1.6" opacity=".8"/>
+      <rect x="-2000" y="${PT + 16}" width="${PE + 2000}" height="30" fill="#8C959B"/><rect x="-2000" y="${PT + 16}" width="${PE + 2000}" height="2" fill="#C9CED2"/>
+      <polygon points="${PE},${PT + 16} ${PE + 14},${PT - 26} ${PE + 14},${PT + 4} ${PE},${PT + 46}" fill="#6F787E"/>
+      ${[60, 190, 320].map(x => `<rect x="${x}" y="${PT + 19}" width="12" height="20" rx="2" fill="#15181B"/><rect x="${x}" y="${PT + 19}" width="4" height="20" fill="#fff" opacity=".1"/>`).join('')}
+      <g transform="translate(${PE - 26} ${PT + 2})"><rect x="-4" y="-10" width="8" height="10" fill="#2B3238"/><ellipse cx="0" cy="-10" rx="6" ry="2.2" fill="#3F4750"/></g>`;
+    return `<svg id="bob" class="mood-smile" viewBox="0 0 470 240" role="img" aria-label="${esc(CONFIG.heroName)}, an orange 40-foot high-cube shipping container with a friendly face">
+      ${pier}
+      <path d="M${X + W} ${Y + H} L${X + W + dx} ${Y + H - dy} L${X + W + 92} ${Y + H - 12} L${X + W + 56} ${Y + H + 6} Z" fill="#1C2A33" opacity=".22"/>
+      <rect x="${X - 2}" y="${Y + H - 2}" width="${W + 4}" height="4" rx="2" fill="#0E151A" opacity=".45"/>
+      <g class="bob-body">${roof}${door}${side}${faceSVG(X + W * .56, Y + H * .48, .85)}</g></svg>`;
   }
+  // v1.0 (retour 6) — intro background: open sea with a real swell. Four wave layers from the horizon to the foreground
+  // (trochoid-like: sharp crests, flat troughs), lit crests and foam on the near ones, sun glitter under the sun (top-left),
+  // a laden container ship on the horizon with its bow wave and wake, distant port in the haze. Each layer loops seamlessly
+  // over one wavelength. Reduced motion: everything stands still.
   function introBg() {
-    let waves = ''; for (let y = 470; y < 600; y += 26) for (let x = -100; x < 1400; x += 90) waves += `<path d="M${x} ${y} q10 -6 20 0 t20 0" stroke="#fff" stroke-width="1.5" fill="none" opacity=".45"/>`;
-    const crane = x => `<g fill="#7F97A9"><rect x="${x}" y="300" width="10" height="160"/><rect x="${x + 60}" y="300" width="10" height="160"/><rect x="${x - 50}" y="292" width="190" height="12"/><rect x="${x + 20}" y="270" width="30" height="22"/></g>`;
+    const wave = (y, A, Lw, fill, crestOp, cls, foam, dur) => {
+      let top = '';
+      for (let x = -Lw; x < 1280 + 2 * Lw; x += Lw) top += ` C${x + Lw * .25} ${y}, ${x + Lw * .42} ${y - A * .55}, ${x + Lw * .5} ${y - A} C${x + Lw * .58} ${y - A * .55}, ${x + Lw * .75} ${y}, ${x + Lw} ${y}`;
+      let vol = '';
+      for (let x = -Lw; x < 1280 + 2 * Lw; x += Lw) vol += `<path d="M${x + Lw * .18} ${y} Q${x + Lw * .42} ${y - A * .72} ${x + Lw * .5} ${y - A} Q${x + Lw * .44} ${y - A * .25} ${x + Lw * .18} ${y} Z" fill="#fff" opacity=".13"/><path d="M${x + Lw * .5} ${y - A} Q${x + Lw * .62} ${y - A * .2} ${x + Lw * .9} ${y + A * .55} Q${x + Lw * .6} ${y + A * .35} ${x + Lw * .5} ${y - A} Z" fill="#082A44" opacity=".22"/>`;
+      const d = `M${-Lw} ${y}${top}`, fo = foam ? Array.from({ length: Math.ceil((1280 + 3 * Lw) / Lw) }, (_, i) => { const cx = -Lw + i * Lw + Lw * .5;
+        return `<ellipse cx="${(cx + A * .3).toFixed(1)}" cy="${(y - A * .82).toFixed(1)}" rx="${(A * 1.1).toFixed(1)}" ry="${(A * .16).toFixed(1)}" fill="#fff" opacity=".55"/><ellipse cx="${(cx + A * 1.6).toFixed(1)}" cy="${(y - A * .38).toFixed(1)}" rx="${(A * .7).toFixed(1)}" ry="${(A * .1).toFixed(1)}" fill="#fff" opacity=".35"/>`; }).join('') : '';
+      return `<g class="${cls}" style="--L:-${Lw}px;animation-duration:${dur}s"><path d="${d} V640 H${-Lw} Z" fill="${fill}"/><path d="${d} V640 H${-Lw} Z" fill="url(#gWaveShade)"/>${vol}<path d="${d}" fill="none" stroke="#E8F4FA" stroke-width="${(A / 9 + .4).toFixed(1)}" opacity="${(crestOp * .6).toFixed(2)}"/>${fo}</g>`;
+    };
+    const glitter = Array.from({ length: 46 }, (_, i) => { const t = i / 46, y = 446 + t * t * 150, x = 150 + Math.sin(i * 7.3) * (12 + t * 90), w = 4 + t * 22;
+      return `<rect class="gl" style="animation-delay:${(-(i * .37) % 3).toFixed(2)}s" x="${x.toFixed(0)}" y="${y.toFixed(0)}" width="${w.toFixed(0)}" height="${(1 + t * 1.6).toFixed(1)}" rx="1" fill="#FFF8E0"/>`; }).join('');
+    const boxes = Array.from({ length: 16 }, (_, i) => [0, 1, 2].map(j => `<rect x="${22 + i * 9}" y="${-14 - j * 5}" width="8.4" height="4.6" fill="${QPAL[(i * 3 + j) % QPAL.length]}"/>`).join('')).join('');
+    const ship = `<g class="i-ship"><g transform="translate(700 441)">
+      <path d="M-40 1 Q-80 3 -120 2" stroke="#fff" stroke-width="2.2" opacity=".55" fill="none"/><path d="M-8 1 Q-60 6 -150 5" stroke="#fff" stroke-width="1" opacity=".4" fill="none"/>
+      <path d="M0 -10 H172 L184 -9 Q190 -6 186 1 H4 Z" fill="#22303B"/><rect x="0" y="-3" width="186" height="3" fill="#7E2F2A"/>${boxes}
+      <rect x="152" y="-34" width="12" height="20" fill="#E9EEF2"/><rect x="152" y="-34" width="12" height="3" fill="#B9C6CF"/><rect x="8" y="-24" width="8" height="14" fill="#E9EEF2"/><rect x="8" y="-26" width="8" height="3" fill="var(--c-primary)"/>
+      <path d="M186 1 Q194 -3 198 1 Q192 3 186 1" fill="#fff" opacity=".9"/></g></g>`;
+    const port = `<g opacity=".5"><rect x="-100" y="428" width="420" height="12" fill="#9DB3C3"/>
+      ${[40, 120, 200].map(x => `<g fill="#9DB3C3"><rect x="${x}" y="372" width="3" height="58"/><rect x="${x + 20}" y="372" width="3" height="58"/><rect x="${x - 14}" y="368" width="64" height="4"/><path d="M${x + 6} 368 l5 -22 l5 22 z"/></g>`).join('')}
+      ${[0, 1, 2, 3, 4, 5, 6].map(i => `<rect x="${250 + i * 9}" y="${418 - (i % 3) * 4}" width="8" height="${10 + (i % 3) * 4}" fill="#A8BCCB"/>`).join('')}</g>`;
     return `<svg class="introbg" viewBox="0 0 1280 600" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
-      <circle cx="1090" cy="110" r="46" fill="#FFF6CF" opacity=".9"/>
-      <g opacity=".6">${crane(80)}${crane(300)}${crane(1050)}<rect x="560" y="400" width="300" height="50" fill="#7F97A9"/><rect x="800" y="350" width="40" height="50" fill="#7F97A9"/>
-        ${[0, 1, 2, 3, 4, 5].map(i => `<rect x="${580 + i * 36}" y="${376}" width="32" height="22" fill="${PALETTE[i]}"/>`).join('')}</g>
-      <rect x="-100" y="455" width="1500" height="200" fill="url(#gSea)"/>
-      <g class="waves-i">${waves}</g></svg>
+      <rect x="-200" y="-200" width="1680" height="650" fill="url(#gSkyR)"/><circle cx="150" cy="70" r="260" fill="url(#gSunGlow)"/><circle cx="150" cy="70" r="30" fill="#FFF9E6"/>
+      <g class="drift-slow">${cloudSVG(420, 120, 1.3)}${cloudSVG(980, 70, 1.6)}${cloudSVG(1240, 200, 1)}</g><g class="drift-slower" opacity=".8">${cloudSVG(640, 260, .7)}${cloudSVG(80, 300, .6)}</g>
+      <rect x="-200" y="230" width="1680" height="112" fill="url(#gHaze)"/><g transform="translate(0 -100)">${port}</g>
+      <rect x="-200" y="340" width="1680" height="300" fill="url(#gOpenSea)"/><g transform="translate(-520 -100)">${ship}</g>
+      ${wave(352, 2, 64, '#6E9FBF', .3, 'w w1', false, 18)}${wave(380, 4, 120, '#5A90B3', .38, 'w w2', false, 14)}<g class="glitter" transform="translate(0 -96) scale(1 1.3)">${glitter}</g>
+      ${wave(430, 7, 200, '#41799F', .45, 'w w3', true, 11)}${wave(500, 11, 300, '#2D6188', .5, 'w w4', true, 9)}${wave(575, 16, 420, '#1D4F75', .55, 'w w5', true, 7)}</svg>
       <svg class="gull" viewBox="0 0 40 20" aria-hidden="true"><path d="M2 10 Q10 0 20 10 Q30 0 38 10" stroke="#33424F" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`;
   }
   function renderIntro() {
@@ -943,6 +986,7 @@ const CONFIG = {
     $('#sceneTitle').textContent = `Step ${s.id} · ${plain(s.title)}`;
     $('#stage').classList.toggle('map', s.scene === 'map');
     $('#svgHost').innerHTML = (SCENES[s.scene] || SCENES.flow)(s);
+    $('#stage').classList.toggle('own-sky', $('#scene') && $('#scene').dataset.sky === 'own');   // v1.0: scene draws its own sky
     painted = -2; along = {};
     const svg = $('#scene');
     svg.classList.add('instant'); paint(s, -1);
@@ -1802,6 +1846,24 @@ const CONFIG = {
     <clipPath id="eyeClip" clipPathUnits="objectBoundingBox"><ellipse cx=".5" cy=".5" rx=".5" ry=".5"/></clipPath>
     <radialGradient id="gIris" cx=".42" cy=".38" r=".62"><stop offset="0" stop-color="#8A6A45"/><stop offset=".55" stop-color="#5A3D24"/><stop offset="1" stop-color="#24170D"/></radialGradient>
     <radialGradient id="gSclera" cx=".5" cy=".42" r=".62"><stop offset=".55" stop-color="#FBFAF6"/><stop offset="1" stop-color="#D7D1C6"/></radialGradient>
+    <!-- v1.0 realism kit (retour 6): sky, sun, clouds, haze, water, steel, quay -->
+    <linearGradient id="gSkyR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3E7FB4"/><stop offset=".55" stop-color="#8DBCDB"/><stop offset=".9" stop-color="#DCE9EF"/><stop offset="1" stop-color="#EEF1EC"/></linearGradient>
+    <radialGradient id="gSunGlow"><stop offset="0" stop-color="#FFF6D8" stop-opacity=".95"/><stop offset=".25" stop-color="#FFEFC2" stop-opacity=".45"/><stop offset="1" stop-color="#FFEFC2" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gCloud" cx=".42" cy=".35" r=".6"><stop offset="0" stop-color="#fff"/><stop offset=".7" stop-color="#F6F8FA" stop-opacity=".95"/><stop offset="1" stop-color="#EEF3F7" stop-opacity="0"/></radialGradient>
+    <radialGradient id="gCloudShade" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#9FB4C6" stop-opacity=".7"/><stop offset="1" stop-color="#9FB4C6" stop-opacity="0"/></radialGradient>
+    <linearGradient id="gHaze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2F4EF" stop-opacity="0"/><stop offset="1" stop-color="#F2F4EF" stop-opacity=".85"/></linearGradient>
+    <linearGradient id="gHarbour" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9DBACB"/><stop offset=".25" stop-color="#5E8BA6"/><stop offset="1" stop-color="#1E4A66"/></linearGradient>
+    <linearGradient id="gHarbourNear" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B5E7E" stop-opacity=".2"/><stop offset="1" stop-color="#163A52" stop-opacity=".95"/></linearGradient>
+    <linearGradient id="gOpenSea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FB6CE"/><stop offset=".3" stop-color="#4E85AA"/><stop offset="1" stop-color="#173F5E"/></linearGradient>
+    <pattern id="corrS" width="2.2" height="4" patternUnits="userSpaceOnUse"><rect width=".5" height="4" fill="#fff" opacity=".22"/><rect x="1.1" width=".6" height="4" fill="#000" opacity=".22"/></pattern>
+    <linearGradient id="gTopLit" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>
+    <linearGradient id="gCraneR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#E4EAEE"/><stop offset=".5" stop-color="#C3CFD8"/><stop offset="1" stop-color="#93A6B4"/></linearGradient>
+    <linearGradient id="gGirder" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E9EEF2"/><stop offset="1" stop-color="#A9B8C3"/></linearGradient>
+    <linearGradient id="gHullR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2F4352"/><stop offset=".6" stop-color="#1E2C37"/><stop offset="1" stop-color="#131D25"/></linearGradient>
+    <linearGradient id="gQuay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C8CDD0"/><stop offset=".35" stop-color="#B2B8BC"/><stop offset="1" stop-color="#8F979D"/></linearGradient>
+    <linearGradient id="gReflFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000"/><stop offset=".62" stop-color="#000"/><stop offset="1" stop-color="#fff"/></linearGradient>
+    <linearGradient id="gWaveShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".12"/><stop offset=".08" stop-color="#000" stop-opacity="0"/><stop offset=".35" stop-color="#06233A" stop-opacity=".25"/></linearGradient>
+    <mask id="mRefl" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#gReflFade)"/></mask>
     <linearGradient id="gDeep" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2C6C96"/><stop offset="1" stop-color="#174A6E"/></linearGradient>
     <linearGradient id="bobPave" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C3CACF"/><stop offset="1" stop-color="#97A1A9"/></linearGradient>
     <linearGradient id="gCast" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B4A22"/><stop offset="1" stop-color="#3E2310"/></linearGradient>
@@ -1826,8 +1888,8 @@ const CONFIG = {
   // in #svgDefs (never display:none), and scene re-renders never touch it.
   function mountDefs() { const d = document.getElementById('svgDefs'); if (d && !d.firstChild) d.innerHTML = DEFS; }
   const PALETTE = ['#8FA3B3', '#9DB59A', '#B9A58F', '#A9A0BE', '#8FB1B0', '#C49A8A', '#7F9BB8'];
-  function svgOpen(s) {
-    return `<svg id="scene" viewBox="0 0 960 460" preserveAspectRatio="xMidYMax meet" role="img" aria-labelledby="sT sD" focusable="false">
+  function svgOpen(s, attrs) {
+    return `<svg id="scene" viewBox="0 0 960 460" preserveAspectRatio="xMidYMax meet" role="img" aria-labelledby="sT sD" focusable="false" ${attrs || ''}>
       <title id="sT">Step ${s.id}: ${esc(plain(s.title))}</title><desc id="sD">${esc(plain(s.sceneDesc))}</desc>`;
   }
   const ground = (fill) => `<rect x="-700" y="${GY}" width="2360" height="300" fill="${fill || 'url(#gGround)'}"/><rect x="-700" y="${GY}" width="2360" height="4" fill="#fff" opacity=".35"/>`;
@@ -1861,7 +1923,8 @@ const CONFIG = {
       <path class="m m-puzzled" d="M-11 33 Q-5.5 28.5 0 32 T11 30.5" fill="none" stroke="#2B1C12" stroke-width="3" stroke-linecap="round"/>
       <g opacity=".18" fill="#C8492F"><ellipse cx="-37" cy="23" rx="6.5" ry="3.6"/><ellipse cx="37" cy="23" rx="6.5" ry="3.6"/></g></g></g>`;
   }
-  const boxDims = c => ({ w: c.len === 20 ? 236 : 470, h: c.hc ? 152 : 136 });
+  // v1.0 (retour 6): real ISO proportions — 40' = 12.19 m → 470 px, so 8'6" = 100 px and 9'6" (high cube) = 112 px; 20' = 6.06 m
+  const boxDims = c => ({ w: c.len === 20 ? 234 : 470, h: c.hc ? 112 : 100 });
   function machine(x, y, w, h) {   // generic heavy machine (out-of-gauge cargo)
     return `<g><rect x="${x}" y="${y + h * .35}" width="${w}" height="${h * .65}" rx="6" fill="#E6B32E" stroke="#6B5410" stroke-width="2"/>
       <rect x="${x + w * .12}" y="${y}" width="${w * .38}" height="${h * .4}" rx="4" fill="#D9A21E" stroke="#6B5410" stroke-width="2"/>
@@ -1912,7 +1975,8 @@ const CONFIG = {
       if (t === '40OT') g += `<path class="tarp" ${o.tarpAttr || ''} d="M0 2 Q${w / 4} -16 ${w / 2} -6 T${w} 2 L${w} 12 L0 12 Z" fill="#3E6E9E" stroke="#24486B" stroke-width="2"/>`;
     }
     const lid = f === 'reefer' ? '#E2E8ED' : f === 'tank' ? '#C3CDD5' : t === '40FR' ? '#DDA82A' : 'var(--c-box)';
-    return `<g class="body">${g}${o.face === false ? '' : faceSVG(fx, fy, small ? .8 : 1, lid)}</g>`;
+    if (o.faceK) fy = h * .47;
+    return `<g class="body">${g}${o.face === false ? '' : faceSVG(fx, fy, (small ? .8 : 1) * (o.faceK || 1), lid)}</g>`;
   }
   // Small container for landscape and map scenes.
   function miniBox(c, x, y, w, h) {
@@ -2000,7 +2064,7 @@ const CONFIG = {
       <circle class="blink" cx="${L - 91}" cy="-176" r="3" fill="#FF5A4A"/></g>`;
   }
   const K = 0.35;              // scale of containers in quay and yard scenes: 40' = 165 px, so stacks and our box match
-  const TH = 54;               // height of one stack tier at that scale (a 9'6" box + a small gap)
+  const TH = 40;               // v1.0: height of one stack tier at that scale (a 9'6" box = 112 × 0.35 + a 1 px gap)
   // A container seen from the side (stacks on ships and in yards), drawn at the same scale as our box.
   function ctr(x, y, w, h, fill) {
     return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="#3F4A54" stroke-width="1"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#corr)" opacity=".7"/>
@@ -2309,54 +2373,167 @@ const CONFIG = {
   };
 
   /* --- Steps 6 & 8: quay operations (load / discharge). Ship stacks, our box and the crane share one scale (K). --- */
+  /* =====================================================================
+     v1.0 REALISM KIT (retour 6) — pilot: quay scenes (steps 6 and 8) and the intro sea.
+     One light source per scene: the sun high on the LEFT → cast shadows fall to the right; lit faces are the left/top ones.
+     Real scale in the quay scenes: QM = 6.94 px per metre (a 40' box = 84.6 px, a 9'6" tier = 20.6 px), so the boxes,
+     the ship (freeboard ≈ 16 m, 9 tiers on deck), the ship-to-shore crane (rail gauge 30.5 m, outreach 68 m, lift ≈ 48 m)
+     and the terminal tractor are drawn to the same scale. Everything is SVG generated here; nothing is loaded.
+     ===================================================================== */
+  const QM = 6.94, KQ = QM / (470 / 12.19), QTH = 20.6, QWL = 400;   // px per metre · box scale · tier height · waterline
+  // Sky: gradient, sun glow (top-left), layered cumulus with lit tops and shaded bases, haze at the horizon (aerial perspective)
+  function cloudSVG(x, y, s, o) {
+    o = o || {}; const puffs = o.puffs || [[0, 0, 46, 30], [38, 6, 40, 26], [-36, 10, 34, 20], [70, 16, 30, 18], [-62, 18, 26, 14], [12, -16, 34, 24]];
+    return `<g transform="translate(${x} ${y}) scale(${s})" opacity="${o.op || .95}">
+      ${puffs.map(([px, py, rx, ry]) => `<ellipse cx="${px + 4}" cy="${py + ry * .55}" rx="${rx * 1.05}" ry="${ry * .7}" fill="url(#gCloudShade)"/>`).join('')}
+      ${puffs.map(([px, py, rx, ry]) => `<ellipse cx="${px}" cy="${py}" rx="${rx}" ry="${ry}" fill="url(#gCloud)"/>`).join('')}</g>`;
+  }
+  function realSky(horizon) {
+    return `<rect x="-800" y="-500" width="2560" height="${horizon + 520}" fill="url(#gSkyR)"/>
+      <circle cx="70" cy="-30" r="230" fill="url(#gSunGlow)"/><circle cx="70" cy="-30" r="26" fill="#FFF9E6" opacity=".95"/>
+      <g class="drift-slow">${cloudSVG(300, 40, 1.1)}${cloudSVG(760, -10, .9, { op: .9 })}${cloudSVG(1180, 70, 1.3)}${cloudSVG(-220, 90, .8, { op: .85 })}</g>
+      <g class="drift-slower" opacity=".75">${cloudSVG(520, 150, .55, { op: .8 })}${cloudSVG(980, 175, .5, { op: .7 })}${cloudSVG(80, 190, .45, { op: .7 })}</g>
+      <rect x="-800" y="${horizon - 90}" width="2560" height="92" fill="url(#gHaze)"/>`;
+  }
+  // Calm harbour water from y0 down: depth gradient, light sheen near the far shore, slow ripple highlights (no "~" pattern)
+  function harbourRipples(y0) {
+    return Array.from({ length: 26 }, (_, i) => { const y = y0 + 6 + Math.pow(i / 26, 1.6) * (470 - y0), w = 18 + (i % 5) * 14 + i * 2.4, x = ((i * 137) % 1300) - 200;
+      return `<rect x="${x}" y="${y.toFixed(1)}" width="${w.toFixed(0)}" height="${(.8 + i / 26 * 1.6).toFixed(1)}" rx="1" fill="#fff" opacity="${(.22 + (i % 3) * .08).toFixed(2)}"/>`; }).join('');
+  }
+  function harbourWater(y0, x0) {
+    x0 = x0 == null ? -800 : x0; const rip = harbourRipples(y0);
+    return `<rect x="${x0}" y="${y0}" width="${1760 - x0}" height="${530 - y0}" fill="url(#gHarbour)"/>
+      <rect x="${x0}" y="${y0}" width="${1760 - x0}" height="10" fill="#fff" opacity=".18"/>
+      <g class="ripples">${rip}</g><g class="ripples r2" opacity=".6">${rip}</g>`;
+  }
+  // A container seen from the side at quay scale: base colour, top-lit gradient, fine corrugation, rails, castings
+  function ctrQ(x, y, w, h, fill) {
+    return `<g><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"/><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#corrS)"/>
+      <rect x="${x}" y="${y}" width="${w}" height="${h}" fill="url(#gTopLit)"/>
+      <rect x="${x}" y="${y}" width="${w}" height="1.4" fill="#000" opacity=".28"/><rect x="${x}" y="${y + h - 1.6}" width="${w}" height="1.6" fill="#000" opacity=".32"/>
+      <rect x="${x}" y="${y}" width="1.6" height="${h}" fill="#000" opacity=".25"/><rect x="${x + w - 1.6}" y="${y}" width="1.6" height="${h}" fill="#000" opacity=".25"/>
+      <rect x="${x}" y="${y + h - 2}" width="2" height="2" fill="#15181B"/><rect x="${x + w - 2}" y="${y + h - 2}" width="2" height="2" fill="#15181B"/></g>`;
+  }
+  const QPAL = ['#7E2F2A', '#2F5E8C', '#8B9297', '#3D6B4F', '#C9CED2', '#A3562C', '#28435E', '#6E6A5E', '#B88A2E', '#5D7587'];
+  // Terminal tractor + trailer at real scale (tractor 6 m, trailer 12.5 m, bed 1.3 m); box left edge at bx, width bw
+  function tractorQ(bx, bw, attrs) {
+    const bed = GY - 9, r = 3.4;
+    return `<g class="rig" ${attrs || ''}><ellipse cx="${bx + bw / 2 + 18}" cy="${GY + 1}" rx="${bw / 2 + 34}" ry="2.2" fill="#0F1A22" opacity=".35"/>
+      <rect x="${bx - 3}" y="${bed}" width="${bw + 8}" height="3.2" fill="#2B3238"/><rect x="${bx + 2}" y="${bed + 3}" width="${bw - 4}" height="1.6" fill="#1B2024"/>
+      ${wheel(bx + 6, GY - r, r)}${wheel(bx + 14, GY - r, r)}
+      <g transform="translate(${bx + bw + 4} 0)"><rect x="0" y="${GY - 9}" width="38" height="4" fill="#2B3238"/>
+        <path d="M14 ${GY - 9} V${GY - 27} q0 -3 3 -3 h15 q4 0 5 4 l2 9 v8 z" fill="#E3B82E" stroke="#6B5410" stroke-width=".8"/>
+        <path d="M24 ${GY - 27} h8 q2 0 2.6 2.5 l1.4 6 h-12 z" fill="url(#gGlass)"/><rect x="15" y="${GY - 24}" width="7" height="2" fill="#fff" opacity=".35"/>
+        <rect x="9" y="${GY - 31}" width="2.4" height="18" fill="#3F4750"/>${wheel(9, GY - r, r)}${wheel(31, GY - r, r)}</g></g>`;
+  }
+  // Ship-to-shore crane, side elevation, real proportions: landside leg at xL, rail gauge 30.5 m, outreach 68 m, backreach 22 m,
+  // girder bottom ≈ 50 m above the quay, portal beam ≈ 18 m, A-frame apex out of frame (stays come down from above).
+  function stsQ(xL) {
+    const g = 30.5 * QM, xW = xL + g, gb = GY - 50 * QM, gt = gb - 26, out = xW + 68 * QM, back = xL - 22 * QM, pb = GY - 18 * QM, lw = 12;
+    // box girder: panel seams, walkway handrail on top, a darker underside (light from above-left)
+    const seams = (x0, x1, y0, y1, step) => { let o = ''; for (let x = x0; x < x1; x += step) o += `M${x.toFixed(1)} ${y0} V${y1} `; return `<path d="${o}" stroke="#8FA2B0" stroke-width=".8" fill="none" opacity=".8"/>`; };
+    const rail = (x0, x1, y) => { let o = `M${x0} ${y - 6} H${x1} `; for (let x = x0; x < x1; x += 12) o += `M${x} ${y} V${y - 6} `; return `<path d="${o}" stroke="#8FA2B0" stroke-width=".8" fill="none"/>`; };
+    const ladder = (x, y0, y1) => `<path d="M${x} ${y0} V${y1} M${x + 3} ${y0} V${y1}${Array.from({ length: Math.floor((y1 - y0) / 5) }, (_, i) => ` M${x} ${y0 + i * 5} h3`).join('')}" stroke="#6B8291" stroke-width=".6" fill="none" opacity=".8"/>`;
+    return {
+      xW, gb, out, svg: `<g>
+      <g stroke="#9AAAB6" stroke-width="2.2" fill="none"><path d="M${xL + g * .55} -260 L${out - 4} ${gt + 2}"/><path d="M${xL + g * .55} -260 L${xW + 32 * QM} ${gt + 2}"/><path d="M${xL + g * .45} -260 L${back + 8} ${gt + 2}"/></g>
+      <polygon points="${xL + g * .38},-260 ${xL + g * .62},-260 ${xW + lw},${gt} ${xW},${gt} ${xL + g * .5},-150 ${xL + lw},${gt} ${xL},${gt}" fill="url(#gCraneR)" stroke="#5F7686" stroke-width="1"/>
+      <rect x="${back}" y="${gt}" width="${out - back}" height="26" fill="url(#gGirder)" stroke="#5F7686" stroke-width="1"/>${seams(back + 30, out - 10, gt + 1, gb - 1, 34)}
+      <rect x="${back}" y="${gb - 5}" width="${out - back}" height="5" fill="#7F93A2"/>${rail(xW + 20, out - 10, gt)}
+      <path d="M${out} ${gt} l14 6 v14 l-14 6 z" fill="#8CA0AF"/>
+      <g><rect x="${back + 10}" y="${gt - 30}" width="${xL - back + 30}" height="30" fill="#E6ECF0" stroke="#8CA0AF"/><rect x="${back + 10}" y="${gt - 30}" width="${xL - back + 30}" height="4" fill="#fff" opacity=".6"/>
+        ${[0, 1, 2, 3].map(i => `<rect x="${back + 20 + i * 26}" y="${gt - 22}" width="14" height="6" fill="#9DB5C4"/>`).join('')}<text x="${back + 22}" y="${gt - 6}" font-size="7" font-weight="800" fill="#55616D" letter-spacing="1">${esc(CONFIG.logoText)} TERMINAL</text></g>
+      <rect x="${xL}" y="${gb}" width="${lw}" height="${GY - gb - 8}" fill="url(#gCraneR)"/><rect x="${xW}" y="${gb}" width="${lw}" height="${GY - gb - 8}" fill="url(#gCraneR)"/>
+      <rect x="${xL + lw - 3}" y="${gb}" width="3" height="${GY - gb - 8}" fill="#000" opacity=".12"/><rect x="${xW + lw - 3}" y="${gb}" width="3" height="${GY - gb - 8}" fill="#000" opacity=".12"/>
+      ${ladder(xL - 5, gb + 12, GY - 10)}${ladder(xW + lw + 2, gb + 12, GY - 10)}
+      <rect x="${xL}" y="${pb}" width="${g + lw}" height="12" fill="url(#gCraneR)" stroke="#5F7686" stroke-width=".8"/><rect x="${xL}" y="${gb}" width="${g + lw}" height="10" fill="url(#gCraneR)"/>
+      <path d="M${xL + lw} ${pb + 12} l22 0 l-22 24 z M${xW} ${pb + 12} l-22 0 l22 24 z M${xL + lw} ${gb + 10} l18 0 l-18 20 z M${xW} ${gb + 10} l-18 0 l18 20 z" fill="#9FB1BE"/>
+      <path d="M${xL + lw} ${gb + 10} L${xW} ${pb}" stroke="#9FB1BE" stroke-width="5"/>
+      ${[xL, xW].map(x => `<rect x="${x - 12}" y="${GY - 9}" width="${lw + 24}" height="7" rx="1.5" fill="#55707F"/>${[0, 1, 2, 3].map(i => `<circle cx="${x - 8 + i * 9.5}" cy="${GY - 2}" r="2.6" fill="#22292E"/>`).join('')}
+        <rect x="${x + lw / 2 - 2}" y="${GY - 1}" width="4" height="2" fill="#8A949C"/>`).join('')}
+      <circle class="blink" cx="${out + 8}" cy="${gt - 3}" r="2.6" fill="#FF5A4A"/>
+      </g>`,
+      // cast shadows on the apron (sun top-left → to the right)
+      shadow: `<g fill="#0F1A22" opacity=".18"><polygon points="${xL},${GY} ${xL + lw},${GY} ${xL + lw + 60},${GY + 6} ${xL + 50},${GY + 6}"/><polygon points="${xW},${GY} ${xW + lw},${GY} ${xW + lw + 40},${GY + 5} ${xW + 30},${GY + 5}"/></g>`
+    };
+  }
+  // Container ship, side elevation at quay scale (bow off-frame to the right, stern near the quay edge). Origin = stern at the waterline.
+  function shipQ(o) {
+    const fb = 16 * QM, deck = -fb, coam = deck - 10, bayP = 13.6 * QM, bays = o.tiers.length, b0 = 58;
+    const bayX = b => b0 + b * bayP;
+    let stacks = '';
+    o.tiers.forEach((n, b) => { if (!n) return; const x = bayX(b);
+      stacks += `<rect x="${x - 4}" y="${coam}" width="${bayP - 4}" height="10" fill="#3B4650"/><rect x="${x - 4}" y="${coam}" width="${bayP - 4}" height="2" fill="#6F7C86"/>`;
+      for (let t = 0; t < n; t++) { const y = coam - (t + 1) * QTH + .6, k = b * 7 + t * 3 + 1, two = (k % 4 === 0);
+        stacks += two ? ctrQ(x, y, 42, QTH - .6, QPAL[k % QPAL.length]) + ctrQ(x + 42.6, y, 42, QTH - .6, QPAL[(k + 3) % QPAL.length]) : ctrQ(x, y, 84.6, QTH - .6, QPAL[k % QPAL.length]);
+        if (t) stacks += `<rect x="${x + 1}" y="${y + QTH - 1.6}" width="3" height="1.6" fill="#0E1114"/><rect x="${x + 80.6}" y="${y + QTH - 1.6}" width="3" height="1.6" fill="#0E1114"/>`; } });
+    // lashing bridges (2 tiers high) with rails, and lashing rods from the bridge to the 1st and 2nd tier
+    const bridges = o.tiers.map((n, b) => b ? `<g><rect x="${bayX(b) - 6}" y="${coam - 2 * QTH - 4}" width="4" height="${2 * QTH + 14}" fill="#5B6A74"/>
+      <rect x="${bayX(b) - 9}" y="${coam - QTH - 1}" width="10" height="2" fill="#5B6A74"/><rect x="${bayX(b) - 9}" y="${coam - 2 * QTH - 5}" width="10" height="2" fill="#5B6A74"/>
+      <path d="M${bayX(b) - 4} ${coam - 2 * QTH} L${bayX(b) + 12} ${coam - QTH + 2} M${bayX(b) - 4} ${coam - QTH} L${bayX(b) + 12} ${coam + 2} M${bayX(b) - 4} ${coam - 2 * QTH} L${bayX(b) - 20} ${coam - QTH + 2} M${bayX(b) - 4} ${coam - QTH} L${bayX(b) - 20} ${coam + 2}" stroke="#20272C" stroke-width=".9"/></g>` : '').join('');
+    const L = bayX(bays) + 260;   // hull continues out of frame
+    const hull = `<path d="M0 ${deck} H${L} V2 H0 Z" fill="url(#gHullR)"/>
+      <rect x="0" y="${deck}" width="${L}" height="3" fill="#C9D2D8"/><rect x="0" y="${deck + 3}" width="${L}" height="1.5" fill="#000" opacity=".35"/>
+      <rect x="0" y="-12" width="${L}" height="12" fill="#8E2B22"/><rect x="0" y="-12" width="${L}" height="1.2" fill="#fff" opacity=".5"/>
+      ${Array.from({ length: 6 }, (_, i) => `<text x="${(b0 + 30 + i * 2.2 * bayP).toFixed(0)}" y="-16" font-size="5.5" fill="#E9EEF2" opacity=".8">${16 - i % 2}M</text>`).join('')}
+      <text x="${b0 + 80}" y="${deck + 34}" font-size="16" font-weight="800" fill="#E9EEF2" letter-spacing="4" opacity=".92">${esc(o.name || '')}</text>
+      <path d="M0 ${deck} V${deck - 8} H40 V${deck}" fill="#2A3640"/><rect x="2" y="${deck - 16}" width="30" height="8" fill="#3B4650"/>
+      ${[14, 40].map(x => `<circle cx="${x}" cy="${deck + 8}" r="2.2" fill="#0D1418"/>`).join('')}`;
+    const fw = 6 * QM, fx = bayX(o.funnelBay) + (bayP - fw) / 2 - 4, ft = coam - 10 * QTH, funnel = `<g><path d="M${fx} ${coam + 10} V${ft + 6} L${fx + 6} ${ft} H${fx + fw} V${coam + 10} Z" fill="#E4E9ED"/>
+      <rect x="${fx}" y="${ft + 10}" width="${fw}" height="12" fill="var(--c-primary)"/><rect x="${fx}" y="${ft + 6}" width="${fw / 2}" height="${coam - ft + 4}" fill="#fff" opacity=".22"/>
+      <rect x="${fx + 10}" y="${ft - 10}" width="5" height="11" fill="#2B3238"/><rect x="${fx + 20}" y="${ft - 7}" width="4" height="8" fill="#2B3238"/><rect x="${fx + fw - 2}" y="${coam - 40}" width="2" height="50" fill="#000" opacity=".15"/></g>`;
+    return { bayX, deck, coam, L, svg: `<g>${hull}${funnel}${stacks}${bridges}</g>` };
+  }
+
+  /* --- Steps 6 & 8: quay operations (load / discharge), v1.0 real-scale pilot ---
+     Same beats and moves as v0.5: berth → load (lift, trolley across, lower) → lash → docs; arrive → discharge → yard. */
   function quay(s, mode) {
-    const c = container(), r = route(), { w, h } = boxDims(c), bw = w * K, bh = h * K, load = mode === 'load';
-    const SX = 270, SY = 352, deck = SY - 30, tiers = [3, 3, 4, 4, 0, 4, 3], bayX = b => 30 + b * 171;
-    const bx0 = 54, by0 = GY - 14 - bh, lift = 96;
-    const slotX = SX + bayX(1), slotY = deck - 3 * TH - bh, dx = slotX - bx0;
-    let deckSvg = '';
-    tiers.forEach((n, b) => { if (!n) return; const x = bayX(b);
-      deckSvg += `<rect x="${x - 3}" y="-36" width="171" height="7" fill="#33424F"/>`;
-      for (let t = 0; t < n; t++) { const y = -30 - (t + 1) * TH + 1, k = b * 3 + t + 2;
-        deckSvg += k % 3 === 0 ? ctr(x, y, 82, TH - 1, PALETTE[k % 7]) + ctr(x + 83, y, 82, TH - 1, PALETTE[(k + 3) % 7]) : ctr(x, y, 165, TH - 1, PALETTE[k % 7]); } });
-    const bridgeX = bayX(4) + 8;
-    // lashing bridges between bays (2 tiers high) and hatch covers under each bay
-    const lashBridges = tiers.map((n, b) => b ? `<rect x="${bayX(b) - 5}" y="${-30 - 2 * TH}" width="4" height="${2 * TH}" fill="#55616D"/><rect x="${bayX(b) - 9}" y="${-30 - TH}" width="12" height="3" fill="#55616D"/>` : '').join('');
-    const shipBody = `<path d="M0 -30 H1180 Q1232 -30 1222 10 L1192 52 H26 L0 -30 Z" fill="url(#gHull)" stroke="#132331" stroke-width="2"/>
-      <rect x="2" y="-30" width="1196" height="6" fill="#E9EEF2" opacity=".9"/><path d="M1160 -30 h40 q22 0 24 -18 h-64 z" fill="#2E4A60" stroke="#132331" stroke-width="1.5"/>
-      <rect x="1196" y="-82" width="4" height="34" fill="#55616D"/><circle cx="1198" cy="-84" r="3" fill="#F2F5F8"/>
-      ${Array.from({ length: 14 }, (_, k) => `<circle cx="${70 + k * 80}" cy="-12" r="2.2" fill="#9FB3C2" opacity=".7"/>`).join('')}
-      ${tiers.map((n, b) => `<rect x="${bayX(b) - 1}" y="-30" width="167" height="6" fill="#55616D"/>`).join('')}${lashBridges}
-      <text x="60" y="12" font-size="15" font-weight="800" fill="#fff" letter-spacing="3">${esc(r.vessel)}</text>
-      ${deckSvg}
-      <rect x="${bridgeX}" y="-250" width="96" height="220" fill="#EEF2F5" stroke="#97A4AF"/><rect x="${bridgeX - 14}" y="-262" width="124" height="14" fill="#DDE3E8" stroke="#97A4AF"/>
-      ${Array.from({ length: 6 }, (_, k) => `<rect x="${bridgeX + 8}" y="${-238 + k * 32}" width="80" height="10" fill="url(#gGlass)"/>`).join('')}
-      <rect x="${bridgeX + 30}" y="-290" width="4" height="28" fill="#55616D"/><circle class="blink" cx="${bridgeX + 32}" cy="-294" r="3" fill="#FF5A4A"/>
-      ${load ? `<g data-at="lash" data-delay="300" stroke="#1B2631" stroke-width="2.2">${[0, 1].map(i => `<line x1="${bayX(1) + 8 + i * 140}" y1="-30" x2="${bayX(1) + 40 + i * 80}" y2="${-30 - 2 * TH}"/><line x1="${bayX(1) + 40 + i * 80}" y1="-30" x2="${bayX(1) + 8 + i * 140}" y2="${-30 - 2 * TH}"/>`).join('')}</g>` : ''}`;
+    const c = container(), r = route(), { w, h } = boxDims(c), bw = w * KQ, bh = h * KQ, load = mode === 'load';
+    const xL = 46, Q = stsQ(xL), quayEdge = Q.xW + 22, SX = quayEdge + 16;
+    const tiers = [5, 6, 0, 7, 8, 8, 9, 8, 9, 9];          // bay 2 = funnel casing
+    const SH = shipQ({ tiers, funnelBay: 2, name: r.vessel });
+    const bx0 = xL + 22, by0 = GY - 9 - bh, lift = Q.gb + 36;
+    const slotX = SX + SH.bayX(1) + (c.len === 20 ? 0 : 0), slotY = QWL + SH.coam - (tiers[1] + 1) * QTH + .6 + (QTH - .6 - bh), dx = slotX - bx0;
     const shipMoves = load ? 'start:1500,0;berth:0,0~2600;depart:1500,0~4200' : 'start:1500,0;arrive:0,0~3200';
-    // our box: g0 = arrival (truck / ship), then up / across / down in one beat
     const loadChain = ['start:0,0;load:0,' + (lift - by0).toFixed(1) + '~900', `start:0,0;load:${dx.toFixed(1)},0@900~1300`, 'start:0,0;load:0,' + (slotY - lift).toFixed(1) + '@2300~900'];
     const disChain = [`start:${dx.toFixed(1)},0;discharge:0,0@900~1300`, 'start:0,' + (slotY - lift).toFixed(1) + ';discharge:0,0~900', 'start:0,' + (lift - by0).toFixed(1) + ';discharge:0,0@2300~900'];
     const g0 = load ? 'start:-640,0;berth:0,0~2200;depart:1500,0~4200' : 'start:1500,0;arrive:0,0~3200;yard:-760,0~2000';
     const lifts = load ? loadChain : disChain;
-    const boxBody = `<g transform="translate(${bx0} ${by0}) scale(${K})">${boxSVG(c, { plate: false })}</g>`;
-    // hoist ropes: from the head block up to the trolley (clipped at the trolley, so they shorten/lengthen as the box moves)
-    const cables = `<g transform="translate(${bx0} ${by0})" stroke="#2B3238" stroke-width="2"><line x1="${bw / 2 - 9}" y1="-24" x2="${bw / 2 - 9}" y2="-600"/><line x1="${bw / 2 + 9}" y1="-24" x2="${bw / 2 + 9}" y2="-600"/></g>`;
-    const spreader = `<g transform="translate(${bx0} ${by0})">${spreaderSVG(bw)}</g>`;
+    const boxBody = `<g transform="translate(${bx0} ${by0}) scale(${KQ})">${boxSVG(c, { plate: false, faceK: 1.35 })}</g>`;
+    // hoist ropes (clipped under the trolley, so they shorten / lengthen) and a spreader with its twistlocks
+    const cables = `<g transform="translate(${bx0} ${by0})" stroke="#2B3238" stroke-width="1.1"><line x1="${bw / 2 - 5}" y1="-9" x2="${bw / 2 - 5}" y2="-600"/><line x1="${bw / 2 + 5}" y1="-9" x2="${bw / 2 + 5}" y2="-600"/></g>`;
+    const spreader = `<g transform="translate(${bx0} ${by0})"><rect x="${bw / 2 - 7}" y="-10" width="14" height="4" rx="1" fill="#3F4750"/><path d="M${bw / 2 - 5} -6 L3 -3 M${bw / 2 + 5} -6 L${bw - 3} -3" stroke="#2B3238" stroke-width=".9"/>
+      <rect x="-1.5" y="-4" width="${bw + 3}" height="4" rx="1" fill="#E3B82E" stroke="#6B5410" stroke-width=".6"/><rect x="-1.5" y="0" width="3" height="1.6" fill="#1B2024"/><rect x="${bw - 1.5}" y="0" width="3" height="1.6" fill="#1B2024"/></g>`;
     const spAttrs = load ? 'data-until="load"' : 'data-until="discharge"';
     const trolleyTx = load ? `start:0,0;load:${dx.toFixed(1)},0@900~1300` : `start:${dx.toFixed(1)},0;discharge:0,0@900~1300`;
     const truckTx = load ? 'start:-640,0;berth:0,0~2200;load:-760,0@3400~1800' : 'start:-640,0;discharge:0,0~1400;yard:-760,0~2000';
-    return `${svgOpen(s)}<defs><clipPath id="cableClip"><rect x="-700" y="64" width="2400" height="500"/></clipPath></defs>${sea(GY - 6)}
-      <rect x="-700" y="${GY - 10}" width="964" height="120" fill="#B9C2C9"/><rect x="-700" y="${GY - 10}" width="964" height="6" fill="#fff" opacity=".4"/><rect x="258" y="${GY - 10}" width="8" height="120" fill="#7E8A95"/>
-      ${skyline([[-60, 236, 46], [0, 252, 40]])}
-      <g data-tx="${shipMoves}"><g transform="translate(${SX} ${SY})">${shipBody}<path d="M20 48 Q600 60 1196 48" stroke="#fff" stroke-width="3" fill="none" opacity=".55"/></g></g>
-      ${quayCrane()}
-      <g data-tx="${trolleyTx}"><g transform="translate(${bx0 + bw / 2 - 30} 50)"><rect x="0" y="0" width="60" height="14" rx="2" fill="#1E3446"/>${wheel(10, 0, 4)}${wheel(50, 0, 4)}
-        <circle cx="21" cy="14" r="4" fill="#55616D"/><circle cx="39" cy="14" r="4" fill="#55616D"/>
-        <rect x="-26" y="16" width="26" height="20" rx="3" fill="#E8C33A" stroke="#6B5410"/><rect x="-22" y="19" width="18" height="9" fill="url(#gGlass)"/><line x1="-13" y1="14" x2="-13" y2="16" stroke="#1E3446" stroke-width="3"/></g></g>
+    // quay: concrete apron with lane markings, cope with bollards, rubber fenders on the quay face, crane rails, lighting mast
+    const quaySvg = `<rect x="-800" y="${GY}" width="${quayEdge + 800}" height="120" fill="url(#gQuay)"/><rect x="-800" y="${GY}" width="${quayEdge + 800}" height="2.5" fill="#fff" opacity=".45"/>
+      <rect x="-800" y="${GY + 12}" width="${quayEdge + 790}" height="1.6" fill="#E3B82E" opacity=".85"/><rect x="-800" y="${GY + 24}" width="${quayEdge + 790}" height="1.4" fill="#F4F4EE" opacity=".7"/>
+      ${Array.from({ length: 14 }, (_, i) => `<rect x="${-300 + i * 44}" y="${GY + 4}" width="1" height="30" fill="#000" opacity=".08"/>`).join('')}
+      <rect x="${quayEdge - 2}" y="${GY}" width="6" height="120" fill="#7C858C"/><rect x="${quayEdge - 6}" y="${GY - 1}" width="10" height="4" fill="#C9CED2"/>
+      ${[0, 1].map(i => `<g transform="translate(${quayEdge - 16 - i * 120} ${GY})"><rect x="-3" y="-7" width="6" height="7" fill="#2B3238"/><ellipse cx="0" cy="-7" rx="4.5" ry="1.6" fill="#3F4750"/></g>`).join('')}
+      ${[GY + 6, GY + 22].map(y => `<rect x="${quayEdge + 3}" y="${y}" width="6" height="11" rx="1.5" fill="#15181B"/><rect x="${quayEdge + 3}" y="${y}" width="2" height="11" fill="#fff" opacity=".12"/>`).join('')}
+      <g opacity=".95"><rect x="-6" y="${GY - 245}" width="4" height="245" fill="#8A97A1"/><rect x="-16" y="${GY - 250}" width="24" height="6" fill="#55616D"/>${[0, 1, 2, 3].map(i => `<rect x="${-15 + i * 6}" y="${GY - 244}" width="4" height="3" fill="#FFF1B8"/>`).join('')}</g>`;
+    // far shore (aerial perspective): another terminal's cranes, masts and a hazy skyline, all pale and low-contrast
+    const far = `<g opacity=".55"><rect x="-800" y="312" width="2560" height="8" fill="#AFC1CE"/>
+      ${[[420, 232, 26], [470, 248, 20], [1010, 236, 30], [1060, 252, 24], [1120, 228, 18]].map(([x, y, w]) => `<rect x="${x}" y="${y}" width="${w}" height="${320 - y}" fill="#B8C8D4"/>`).join('')}
+      ${[560, 700, 840].map(x => `<g fill="#A9BBC8"><rect x="${x}" y="226" width="3" height="90"/><rect x="${x + 26}" y="226" width="3" height="90"/><rect x="${x - 10}" y="222" width="80" height="5"/><path d="M${x + 10} 222 l6 -30 l6 30 z"/></g>`).join('')}</g>`;
+    // ship + its reflection in the calm water (mirror image, faded and broken by the ripple highlights)
+    const shipG = `<g transform="translate(${SX} ${QWL})">${SH.svg}</g>`;
+    const refl = `<g transform="translate(${SX} ${QWL}) scale(1 -1)" opacity=".28" mask="url(#mRefl)">${SH.svg}</g>`;
+    return `${svgOpen(s, 'data-sky="own"')}<defs><clipPath id="cableClip"><rect x="-700" y="${Q.gb + 10}" width="2400" height="500"/></clipPath></defs>
+      <g transform="translate(0 -38)">${realSky(318)}${far}
+      ${harbourWater(318, quayEdge - 40)}
+      <g data-tx="${shipMoves}">${refl}${shipG}</g>
+      <rect x="${quayEdge}" y="${QWL}" width="1800" height="110" fill="url(#gHarbourNear)" opacity=".5"/><g class="ripples r2" opacity=".5">${harbourRipples(QWL)}</g>
+      ${quaySvg}${Q.shadow}${Q.svg}
+      <g data-tx="${trolleyTx}"><g transform="translate(${bx0 + bw / 2 - 16} ${Q.gb})"><rect x="0" y="0" width="32" height="8" rx="1.5" fill="#55707F"/>${wheel(6, 0, 2.4)}${wheel(26, 0, 2.4)}
+        <rect x="-15" y="9" width="15" height="13" rx="1.5" fill="#E3B82E" stroke="#6B5410" stroke-width=".6"/><rect x="-13" y="11" width="11" height="6" fill="url(#gGlass)"/><line x1="-7.5" y1="8" x2="-7.5" y2="9" stroke="#3F4750" stroke-width="2"/></g></g>
       <g ${spAttrs}><g clip-path="url(#cableClip)">${chain(lifts, cables)}</g>${chain(lifts, spreader)}</g>
-      ${chain([truckTx], terminalTractor(bx0, bw))}
+      ${chain([truckTx], tractorQ(bx0, bw))}
       ${chain([g0].concat(lifts), boxBody)}
+      <g fill="none" stroke="#1B2024" stroke-width="1" ${load ? 'data-at="berth" data-until="docs" data-delay="2600"' : 'data-at="arrive" data-delay="3200"'}><path d="M${quayEdge - 16} ${GY - 7} Q${quayEdge + 4} ${GY - 2} ${SX + 18} ${QWL + SH.deck - 4}"/><path d="M${quayEdge - 136} ${GY - 7} Q${quayEdge - 40} ${GY + 2} ${SX + 30} ${QWL + SH.deck - 4}"/></g></g>
       ${load ? tag(640, 84, `ETD ${plain('{etd}')} · ${r.vessel} ${r.voyage}`, 'data-at="docs" data-delay="600"') : tag(640, 84, plain(C.ui.arrivalNotice), 'data-at="yard" data-delay="1800"')}
       ${c.family === 'reefer' ? tag(420, 84, load ? 'PLUGGED ON BOARD ⚡ ' + plain('{setPoint}') : 'PLUGGED IN REEFER RACK ⚡', `data-at="${load ? 'lash' : 'yard'}" data-delay="1600"`, '#0B4F6C') : ''}
     </svg>`;

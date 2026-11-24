@@ -32,7 +32,7 @@ Read this file first. It replaces the long history of the first project ("AI" pr
 |---|---|---|
 | A | Retours 1–4: CO₂ step by step, Bob's eyes, essentials nudge, rail/barge to inland terminals | **done** (24 Nov) |
 | B | Retour 5: real world map (Natural Earth) at step 7 | **done** (24 Nov) |
-| C | Retour 6: realism. Pilot = step 6 + intro sea, 2 screenshots, **wait for OK**; then 7, 1, 2, 3+10, 5, 8, 11, 4+9, menu + intro (one push per group) | to do |
+| C | Retour 6: realism. Pilot = step 6 + intro sea, 2 screenshots, **wait for OK**; then 7, 1, 2, 3+10, 5, 8, 11, 4+9, menu + intro (one push per group) | **pilot pushed 24 Nov — waiting for the team's OK** before the other scenes |
 | — | Final: v1.0 in CONFIG / README / HANDOFF; 4 test journeys (L1 reefer GYE→ANR · L2 20' HCM→SIN→LEH CIF rail · L3 flat rack SHA→LEH DAP · L2 tank SHA→LEH FCA), 0 console errors | to do |
 
 ### Block A — what changed (24 Nov)
@@ -51,6 +51,14 @@ Read this file first. It replaces the long history of the first project ("AI" pr
 - `global.json`: `mapPlaces` (14 ports / passages with lat/lon and label side), `mapSeas` (sea names), `routes[].map.geo` (`path`, `feeder`, `alt` = Cape alternative, `at` = beat anchors, `inland` / `feederInland` = canal or river segments, `ports`, `altLabelAt`). The old schematic `map.path/at/ports/alt` and `mapLand` are kept (unused on desktop) for the mobile version. New TO VERIFY **v100** (coordinates are teaching approximations).
 - Lanes checked against the 1:50m land at build time: 0 crossings (Suez, Panama, Saigon River and Scheldt drawn as waterways). Lane lengths: SHA→LEH 19,170 km, Cat Lai→SIN 1,220 km, SIN→LEH 15,179 km, Posorja→ANR 10,433 km — consistent with v88. CO₂ `sea[].split` shares now come from these lengths.
 - Ocean: depth gradient + coastal shelf shading, discreet 15° graticule, sea names with collision check. Top-down ship follows the lane with its heading (`data-heading` in `paint()`), bow wave and wake while moving.
+
+### Block C — pilot (24 Nov, waiting for OK)
+- **Realism kit** in `engine.html` (before `quay()`): `QM` = 6.94 px/m quay scale, `realSky()` (gradient, sun top-left, cumulus with lit tops / shaded bases, horizon haze), `harbourWater()` + `harbourRipples()` (calm water, depth gradient, slow ripple highlights — no "~"), `ctrQ()` (container at quay scale), `tractorQ()`, `stsQ()` (STS crane: gauge 30.5 m, outreach 68 m, backreach 22 m, girder ≈ 50 m), `shipQ()` (freeboard 16 m, 9 tiers, lashing bridges and rods, twistlocks, funnel casing, draught marks), `cloudSVG()`. New gradients/patterns/mask in `#svgDefs` (gSkyR, gSunGlow, gCloud, gCloudShade, gHaze, gHarbour, gHarbourNear, gOpenSea, gWaveShade, corrS, gTopLit, gCraneR, gGirder, gHullR, gQuay, gReflFade, mRefl).
+- Steps 6 and 8 (`quay()`): rebuilt at real scale, same beats and moves; ship reflection in the water, mooring lines, fenders, bollards, lane markings, lighting mast, far shore in aerial perspective; scene content raised 38 px so the quay stays above the narration bubble. `svgOpen(s, 'data-sky="own"')` hides the CSS sun/clouds (`.scene.own-sky`).
+- Intro: `introBg()` = open sea with 5 swell layers (trochoid crests, lit/shaded slopes, foam), sun glitter, laden ship with bow wave and wake, port in the haze. `bobSVG()` = Bob as a real **40' high cube (45G1)**, as the intro text says, on the end of a pier.
+- **Global proportion change:** `boxDims` now 470 × 100 (8'6") / 112 (9'6"), 20' = 234 wide; step-5 tier `TH` = 40. Other scenes still render correctly (checked 1, 2, 5, 11) but keep their v0.5 style until their group is done.
+- Perf (headless, software rendering): intro ≈ 51 fps, step 6 during a lift ≈ 44 fps at 1920×1080.
+- **Next after OK:** 7 (open sea: swell, bow wave, wake on the map ship) → 1 → 2 → 3+10 (inland: realistic trucks, wagons, barge at the same scale) → 5 → 8 → 11 → 4+9 → menu + intro UI (design system via CONFIG), then "Illustrations generated with AI" in the credits, v1.0 in CONFIG / README / HANDOFF, the 4 final test journeys.
 
 ## v0.5 — what changed
 1. **Texture bug fixed at the root**: the gradients existed twice (in every scene and in a hidden `<svg>` of the start menu); `url(#…)` resolved to the hidden copy → empty cartons, cab, sea, hull. Now one `#svgDefs` for the page; `stop-color` with CSS variables moved to `style`.
