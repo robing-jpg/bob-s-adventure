@@ -1924,24 +1924,31 @@ const CONFIG = {
     const { w, h } = boxDims(c), f = c.family, t = c.id, small = c.len === 20;
     // v1.0: ISO corner castings with their oval apertures (side face)
     const corners = [[0, 0], [w - 10, 0], [0, h - 10], [w - 10, h - 10]].map(([x, y]) => `<rect x="${x}" y="${y}" width="10" height="10" rx="1" fill="${f === 'reefer' ? '#7C8B97' : 'url(#gCast)'}"/><ellipse cx="${x + 5}" cy="${y + 5}" rx="2.9" ry="1.7" fill="#15181B"/>`).join('');
-    const num = (fill) => `<text x="${small ? w / 2 - 10 : w / 2 - 30}" y="30" text-anchor="middle" font-size="${small ? 14 : 20}" font-weight="800" fill="${fill}" opacity=".92" letter-spacing="${small ? 1 : 2}">${esc(CONTAINER_NO)}</text>`;
-    const plate = o.plate === false ? '' : `<g><rect x="10" y="${h - 54}" width="${small ? 112 : 126}" height="44" rx="3" fill="#fff" opacity=".92"/>
-      <text x="16" y="${h - 40}" font-size="10" fill="#1B2631">MAX GROSS ${fmt(c.mgm)} KG</text><text x="16" y="${h - 27}" font-size="10" fill="#1B2631">TARE ${fmt(c.tare)} KG</text><text x="16" y="${h - 14}" font-size="10" fill="#1B2631">${esc(c.iso)} · ${esc(c.short)}</text></g>`;
-    let g = '', wallFace = false, fx = w - (f === 'reefer' ? 130 : 80), fy = h * .4;
+    // v1.0 fix (24 Nov): with the ISO heights the markings no longer fit the old fixed boxes, and on a 20' they ran into
+    // the face. Layout now: owner number top-left, consolidated marking plate bottom-left, FACE ZONE on the right third.
+    // pw = plate width, fx = centre of the face (its cheeks reach ±41 × the face scale).
+    const pw = Math.min(small ? 100 : 126, Math.round(w * .46)), ph = Math.min(38, h - 46), fk = small ? .8 : 1;
+    const num = (fill) => `<text x="14" y="${(h * .27).toFixed(0)}" font-size="${small ? 12 : 18}" font-weight="800" fill="${fill}" opacity=".92" letter-spacing="${small ? .5 : 2}">${esc(CONTAINER_NO)}</text>`;
+    const plate = o.plate === false ? '' : `<g><rect x="12" y="${h - ph - 11}" width="${pw}" height="${ph}" rx="2" fill="#F4F2EC" opacity=".93"/>
+      ${[`MAX GROSS ${fmt(c.mgm)} KG`, `TARE ${fmt(c.tare)} KG`, `${c.iso} · ${c.short}`].map((l, i) => `<text x="17" y="${(h - ph - 11 + ph / 3 * (i + .78)).toFixed(1)}" font-size="${Math.min(ph / 3.9, pw / 11.4).toFixed(1)}" fill="#1B2631">${esc(l)}</text>`).join('')}</g>`;
+    let g = '', wallFace = false, fx = Math.max(12 + pw + 41 * fk + 6, w - (f === 'reefer' ? 128 : small ? 62 : 80)), fy = h * .45;
     if (t === '40FR') {
       g += `<rect x="0" y="${h - 18}" width="${w}" height="18" fill="#5B6670" stroke="#3F4750"/><rect x="0" y="0" width="14" height="${h}" fill="var(--c-box-dark)"/><rect x="${w - 14}" y="0" width="14" height="${h}" fill="var(--c-box-dark)"/>`;
-      if (o.cargo !== false) g += `<g ${o.cargoAttr || ''}>${machine(70, 18, w - 140, h - 36)}
-        <g stroke="#2B3238" stroke-width="3" stroke-dasharray="6 3"><line x1="22" y1="${h - 18}" x2="${90}" y2="${50}"/><line x1="${w - 22}" y1="${h - 18}" x2="${w - 90}" y2="${50}"/><line x1="60" y1="${h - 18}" x2="${120}" y2="${h - 50}"/><line x1="${w - 60}" y1="${h - 18}" x2="${w - 120}" y2="${h - 50}"/></g></g>`;
-      g += `<text x="${w / 2}" y="${h - 4}" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">${esc(CONTAINER_NO)}</text>`;
-      fx = w - 130; fy = 70;
+      // v1.0 fix (24 Nov): the cargo is lashed on the LEFT half, so Bob's face has a clear stretch of deck on the right
+      const cw0 = Math.round(w * .52);
+      if (o.cargo !== false) g += `<g ${o.cargoAttr || ''}>${machine(34, 14, cw0, h - 32)}
+        <g stroke="#2B3238" stroke-width="2.5" stroke-dasharray="6 3"><line x1="20" y1="${h - 18}" x2="${44}" y2="${h - 54}"/><line x1="${34 + cw0 + 18}" y1="${h - 18}" x2="${34 + cw0 - 10}" y2="${h - 54}"/>
+          <line x1="52" y1="${h - 18}" x2="${90}" y2="${h - 34}"/><line x1="${34 + cw0 - 10}" y1="${h - 18}" x2="${34 + cw0 - 48}" y2="${h - 34}"/></g></g>`;
+      g += `<text x="20" y="${h - 5}" font-size="10" font-weight="800" fill="#fff" opacity=".9">${esc(CONTAINER_NO)} · ${esc(c.iso)}</text>`;
+      fx = w - 74; fy = h - 58;
     } else if (f === 'tank') {
       g += `<rect x="0" y="0" width="${w}" height="${h}" fill="none" stroke="#5B6670" stroke-width="10"/><line x1="0" y1="${h / 2}" x2="${w}" y2="${h / 2}" stroke="#5B6670" stroke-width="4" opacity=".4"/>
         <rect x="14" y="14" width="${w - 28}" height="${h - 28}" rx="${(h - 28) / 2}" fill="url(#gTank)" stroke="#6E7B86" stroke-width="2"/>
         <rect x="${w / 2 - 14}" y="6" width="28" height="10" rx="3" fill="#6E7B86"/>
         <g transform="translate(${small ? 52 : 70} ${h / 2}) rotate(45)"><rect x="-22" y="-22" width="44" height="44" fill="#E2432F" stroke="#fff" stroke-width="3"/></g>
         <text x="${small ? 52 : 70}" y="${h / 2 + 9}" text-anchor="middle" font-size="22" font-weight="900" fill="#fff">3</text>
-        <text x="${w / 2 + 20}" y="${h - 22}" text-anchor="middle" font-size="11" font-weight="800" fill="#33424F">${esc(CONTAINER_NO)}</text>`;
-      fx = w - 70; fy = h * .42;
+        <text x="22" y="${h - 7}" font-size="10" font-weight="800" fill="#33424F">${esc(CONTAINER_NO)} · ${esc(c.iso)}</text>`;
+      fx = w - (small ? 58 : 76); fy = h * .44;
     } else {
       // v1.0 fix (24 Nov): the open box shows a lit plywood interior (floor, side wall, ceiling), not a black hole
       g += `<g><rect x="0" y="0" width="${w}" height="${h}" rx="2" fill="url(#gInside)"/><rect x="0" y="${h - 9}" width="${w}" height="9" fill="#9A7B52"/><rect x="0" y="${h - 9}" width="${w}" height="1.5" fill="#C8A878"/>
