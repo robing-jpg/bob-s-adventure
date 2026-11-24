@@ -10,11 +10,11 @@
       "caption": { "2": "Under {incoterm}, on-carriage is organised by {onBy}." } },
     { "id": "travel", "ms": 3200,
       "narration": {
-        "1": { "_by": "onMode", "barge": "A barge carries me up the river, then a short truck trip reaches the customer.", "rail": "A train carries me inland, then a truck does the last kilometres.", "*": "On the road to {dest}!" },
-        "2": { "_by": "onMode", "barge": "Barge to an inland terminal, then last-mile trucking: cheaper per box over distance, more handlings. [TO VERIFY:v69]", "rail": "Rail shuttle to an inland terminal, then last-mile truck; the detention clock keeps running. [TO VERIFY:v69]", "*": "Road delivery under a [[cmr]] consignment note; road limits apply (e.g. 44 t gross in France). [TO VERIFY:v13]" },
+        "1": { "_by": "onMode", "barge": "A barge carries me up the river to an inland terminal; there a crane lifts me onto a truck for the last few kilometres.", "rail": "A train carries me to an inland rail terminal near the customer; a crane lifts me onto a truck for the last kilometres — few warehouses have their own rail siding. [TO VERIFY:v99]", "*": "On the road to {dest}!" },
+        "2": { "_by": "onMode", "barge": "Barge to an inland river terminal, then last-mile trucking: cheaper per box over distance, more handlings. [TO VERIFY:v69] [TO VERIFY:v98]", "rail": "Rail shuttle to an inland rail terminal, then last-mile truck (the usual case: private sidings are rare); the detention clock keeps running. [TO VERIFY:v69] [TO VERIFY:v99]", "*": "Road delivery under a [[cmr]] consignment note; road limits apply (e.g. 44 t gross in France). [TO VERIFY:v13]" },
         "3": "Inland legs share risks with pre-carriage: congestion, weight limits, missed slots. Under carrier haulage, the carrier answers for the inland leg under its B/L terms. [TO VERIFY:v43]" },
       "caption": { "2": { "_by": "family", "reefer": "Genset on the road keeps {setPoint}. [TO VERIFY:v57]", "tank": "DG road rules apply (ADR in Europe). [TO VERIFY:v59]", "oog": "Oversize transport may need a permit or escort. [TO VERIFY:v58]", "*": "Import detention runs until the empty is returned. [TO VERIFY:v21]" } } },
-    { "id": "deliver", "ms": 1600,
+    { "id": "deliver", "ms": 2800,
       "narration": {
         "1": "Delivered! The customer checks my seal and signs a delivery receipt.",
         "2": "Delivery at {dest} on appointment; the consignee checks the seal and condition and signs the [[pod-proof|proof of delivery]], noting any reservations. [TO VERIFY:v70]",

@@ -131,13 +131,20 @@ button.jdot{cursor:pointer}
 #scene .fan{transform-box:fill-box;transform-origin:center;animation:spin 1.2s linear infinite}
 #scene .body{transform-box:fill-box;transform-origin:50% 100%;animation:breathe 3.4s ease-in-out infinite}
 @keyframes breathe{50%{transform:scaleY(1.012)}}
-#scene .eye{transform-box:fill-box;transform-origin:center;animation:eyeblink 4.5s infinite}
-@keyframes eyeblink{0%,94%,100%{transform:scaleY(1)}97%{transform:scaleY(.1)}}
-#scene .face{transform-box:fill-box;transform-origin:center}
-#scene .m-happy,#scene .m-puzzled,#scene .brow{opacity:0;transition:opacity .25s}
-#scene.face-happy .m-idle,#scene.face-puzzled .m-idle{opacity:0}
-#scene.face-happy .m-happy{opacity:1}
-#scene.face-puzzled .m-puzzled,#scene.face-puzzled .brow{opacity:1}
+/* v1.0 — Bob's face (retour 2). One group per eye, clipped to the eye shape; the lid (container colour) drops over the
+   WHOLE eye to blink, so the pupil is never left on a closed eye. Moods: .face-happy / .face-puzzled (scenes, avatar)
+   and .mood-* (intro). Brows are symmetric; one shape per mood. Reduced motion: no blink (eyes stay open). */
+.bface .lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:lidblink 5.2s infinite}
+@keyframes lidblink{0%,91%,99%,100%{transform:scaleY(0)}94.5%{transform:scaleY(1)}}
+.bface .br path{fill:none;stroke:#2B1C12;stroke-width:3.2;stroke-linecap:round}
+.bface .m,.bface .br{opacity:0;transition:opacity .25s}
+.bface .m-idle,.bface .br-n{opacity:1}
+:is(.face-happy,.mood-grin,.mood-wink,.mood-proud) .bface :is(.m-idle,.br-n),:is(.face-puzzled,.mood-puzzled) .bface :is(.m-idle,.br-n){opacity:0}
+:is(.face-happy,.mood-grin,.mood-wink) .bface :is(.m-happy,.br-h){opacity:1}
+.mood-proud .bface .br-h,.mood-proud .bface .m-idle{opacity:1}
+:is(.face-puzzled,.mood-puzzled) .bface :is(.m-puzzled,.br-p){opacity:1}
+.mood-wink .bface .eye-r .lid{animation:none;transform:scaleY(1)}
+.face{transform-box:fill-box;transform-origin:center}
 #scene.face-puzzled .face{animation:tilt .5s ease-in-out}
 @keyframes tilt{30%{transform:rotate(-4deg)}70%{transform:rotate(3deg)}}
 #scene .wall{transition:opacity .8s}
@@ -186,6 +193,7 @@ button.jdot{cursor:pointer}
 .pill.primary.go{background:linear-gradient(180deg,#2A9363,var(--c-ok));border-color:var(--c-ok)}
 .pill.big{min-height:52px;padding:0 26px;font-size:1.05rem}
 .pill[disabled]{opacity:.45;cursor:not-allowed;box-shadow:none}
+.pill[aria-disabled="true"]{opacity:.55;cursor:not-allowed;box-shadow:none;filter:saturate(.6)}
 .pill:not([disabled]):hover{filter:brightness(1.08)}
 .pill.round{width:44px;padding:0}
 .dots{display:flex;gap:6px;align-items:center}
@@ -197,6 +205,15 @@ button.jdot{cursor:pointer}
 .cta-wrap{position:relative}
 .cta-wrap .tip{position:absolute;right:0;bottom:calc(100% + 8px);background:var(--c-text);color:#fff;font-size:.8rem;padding:6px 10px;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s}
 .cta-wrap:hover .tip,.cta-wrap:focus-within .tip{opacity:1}
+.cta-wrap .tip.show{opacity:1;background:#7A2E0E}
+/* v1.0: essentials nudge (retour 3) — shake ≈ 0.6 s; reduced motion: halo + "!" badge, no movement */
+.hs.shake{animation:hsShake .6s ease-in-out}
+@keyframes hsShake{0%,100%{transform:translate(-50%,-50%)}15%{transform:translate(calc(-50% - 7px),-50%) rotate(-3deg)}35%{transform:translate(calc(-50% + 6px),-50%) rotate(2.5deg)}55%{transform:translate(calc(-50% - 4px),-50%) rotate(-1.5deg)}75%{transform:translate(calc(-50% + 2px),-50%)}}
+.hs.attn{box-shadow:0 0 0 4px var(--c-star),0 0 18px 6px rgba(242,183,5,.75)}
+.hs.attn::before{content:"!";position:absolute;top:-9px;right:-9px;width:20px;height:20px;border-radius:50%;background:#A4231A;color:#fff;font-weight:900;font-size:.8rem;display:grid;place-items:center;border:2px solid #fff}
+.ess-count.pulse{animation:essPulse .6s ease-in-out}
+@keyframes essPulse{0%,100%{transform:scale(1)}40%{transform:scale(1.1);box-shadow:0 0 0 5px rgba(242,183,5,.55)}}
+.ess-count.attn{box-shadow:0 0 0 3px var(--c-star);border-color:#7A5A00}
 
 /* ---------- Bottom sheet ---------- */
 .backdrop{position:fixed;inset:var(--top) 0 0 0;background:rgba(10,25,35,.38);opacity:0;pointer-events:none;transition:opacity .3s;z-index:20}
@@ -337,16 +354,8 @@ details.kp ul{margin:0 0 10px;padding-left:2em}
 .intro .sub{font-weight:700;color:var(--c-primary);margin:.3em 0 1em;font-size:1.05rem}
 #bob{width:100%;max-width:470px;justify-self:center;overflow:visible;animation:bobDrop 1.1s cubic-bezier(.3,1.5,.5,1) both}
 @keyframes bobDrop{0%{transform:translateY(-120%) rotate(-8deg)}60%{transform:translateY(4%) scaleY(.92)}100%{transform:none}}
-#bob .bob-body{transform-box:fill-box;transform-origin:50% 100%;animation:breathe 3s ease-in-out infinite}
-#bob .bob-arm{transform-box:fill-box;transform-origin:10% 90%;animation:wave 1.4s ease-in-out infinite}
-@keyframes wave{0%,100%{transform:rotate(0)}50%{transform:rotate(-28deg)}}
-#bob .eye{transform-box:fill-box;transform-origin:center;animation:eyeblink 4s infinite}
-#bob .m{opacity:0;transition:opacity .2s}
-#bob.mood-smile .m-smile,#bob.mood-grin .m-grin,#bob.mood-puzzled .m-puzzled,#bob.mood-wink .m-grin,#bob.mood-proud .m-smile{opacity:1}
-#bob .brow-p,#bob .wink{opacity:0}
-#bob.mood-puzzled .brow-p{opacity:1}
-#bob.mood-wink .wink{opacity:1}#bob.mood-wink .eye-r{opacity:0}
-#bob.mood-puzzled .bob-face{animation:tilt .6s ease-in-out}
+#bob .bob-body{transform-box:fill-box;transform-origin:50% 100%;animation:breathe 3.6s ease-in-out infinite}
+#bob.mood-puzzled .face{animation:tilt .6s ease-in-out}
 #bob.mood-proud .bob-body{animation:proud .9s ease-in-out}
 @keyframes proud{40%{transform:translateY(-14px) scaleY(1.04)}}
 .speech{position:relative;background:#fff;border-radius:22px;padding:20px 22px 16px;box-shadow:0 14px 40px rgba(15,35,55,.22);border:2px solid #fff;min-height:170px}
@@ -433,6 +442,15 @@ details.kp ul{margin:0 0 10px;padding-left:2em}
 .meter{gap:4px;padding:0 4px;height:32px;background:transparent;border:0}
 .meter .pl{display:inline-flex;align-items:center;height:26px;padding:0 9px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.45);font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums}
 .meter .pl.bump{animation:pop .5s}
+/* v1.0: "+X kg" chip next to the CO2 pill when a movement adds emissions (text, so not carried by motion alone) */
+.meter{position:relative}
+.meter .dco2{position:absolute;right:4px;top:calc(100% + 4px);padding:2px 8px;border-radius:999px;background:#fff;color:var(--c-ok);border:1.5px solid var(--c-ok);font-size:.74rem;font-weight:800;white-space:nowrap;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.18);animation:dco2 2.4s ease-out forwards}
+@keyframes dco2{0%{opacity:0;transform:translateY(-6px)}12%{opacity:1;transform:none}75%{opacity:1}100%{opacity:0;transform:translateY(6px)}}
+@media (prefers-reduced-motion:reduce){ .meter .dco2{animation:none!important;opacity:1} }
+table.fp tr.stp td{background:var(--c-primary-soft);font-weight:800;border-bottom:1px solid #C9D3DB}
+table.fp tr.stp td.n{font-weight:800}
+table.fp .calc{display:block;font-size:.76rem;color:var(--c-muted);font-family:ui-monospace,Menlo,Consolas,monospace;margin-top:1px}
+table.fp tr.zero td{font-size:.8rem;color:var(--c-muted);font-style:italic}
 table.fp{width:100%;border-collapse:collapse;font-size:.86rem}
 table.fp th,table.fp td{padding:5px 6px;border-bottom:1px solid var(--c-line);text-align:left;vertical-align:top}
 table.fp td.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -705,30 +723,41 @@ const CONFIG = {
      INTRO — Bob introduces himself (shown on the first visit; "Meet Bob again" in the menu)
      ===================================================================== */
   let introIdx = 0, typer = null;
+  /* v1.0 — Bob in the intro (retour 2): a real 20' box (6.06 × 2.59 m, ratio 2.34) seen in a 3/4 view — corrugated side
+     with the face, roof, door end with four locking bars, cam keepers, handles and the CSC plate, corner castings, light wear,
+     contact and cast shadows (light from the top-left). Same name, colour and number as everywhere in the game. */
   function bobSVG() {
-    const ribs = Array.from({ length: 15 }, (_, i) => `<rect x="${52 + i * 15}" y="48" width="6" height="124" fill="#000" opacity=".1"/>`).join('');
-    return `<svg id="bob" class="mood-smile" viewBox="0 0 340 300" role="img" aria-label="${esc(CONFIG.heroName)}, an orange shipping container with a friendly face, waving">
-      <rect x="-2000" y="206" width="4340" height="90" fill="#B9C2C9"/><rect x="-2000" y="206" width="4340" height="6" fill="#fff" opacity=".45"/><rect x="-2000" y="290" width="4340" height="8" fill="#7E8A95"/><g><rect x="-10" y="186" width="22" height="22" rx="6" fill="#33424F"/><rect x="-16" y="182" width="34" height="8" rx="4" fill="#33424F"/></g><ellipse cx="170" cy="207" rx="140" ry="9" fill="#0E2230" opacity=".22"/>
-      <g class="bob-body">
-        <path d="M44 120 C 18 128, 10 150, 16 170" stroke="var(--c-box-dark)" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="16" cy="172" r="11" fill="#FFF3E6" stroke="var(--c-box-dark)" stroke-width="4"/>
-        <g class="bob-arm"><path d="M296 118 C 318 104, 324 80, 318 58" stroke="var(--c-box-dark)" stroke-width="12" fill="none" stroke-linecap="round"/><circle cx="317" cy="54" r="12" fill="#FFF3E6" stroke="var(--c-box-dark)" stroke-width="4"/></g>
-        <rect x="40" y="40" width="260" height="140" rx="10" fill="url(#bobGrad)" stroke="var(--c-box-dark)" stroke-width="4"/>${ribs}
-        <rect x="40" y="40" width="260" height="10" fill="#000" opacity=".12"/><rect x="40" y="170" width="260" height="10" fill="#000" opacity=".15"/>
-        ${[[40, 40], [286, 40], [40, 166], [286, 166]].map(([x, y]) => `<rect x="${x}" y="${y}" width="14" height="14" rx="2" fill="#5A2E0A"/>`).join('')}
-        <text x="78" y="78" font-size="24" font-weight="900" fill="#fff" opacity=".95" letter-spacing="3">${esc(CONFIG.heroName.toUpperCase())}</text>
-        <text x="62" y="164" font-size="10" font-weight="700" fill="#fff" opacity=".75" letter-spacing="1">${esc(CONTAINER_NO)} · 45G1</text>
-        <g class="bob-face">
-          <ellipse class="eye" cx="178" cy="112" rx="17" ry="20" fill="#fff" stroke="#1B2631" stroke-width="3"/><circle cx="183" cy="116" r="8" fill="#1B2631"/><circle cx="186" cy="111" r="3" fill="#fff"/>
-          <g class="eye-r"><ellipse class="eye" cx="236" cy="112" rx="17" ry="20" fill="#fff" stroke="#1B2631" stroke-width="3"/><circle cx="241" cy="116" r="8" fill="#1B2631"/><circle cx="244" cy="111" r="3" fill="#fff"/></g>
-          <path class="wink" d="M222 114 q14 -10 28 0" stroke="#1B2631" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path class="brow-p" d="M160 84 q16 -12 34 -4" stroke="#1B2631" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path class="m m-smile" d="M190 148 q18 14 36 0" stroke="#1B2631" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <path class="m m-grin" d="M184 142 q24 34 48 0 z" fill="#1B2631"/><path class="m m-grin" d="M194 154 q14 10 28 0" fill="#E2685A"/>
-          <path class="m m-puzzled" d="M190 152 q9 -8 18 0 t18 0" stroke="#1B2631" stroke-width="5" fill="none" stroke-linecap="round"/>
-          <ellipse cx="156" cy="140" rx="11" ry="6" fill="#FF8B7A" opacity=".55"/><ellipse cx="258" cy="140" rx="11" ry="6" fill="#FF8B7A" opacity=".55"/>
-        </g>
-        <rect x="64" y="180" width="34" height="26" rx="6" fill="#1B2631"/><rect x="242" y="180" width="34" height="26" rx="6" fill="#1B2631"/>
-      </g></svg>`;
+    const W = 270, H = 116, X = 26, Y = 92;                       // side wall
+    const ribsDoor = [0, 1, 2, 3, 4].map(i => `<rect x="2" y="${14 + i * 21}" width="105" height="3" fill="#000" opacity=".14"/><rect x="2" y="${17 + i * 21}" width="105" height="1.5" fill="#fff" opacity=".14"/>`).join('');
+    const bar = x => `<rect x="${x - 2.6}" y="6" width="5.2" height="104" rx="2.6" fill="#3A210E"/><rect x="${x - 2.2}" y="6" width="1.6" height="104" fill="#fff" opacity=".3"/>
+      <rect x="${x - 3.5}" y="4" width="7" height="6" rx="1" fill="#4A2A12"/><rect x="${x - 3.5}" y="106" width="7" height="6" rx="1" fill="#4A2A12"/>
+      <rect x="${x - 1}" y="60" width="9" height="3" rx="1.5" fill="#3E2310"/><rect x="${x + 6}" y="57" width="3" height="9" rx="1" fill="#4A2A12"/>`;
+    const door = `<g transform="matrix(0.48 -0.165 0 1 ${X + W} ${Y})">
+      <rect x="0" y="0" width="109" height="${H}" fill="url(#bobGrad)"/><rect x="0" y="0" width="109" height="${H}" fill="#000" opacity=".16"/>${ribsDoor}
+      <rect x="0" y="0" width="109" height="7" fill="var(--c-box-dark)" opacity=".8"/><rect x="0" y="${H - 9}" width="109" height="9" fill="var(--c-box-dark)" opacity=".85"/>
+      <rect x="0" y="0" width="7" height="${H}" fill="var(--c-box-dark)" opacity=".8"/><rect x="102" y="0" width="7" height="${H}" fill="var(--c-box-dark)" opacity=".8"/>
+      <rect x="53.8" y="7" width="1.4" height="${H - 16}" fill="#1B1F22" opacity=".7"/>
+      ${bar(17)}${bar(40)}${bar(69)}${bar(92)}
+      <g><rect x="9" y="68" width="24" height="15" rx="1" fill="#D9DEE2" stroke="#6E7881" stroke-width=".8"/><text x="21" y="74" text-anchor="middle" font-size="3.6" font-weight="800" fill="#1B2631">CSC SAFETY</text><text x="21" y="78.5" text-anchor="middle" font-size="3.6" font-weight="800" fill="#1B2631">APPROVAL</text><rect x="12" y="80" width="18" height="1" fill="#6E7881"/></g>
+      <text x="80" y="22" text-anchor="middle" font-size="7.5" font-weight="800" fill="#fff" opacity=".9">${esc(CONTAINER_NO)}</text><text x="80" y="31" text-anchor="middle" font-size="6.5" font-weight="800" fill="#fff" opacity=".85">22G1</text>
+      <text x="14" y="94" font-size="4.6" fill="#fff" opacity=".85">MAX GROSS 30,480 KG</text><text x="14" y="100" font-size="4.6" fill="#fff" opacity=".85">TARE 2,200 KG</text>
+      ${[[0, 0], [99, 0], [0, H - 10], [99, H - 10]].map(([x, y]) => `<rect x="${x}" y="${y}" width="10" height="10" rx="1" fill="url(#gCast)"/><ellipse cx="${x + 5}" cy="${y + 5}" rx="2.2" ry="3" fill="#15181B"/>`).join('')}</g>`;
+    const roof = `<path d="M${X} ${Y} L${X + 52} ${Y - 18} L${X + W + 52} ${Y - 18} L${X + W} ${Y} Z" fill="var(--c-box)"/><path d="M${X} ${Y} L${X + 52} ${Y - 18} L${X + W + 52} ${Y - 18} L${X + W} ${Y} Z" fill="#fff" opacity=".22"/>
+      ${Array.from({ length: 24 }, (_, i) => `<path d="M${X + 12 + i * 10.8} ${Y} l52 -18" stroke="#000" stroke-width="1" opacity=".08"/>`).join('')}`;
+    const side = `<rect x="${X}" y="${Y}" width="${W}" height="${H}" fill="url(#bobGrad)"/><rect x="${X}" y="${Y}" width="${W}" height="${H}" fill="url(#corr)"/>
+      <rect x="${X}" y="${Y}" width="${W}" height="${H}" fill="url(#grime)"/><rect x="${X}" y="${Y + H * .5}" width="${W}" height="${H * .5}" fill="url(#gDirt)"/>
+      <rect x="${X}" y="${Y}" width="${W}" height="7" fill="var(--c-box-dark)" opacity=".75"/><rect x="${X}" y="${Y + 7}" width="${W}" height="1.4" fill="#000" opacity=".22"/>
+      <rect x="${X}" y="${Y + H - 9}" width="${W}" height="9" fill="var(--c-box-dark)" opacity=".85"/>
+      <rect x="${X}" y="${Y}" width="9" height="${H}" fill="var(--c-box-dark)" opacity=".7"/><rect x="${X + W - 9}" y="${Y}" width="9" height="${H}" fill="var(--c-box-dark)" opacity=".7"/>
+      ${[[X, Y], [X + W - 10, Y], [X, Y + H - 10], [X + W - 10, Y + H - 10]].map(([x, y]) => `<rect x="${x}" y="${y}" width="10" height="10" rx="1" fill="url(#gCast)"/><ellipse cx="${x + 5}" cy="${y + 5}" rx="2.9" ry="1.7" fill="#15181B"/>`).join('')}
+      <text x="${X + 22}" y="${Y + 34}" font-size="21" font-weight="900" fill="#fff" opacity=".93" letter-spacing="3">${esc(CONFIG.heroName.toUpperCase())}</text>
+      <text x="${X + W - 16}" y="${Y + 22}" text-anchor="end" font-size="9" font-weight="800" fill="#fff" opacity=".85" letter-spacing=".5">${esc(CONTAINER_NO)} · 22G1</text>`;
+    return `<svg id="bob" class="mood-smile" viewBox="0 0 380 250" role="img" aria-label="${esc(CONFIG.heroName)}, an orange 20-foot shipping container with a friendly face">
+      <rect x="-2000" y="${Y + H - 36}" width="4380" height="96" fill="url(#bobPave)"/><rect x="-2000" y="${Y + H - 36}" width="4380" height="2" fill="#fff" opacity=".45"/>
+      <path d="M-2000 ${Y + H + 32} H2380" stroke="#F2F2EE" stroke-width="3" stroke-dasharray="40 30" opacity=".7"/>
+      <path d="M${X + W} ${Y + H} L${X + W + 52} ${Y + H - 18} L${X + W + 128} ${Y + H - 14} L${X + W + 64} ${Y + H + 5} Z" fill="#1C2A33" opacity=".2"/>
+      <rect x="${X - 2}" y="${Y + H - 2}" width="${W + 4}" height="5" rx="2" fill="#0E151A" opacity=".45"/>
+      <g class="bob-body">${roof}${door}${side}${faceSVG(X + W * .52, Y + H * .5, 1.12)}</g></svg>`;
   }
   function introBg() {
     let waves = ''; for (let y = 470; y < 600; y += 26) for (let x = -100; x < 1400; x += 90) waves += `<path d="M${x} ${y} q10 -6 20 0 t20 0" stroke="#fff" stroke-width="1.5" fill="none" opacity=".45"/>`;
@@ -974,17 +1003,17 @@ const CONFIG = {
     if (!animate || reduce || gi <= painted) {
       const m = paint(s, gi); if (m && animate) wheels(m);
       for (let k = Math.max(0, painted + 1); k <= gi; k++) fx(s.beats[k], true);
-      painted = gi; hs.classList.remove('wait'); placeHs(); return;
+      painted = gi; hs.classList.remove('wait'); placeHs(); meterAt(s.id, gi); nudgeStart(); return;
     }
     hs.classList.add('wait');
     let t = 0;
     for (let k = Math.max(0, painted + 1); k <= gi; k++) {
       const b = s.beats[k];
-      later(() => { const m = paint(s, k); if (m) wheels(m); fx(b, false); }, t);
+      later(() => { const m = paint(s, k); if (m) wheels(m); fx(b, false); meterAt(s.id, k); }, t);   // v1.0: CO2 moves with the beat
       t += k < gi ? (b.ms || 1600) : 0;
     }
     const last = s.beats[gi];
-    later(() => { hs.classList.remove('wait'); placeHs(); }, t + Math.min(last.ms || 1600, 2600) - 300);
+    later(() => { hs.classList.remove('wait'); placeHs(); nudgeStart(); }, t + Math.min(last.ms || 1600, 2600) - 300);
     painted = gi;
   }
   function fx(b, instant) {
@@ -1019,7 +1048,8 @@ const CONFIG = {
       const ic = seen ? '✓' : ess ? '★' : doc ? '📄' : ch ? '⇄' : 'i';
       const badge = doc ? `<span class="badge">${seen ? '✓ checked' : 'Open me'}</span>` : ch ? `<span class="badge">${seen ? esc(choiceLabel(ch)) : 'Choose'}</span>` : (ess ? `<span class="badge">${seen ? '✓' : 'Essential'}</span>` : '');
       const lab = plain(h.label);
-      return `<button type="button" class="hs ${ess ? 'ess' : ''} ${seen ? 'seen' : ''}" data-hs="${h.id}" data-x="${R(h.x)}" data-y="${R(h.y)}"
+      const attn = reduce && ess && !seen && nudgedKey === S.step + ':' + S.i ? 'attn' : '';   // v1.0: reduced-motion nudge stays visible
+      return `<button type="button" class="hs ${ess ? 'ess' : ''} ${seen ? 'seen' : ''} ${attn}" data-hs="${h.id}" data-x="${R(h.x)}" data-y="${R(h.y)}"
         aria-label="${esc(lab)}, ${esc(plain(h.kind))}${ess ? ', essential' : ''}${seen ? ', consulted' : ''}"><span class="ic" aria-hidden="true">${ic}</span>${esc(lab)}${badge}</button>`;
     }).join('');
     $$('#hs .hs').forEach(b => b.addEventListener('click', () => openHotspot(step().hotspots.find(h => h.id === b.dataset.hs), b)));
@@ -1109,29 +1139,64 @@ const CONFIG = {
     let cta;
     if (S.departed) cta = `<button class="pill primary" id="cta">Key points</button>`;
     else if (last && solved(s)) cta = `<button class="pill primary go" id="cta">${esc(C.ui.continue)} ▶</button>`;
-    else if (last) cta = `<button class="pill primary" id="cta" ${gated ? 'disabled aria-describedby="tip"' : ''}><span class="long">${esc(C.ui.whatNext)}</span><span class="short">${esc(C.ui.whatNextShort)}</span></button>`;
-    else cta = `<button class="pill primary" id="cta" ${gated ? 'disabled aria-describedby="tip"' : ''}>${esc(C.ui.next)} ▶</button>`;
+    // v1.0: a locked button stays clickable (aria-disabled) so a click can point at the missing ★ items (retour 3)
+    else if (last) cta = `<button class="pill primary" id="cta" ${gated ? 'aria-disabled="true" aria-describedby="tip"' : ''}><span class="long">${esc(C.ui.whatNext)}</span><span class="short">${esc(C.ui.whatNextShort)}</span></button>`;
+    else cta = `<button class="pill primary" id="cta" ${gated ? 'aria-disabled="true" aria-describedby="tip"' : ''}>${esc(C.ui.next)} ▶</button>`;
     $('#bar').innerHTML = `
       <button class="pill round" id="bBack" ${S.i === 0 || S.departed ? 'disabled' : ''} aria-label="Previous scene">◀</button>
       <div class="dots" role="img" aria-label="Scene ${S.i + 1} of ${bs.length}">${bs.map((_, k) => `<span class="${k <= S.i ? 'on' : ''}"></span>`).join('')}</div>
       ${ess.length ? `<span class="ess-count ${seenN === ess.length ? 'ok' : ''}" aria-live="polite"><span aria-hidden="true">${seenN === ess.length ? '✓' : '★'}</span> <span class="long">${esc(C.ui.essentials)}&nbsp;</span>${seenN}/${ess.length}<span class="sr"> essentials consulted</span></span>` : ''}
       <span class="grow"></span>
       ${L() >= 2 ? `<button class="pill" id="bFile" aria-haspopup="dialog"><span aria-hidden="true">📁</span><span class="long">${esc(C.ui.stepFile)}</span><span class="sr">Step file</span></button>` : ''}
-      <span class="cta-wrap">${cta}${gated && !S.departed && !(last && solved(s)) ? `<span class="tip" id="tip" role="tooltip">${esc(C.ui.gateTip)}</span>` : ''}</span>`;
+      <span class="cta-wrap">${cta}${gated && !S.departed && !(last && solved(s)) ? `<span class="tip" id="tip" role="tooltip">${esc(C.ui.gateTip)}</span>` : ''}<span class="sr" id="gateLive" aria-live="assertive"></span></span>`;
     $('#bBack').onclick = () => go(-1);
     const f = $('#bFile'); if (f) f.onclick = e => openDossier(e.currentTarget);
     $('#cta').onclick = e => {
+      if (e.currentTarget.getAttribute('aria-disabled') === 'true') return gateBlocked();
       if (S.departed) return openKeyPoints();
       if (last && solved(s)) return depart();
       if (last) return openQuestion(e.currentTarget);
       go(1);
     };
   }
+  /* ---------- v1.0: essentials nudge (retour 3) ----------
+     If a ★ essential of the current scene is still closed 5 s after its hotspots appear, the closed ones shake (≈ 0.6 s) and the
+     "★ Essentials" counter pulses; then again every ≈ 6 s, 5 times at most. The timer restarts at every beat or scene, stops when
+     everything is open, and pauses while a sheet, a document, a question or the transfer moment is open.
+     Reduced motion: no shaking — a halo and a "!" badge instead. A click on the locked button nudges at once, with a message. */
+  const NUDGE = { first: 5000, every: 6000, max: 5, tick: 250 };
+  let nudgeT = null, nudgeLeft = 0, nudgeN = 0, nudgedKey = '';
+  const sceneEss = () => (S && !S.departed && curBeat()) ? visibleHs().filter(h => h.essential && h.essential.includes(L()) && h.beat === curBeat().id) : [];
+  const closedEss = () => sceneEss().filter(h => !consulted(h.id));
+  function nudgeStop() { clearInterval(nudgeT); nudgeT = null; }
+  function nudgeStart() {
+    nudgeStop(); nudgeN = 0; nudgeLeft = NUDGE.first; nudgedKey = '';
+    if (!closedEss().length) return;
+    nudgeT = setInterval(() => {
+      if ($('#app').hidden || !closedEss().length) return nudgeStop();
+      if (sheetOpen() || dv || xferOpen() || $('#hs').classList.contains('wait') || document.hidden) return;   // paused
+      if ((nudgeLeft -= NUDGE.tick) > 0) return;
+      nudgeNow(); nudgeLeft = NUDGE.every;
+      if (++nudgeN >= NUDGE.max) nudgeStop();
+    }, NUDGE.tick);
+  }
+  function nudgeNow() {
+    nudgedKey = S.step + ':' + S.i;
+    closedEss().forEach(h => { const b = $(`#hs [data-hs="${h.id}"]`); if (!b) return;
+      if (reduce) b.classList.add('attn'); else { b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake'); } });
+    const c = $('.ess-count'); if (c) { if (reduce) c.classList.add('attn'); else { c.classList.remove('pulse'); void c.offsetWidth; c.classList.add('pulse'); } }
+  }
+  function gateBlocked() {
+    nudgeNow();
+    const all = sceneEss(), msg = (C.ui.gateNudge || 'Open the ★ items first ({n}/{t})').replace('{n}', all.length - closedEss().length).replace('{t}', all.length);
+    const tip = $('#tip'); if (tip) { tip.textContent = msg; tip.classList.add('show'); clearTimeout(gateBlocked.t); gateBlocked.t = setTimeout(() => { const x = $('#tip'); if (x) { x.classList.remove('show'); x.textContent = C.ui.gateTip; } }, 2800); }
+    const live = $('#gateLive'); if (live) { live.textContent = ''; setTimeout(() => { live.textContent = msg; }, 30); }
+  }
   function go(d) {
     const n = beats(step()).length;
     S.i = Math.max(0, Math.min(n - 1, S.i + d)); save();
     face(null); renderNarr(true); renderFact(); renderHs(); renderBar(); sceneTo(d > 0);
-    if (d > 0) { const c = $('#cta'); if (c && !c.disabled) c.focus(); }
+    if (d > 0) { const c = $('#cta'); if (c && c.getAttribute('aria-disabled') !== 'true') c.focus(); }
   }
 
   /* ---------- Bottom sheet ---------- */
@@ -1213,14 +1278,16 @@ const CONFIG = {
   /* ---------- Departure, key points, next step ---------- */
   function depart() {
     const s = step();
-    closeSheet(); S.departed = true; clearTimers();
+    closeSheet(); S.departed = true; clearTimers(); nudgeStop();
+    const kg0 = meterTotals().kg;
     if (!S.completed.includes(s.id)) S.completed.push(s.id);
     if (s.id < 11) S.maxStep = Math.max(S.maxStep, s.id + 1);
+    S.mGi = S.mGi || {}; S.mGi[s.id] = 999;
     save();
     const m = paint(s, s.beats.indexOf(curBeat())); if (m) wheels(m);
     renderHs(); renderFact(); renderBar();
     later(() => renderTop(Math.min(11, s.id + 1)), reduce ? 0 : 1300);
-    renderMeter(true);
+    const dKg = meterTotals().kg - kg0; renderMeter(dKg > 0.001 ? dKg : true);
     // v0.5: when the box passes the Incoterm transfer point, play the full-screen "transfer" moment first
     const ic = inco(), kind = s.id === ic.risk && s.id === ic.cost ? 'both' : s.id === ic.risk ? 'risk' : s.id === ic.cost ? 'cost' : null;
     later(() => (kind ? showXfer(kind, openKeyPoints) : openKeyPoints()), reduce ? 50 : Math.min(3000, (m || 800) + 400));
@@ -1277,10 +1344,17 @@ const CONFIG = {
     for (const k of [c.id, c.family, String(c.len), '*']) if (v[k] != null) return v[k];
     return null;
   }
+  /* v1.0 — CO2e line by line (retour 1). footprint.lines in global.json lists every emission source with its step and the
+     beat where the movement is played; nothing is hard-coded here except the arithmetic of each calc type:
+       empty / first / pre / on / last → distance × tonnes × truck/barge/rail factor (tonne-km)
+       sea      → each leg's km × TEU × ship factor, spread over the map beats with the leg's "split" shares
+       hub      → cargo tonnes × GLEC hub factor (stuffing / unstuffing)
+       terminal → 1 container × GLEC maritime terminal factor
+       plug     → reefer plug-in days (route.plug[step]) × kg per day (reefers only) */
   function footprint() {
-    const F = C.footprint, r = route(), c = container(), ic = inco(), RT = F.routes[r.id] || {}, fac = F.factors;
-    const teu = c.len === 40 ? 2 : 1, cargoT = ((r.cargoKg || {})[c.family] || 10000) / 1000, grossT = cargoT + c.tare / 1000;
-    const rows = [];
+    const F = C.footprint, r = route(), c = container(), ic = inco(), RT = F.routes[r.id] || {}, fac = F.factors, CL = F.calc || {};
+    const teu = c.len === 40 ? 2 : 1, cargoT = ((r.cargoKg || {})[c.family] || 10000) / 1000, tareT = c.tare / 1000, grossT = cargoT + tareT;
+    const reefer = c.family === 'reefer', rows = [];
     (F.costs || []).forEach(it => {
       if (it.when && !ok({ when: it.when })) return;
       const eur = pickVal((it.route || {})[r.id] != null ? it.route[r.id] : it.eur, c); if (!eur) return;
@@ -1289,38 +1363,80 @@ const CONFIG = {
       const v = it.v && typeof it.v === 'object' ? (c.family === 'reefer' && it.vReefer) || it.v[r.id] : it.v;
       rows.push({ step: it.step, label: it.label, eur: Math.round(eur * x / 5) * 5, payer, kg: 0, v });
     });
-    const land = (mode, km) => km * grossT * ((fac[mode] || fac.truck).kg);
-    const co2 = (step, label, kg, v) => rows.push({ step, label, eur: 0, payer: null, kg, v });
-    co2(3, plain(F.labels.pre).replace('{mode}', choiceLabel('mode') || 'truck'), land(S.choices.mode, RT.preKm || 0), fac[S.choices.mode || 'truck'].v);
-    if (c.family === 'reefer') { co2(5, plain(F.labels.plugO), (RT.plugDays || 0) * fac.reeferDay.kg, fac.reeferDay.v); }
-    (RT.sea || []).forEach(leg => { const f = fac[leg.kind], k = c.family === 'reefer' ? (leg.kind === 'ship' ? fac.shipReefer.kg : f.kg * fac.feeder.reeferX) : f.kg;
-      co2(7, leg.label, leg.km * teu * k, c.family === 'reefer' && leg.kind === 'ship' ? fac.shipReefer.v : f.v); });
-    if (c.family === 'reefer') co2(8, plain(F.labels.plugD), (RT.plugDays || 0) * fac.reeferDay.kg, fac.reeferDay.v);
-    co2(10, plain(F.labels.on).replace('{mode}', choiceLabel('onMode') || 'truck'), land(S.choices.onMode, RT.onKm || 0), fac[S.choices.onMode || 'truck'].v);
-    co2(11, plain(F.labels.ret), (RT.returnKm || 0) * (c.tare / 1000) * fac.truck.kg, fac.truck.v);
+    const n1 = x => (+x).toLocaleString('en-GB', { maximumFractionDigits: 1 }), nf = x => String(+(+x).toFixed(4));
+    const fill = (t, m) => String(t || '').replace(/\{(\w+)\}/g, (a, k) => (m[k] != null ? m[k] : a));
+    const modeName = key => (choiceLabel(key) || 'truck').toLowerCase();
+    const lab = (k, m) => fill(tpl(plain(F.labels[k] || k)), m || {});
+    const add = (L, label, kg, calc, v, beat) => rows.push({ step: L.step, beat: beat || L.beat, label, eur: 0, payer: null, kg, calc, v });
+    const land = (L, mode, km, t, label) => { const f = fac[mode] || fac.truck; if (!km) return; add(L, label, km * t * f.kg, fill(CL.tkm, { name: f.short || mode, km: fmt(km), t: n1(t), f: nf(f.kg) }), f.v); };
+    (F.lines || []).forEach(L => {
+      if (L.when && !ok({ when: L.when })) return;
+      const mode = S.choices.mode || 'truck', on = S.choices.onMode || 'truck';
+      if (L.calc === 'empty') land(L, 'truck', RT[L.km] || 0, tareT, lab(L.label));
+      else if (L.calc === 'hub') { const f = reefer && fac.stuffingCold ? fac.stuffingCold : fac.stuffing; add(L, lab(L.label), cargoT * f.kg, fill(CL.hub, { t: n1(cargoT), f: nf(f.kg) }), f.v); }
+      else if (L.calc === 'first') { if (mode !== 'truck') land(L, 'truck', (RT.firstKm || {})[mode] || 0, grossT, lab(L.label, { mode: modeName('mode') })); }
+      else if (L.calc === 'pre') land(L, mode, (RT.preKmBy || {})[mode] || RT.preKm || 0, grossT, lab(L.label, { mode: modeName('mode') }));
+      else if (L.calc === 'on') land(L, on, (RT.onKmBy || {})[on] || RT.onKm || 0, grossT, lab(L.label, { mode: modeName('onMode') }));
+      else if (L.calc === 'last') { if (on !== 'truck') land(L, 'truck', (RT.lastKm || {})[on] || 0, grossT, lab(L.label, { mode: modeName('onMode') })); }
+      else if (L.calc === 'terminal') add(L, lab(L.label, { hub: r.hub || '' }), fac.terminal.kg, fill(CL.terminal, { f: nf(fac.terminal.kg) }), fac.terminal.v);
+      else if (L.calc === 'plug') { const d = (RT.plug || {})[L.step], f = fac.reeferDay; if (reefer && d) add(L, lab('plug', { place: L.place, days: n1(d) }), d * f.kg, fill(CL.plug, { days: n1(d), f: nf(f.kg) }), f.v); }
+      else if (L.calc === 'sea') (RT.sea || []).forEach(leg => {
+        const f = reefer && leg.kind === 'ship' ? fac.shipReefer : fac[leg.kind], k = reefer && leg.kind !== 'ship' ? f.kg * (fac.feeder.reeferX || 1) : f.kg;
+        (leg.split || [{ beat: 'arrive', share: 1, label: '' }]).forEach(p => add(L, `${p.label || ''}${p.label ? ' — ' : ''}${leg.label}`, leg.km * p.share * teu * k,
+          fill(CL.teukm, { name: f.short || leg.kind, km: fmt(leg.km * p.share), teu, f: nf(k) }), [f.v, 'v88'].filter((v, i, a) => a.indexOf(v) === i), p.beat));
+      });
+    });
     return rows;
   }
-  const reached = step => S && S.completed.includes(step);
-  function meterTotals() { const rows = footprint().filter(x => reached(x.step)); return { eur: rows.reduce((a, x) => a + x.eur, 0), kg: rows.reduce((a, x) => a + x.kg, 0) }; }
-  const fmtT = kg => (kg / 1000).toLocaleString('en-GB', { maximumFractionDigits: kg < 10000 ? 1 : 0, minimumFractionDigits: kg < 10000 ? 1 : 0 });
-  function renderMeter(bump) {
+  // A line counts once its beat has been played (S.mGi[step] = highest beat index played) or its step is validated.
+  // Lines without a beat, or whose beat is hidden at this level, count at departure (998), like the costs.
+  function lineGi(x) {
+    if (!x.beat || x.beat === 'depart') return 998;
+    const i = stepDef(x.step).beats.findIndex(b => b.id === x.beat && ok(b));
+    return i < 0 ? 998 : i;
+  }
+  const counted = x => !!S && (S.completed.includes(x.step) || lineGi(x) <= ((S.mGi || {})[x.step] != null ? S.mGi[x.step] : -1));
+  function meterTotals() { const rows = footprint().filter(counted); return { eur: rows.reduce((a, x) => a + x.eur, 0), kg: rows.reduce((a, x) => a + x.kg, 0) }; }
+  // kg under 1,000 kg ("CO₂ ≈ 840 kg"), then tonnes with one decimal ("CO₂ ≈ 1.7 t")
+  const fmtCO2 = kg => kg < 999.5 ? `${fmt(kg)} kg` : `${(kg / 1000).toLocaleString('en-GB', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} t`;
+  const fmtDelta = kg => kg < 0.5 ? '<1 kg' : fmtCO2(kg);
+  // Called when a beat is played (sceneTo) or the step is left (depart): the meter moves with the movement.
+  function meterAt(stepId, gi) {
+    if (!S || !C.footprint) return;
+    S.mGi = S.mGi || {};
+    const prev = S.mGi[stepId] != null ? S.mGi[stepId] : -1; if (gi <= prev) return;
+    const before = meterTotals().kg; S.mGi[stepId] = gi; save();
+    const d = meterTotals().kg - before; if (d > 0.001) renderMeter(d);
+  }
+  function renderMeter(delta) {
     const b = $('#bMeter'); if (!b || !S || !C.footprint) return;
-    const T = meterTotals(), cu = C.footprint.currency;
-    b.innerHTML = `<span class="pl ${bump ? 'bump' : ''}">${cu} ≈ ${fmt(T.eur).replace(/,/g, ' ')}</span><span class="pl ${bump ? 'bump' : ''}">CO₂ ≈ ${fmtT(T.kg)} t</span><span class="sr"> — indicative cost and CO2 so far; details</span>`;
+    const T = meterTotals(), cu = C.footprint.currency, bump = !!delta, U = C.footprint.ui || {};
+    b.innerHTML = `<span class="pl ${bump ? 'bump' : ''}">${cu} ≈ ${fmt(T.eur).replace(/,/g, ' ')}</span><span class="pl ${bump ? 'bump' : ''}">CO₂ ≈ ${fmtCO2(T.kg)}</span><span class="sr"> — indicative cost and CO2 so far; details</span>
+      ${typeof delta === 'number' ? `<span class="dco2" aria-hidden="true">${esc((U.delta || '+{kg}').replace('{kg}', fmtDelta(delta)))}</span>` : ''}`;
     b.title = plain(C.footprint.tip);
   }
   function openMeter(opener) {
-    const F = C.footprint, rows = footprint(), cu = F.currency, all = rows.reduce((a, x) => a + x.eur, 0), kgAll = rows.reduce((a, x) => a + x.kg, 0);
+    const F = C.footprint, U = F.ui || {}, rows = footprint(), cu = F.currency, all = rows.reduce((a, x) => a + x.eur, 0), kgAll = rows.reduce((a, x) => a + x.kg, 0);
     const sel = rows.filter(x => x.payer === 'seller').reduce((a, x) => a + x.eur, 0), buy = all - sel, T = meterTotals();
+    const chips = v => [].concat(v || []).map(id => rich('[TO VERIFY:' + id + ']')).join(' ');
+    const fillU = (t, m) => String(t || '').replace(/\{(\w+)\}/g, (a, k) => (m[k] != null ? m[k] : a));
+    let cum = 0, tb = '';
+    C.steps.forEach(s => {
+      const rs = rows.filter(x => x.step === s.id), kg = rs.reduce((a, x) => a + x.kg, 0); cum += kg;
+      const z = (F.zero || {})[s.id], done = S.completed.includes(s.id);
+      tb += `<tr class="stp ${done || rs.some(counted) ? '' : 'later'}" data-step="${s.id}" data-kg="${kg.toFixed(3)}"><td>${s.id}</td><td>${esc(fillU(U.stepRow || 'Step {n} · {title}', { n: s.id, title: plain(s.short || s.title) }))}${done ? '' : ` <small>(${esc(U.upcoming || 'upcoming')})</small>`}</td>
+        <td class="n"></td><td></td><td class="n">${esc((U.stepKg || '+{kg}').replace('{kg}', fmtCO2(kg)))}<br><small>${esc((U.cumKg || '{kg}').replace('{kg}', fmtCO2(cum)))}</small></td></tr>`;
+      if (!kg && z) tb += `<tr class="zero"><td></td><td colspan="4"><strong>${esc(plain(z.title))}</strong> — ${rich(z.text)}</td></tr>`;
+      rs.forEach(x => { tb += `<tr class="${counted(x) ? '' : 'later'}"><td></td><td>${rich(x.label)} ${chips(x.v)}${x.calc ? `<span class="calc">${esc(x.calc)}</span>` : ''}</td>
+        <td class="n">${x.eur ? fmt(x.eur) : '—'}</td><td>${x.payer ? `<span class="payer ${x.payer}">${x.payer === 'seller' ? 'Seller' : 'Buyer'}</span>` : ''}</td><td class="n">${x.kg ? fmt(x.kg) : '—'}</td></tr>`; });
+    });
     const body = `<p class="fp-intro" style="margin-top:0">${rich(F.intro)}</p>
-      <div class="scores"><div>So far<strong>${cu} ≈ ${fmt(T.eur)}</strong>CO₂e ≈ ${fmtT(T.kg)} t</div><div>Whole journey<strong>${cu} ≈ ${fmt(all)}</strong>CO₂e ≈ ${fmtT(kgAll)} t</div>
+      <div class="scores"><div>So far<strong>${cu} ≈ ${fmt(T.eur)}</strong>CO₂e ≈ ${fmtCO2(T.kg)}</div><div>Whole journey<strong>${cu} ≈ ${fmt(all)}</strong>CO₂e ≈ ${fmtCO2(kgAll)}</div>
         <div>Under ${esc(cur().incoterm)}<strong style="font-size:1rem"><span class="payer seller">Seller</span> ${cu} ${fmt(sel)} · <span class="payer buyer">Buyer</span> ${cu} ${fmt(buy)}</strong></div></div>
       <div class="split" role="img" aria-label="Seller pays about ${fmt(sel)}, buyer about ${fmt(buy)}"><span style="width:${all ? sel / all * 100 : 0}%;background:var(--c-seller)"></span><span style="width:${all ? buy / all * 100 : 0}%;background:repeating-linear-gradient(45deg,var(--c-buyer) 0 6px,#8A66B5 6px 12px)"></span></div>
-      <div style="overflow:auto"><table class="fp"><caption class="sr">Indicative cost and CO2 by step</caption>
-        <thead><tr><th>Step</th><th>Item</th><th class="n">${cu} ≈</th><th>Paid by</th><th class="n">CO₂e kg</th></tr></thead><tbody>
-        ${rows.sort((a, b) => a.step - b.step).map(x => `<tr class="${reached(x.step) ? '' : 'later'}"><td>${x.step}</td><td>${rich(x.label)} ${x.v ? rich('[TO VERIFY:' + x.v + ']') : ''}${reached(x.step) ? '' : ' <small>(upcoming)</small>'}</td>
-          <td class="n">${x.eur ? fmt(x.eur) : '—'}</td><td>${x.payer ? `<span class="payer ${x.payer}">${x.payer === 'seller' ? 'Seller' : 'Buyer'}</span>` : ''}</td><td class="n">${x.kg ? fmt(x.kg) : '—'}</td></tr>`).join('')}
-        </tbody><tfoot><tr><td></td><td>Total (whole journey)</td><td class="n">${fmt(all)}</td><td></td><td class="n">${fmt(kgAll)}</td></tr></tfoot></table></div>
+      <div style="overflow:auto"><table class="fp" id="fpTable"><caption class="sr">Indicative cost and CO2 by step, with the calculation of each line</caption>
+        <thead><tr><th>Step</th><th>Item · calculation</th><th class="n">${cu} ≈</th><th>Paid by</th><th class="n">CO₂e kg</th></tr></thead><tbody>${tb}</tbody>
+        <tfoot><tr><td></td><td>Total (whole journey)</td><td class="n">${fmt(all)}</td><td></td><td class="n" data-kg="${kgAll.toFixed(3)}">${fmt(kgAll)}</td></tr></tfoot></table></div>
       <p style="font-size:.82rem;color:var(--c-muted)">${rich(F.note)}</p>`;
     openSheet(plain(F.title), body, { kind: plain(F.kicker), opener, wide: true });
   }
@@ -1550,7 +1666,7 @@ const CONFIG = {
     const rec = Z && Z.done ? recordResults() : null;
     $('#summary').innerHTML = `<div class="wrap">
       <div class="brandbar"><span class="logo" aria-hidden="true">${esc(CONFIG.logoText)}</span><strong>${esc(CONFIG.companyName)}</strong></div>
-      <h1 id="sumTitle">Your journey summary</h1>
+      <div style="display:flex;align-items:center;gap:14px"><div aria-hidden="true">${avatar(84, 'happy')}</div><h1 id="sumTitle">Your journey summary</h1></div>
       <p style="color:var(--c-muted)">Level played: <strong>${esc(lvl.name)}</strong> · ${esc(container().name)} · ${esc(route().name)} · Incoterm ${esc(cur().incoterm)} · Steps completed: ${S.completed.length}/11</p>
       <div class="scores">
         <div>First-try answers<strong>${pct}%</strong>${okN} of ${ids.length} steps</div>
@@ -1675,7 +1791,15 @@ const CONFIG = {
     <linearGradient id="gBox" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--c-box)" stop-opacity=".85"/><stop offset=".15" style="stop-color:var(--c-box)"/><stop offset="1" style="stop-color:var(--c-box-dark)"/></linearGradient>
     <linearGradient id="gReefer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBFCFD"/><stop offset="1" stop-color="#C9D3DB"/></linearGradient>
     <linearGradient id="gTank" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F4F7F9"/><stop offset=".45" stop-color="#C3CDD5"/><stop offset="1" stop-color="#8996A2"/></linearGradient>
-    <pattern id="corr" width="14" height="10" patternUnits="userSpaceOnUse"><rect width="5" height="10" fill="#000" opacity=".12"/><rect x="5" width="2" height="10" fill="#fff" opacity=".1"/></pattern>
+    <!-- v1.0: trapezoidal corrugation (pitch ≈ 0.28 m at the 40' = 470 px scale), lit from the top-left -->
+    <pattern id="corr" width="11" height="10" patternUnits="userSpaceOnUse"><rect width="11" height="10" fill="#000" opacity=".05"/><rect x="0" width="1.6" height="10" fill="#fff" opacity=".28"/><rect x="1.6" width="3.6" height="10" fill="#fff" opacity=".07"/><rect x="5.2" width="1.6" height="10" fill="#000" opacity=".26"/><rect x="6.8" width="4.2" height="10" fill="#000" opacity=".1"/></pattern>
+    <pattern id="grime" width="97" height="61" patternUnits="userSpaceOnUse"><g fill="#5A2A0C"><ellipse cx="14" cy="9" rx="3" ry="1.4" opacity=".16"/><ellipse cx="61" cy="33" rx="5" ry="1.8" opacity=".12"/><ellipse cx="83" cy="12" rx="1.6" ry="2.6" opacity=".14"/><ellipse cx="33" cy="49" rx="4" ry="1.3" opacity=".12"/><circle cx="47" cy="20" r="1.2" opacity=".2"/><circle cx="90" cy="52" r="1.4" opacity=".18"/></g><g fill="#fff"><rect x="22" y="27" width="9" height=".8" opacity=".12"/><rect x="70" y="44" width="6" height=".8" opacity=".1"/></g></pattern>
+    <linearGradient id="gDirt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3B2414" stop-opacity="0"/><stop offset="1" stop-color="#3B2414" stop-opacity=".28"/></linearGradient>
+    <clipPath id="eyeClip" clipPathUnits="objectBoundingBox"><ellipse cx=".5" cy=".5" rx=".5" ry=".5"/></clipPath>
+    <radialGradient id="gIris" cx=".42" cy=".38" r=".62"><stop offset="0" stop-color="#8A6A45"/><stop offset=".55" stop-color="#5A3D24"/><stop offset="1" stop-color="#24170D"/></radialGradient>
+    <radialGradient id="gSclera" cx=".5" cy=".42" r=".62"><stop offset=".55" stop-color="#FBFAF6"/><stop offset="1" stop-color="#D7D1C6"/></radialGradient>
+    <linearGradient id="bobPave" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C3CACF"/><stop offset="1" stop-color="#97A1A9"/></linearGradient>
+    <linearGradient id="gCast" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B4A22"/><stop offset="1" stop-color="#3E2310"/></linearGradient>
     <pattern id="ribs" width="18" height="10" patternUnits="userSpaceOnUse"><rect width="2" height="10" fill="#7C8B97" opacity=".25"/></pattern>
     <linearGradient id="gWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EEF2F5"/><stop offset="1" stop-color="#C7D1D9"/></linearGradient>
     <linearGradient id="gRoof" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8FA2B2"/><stop offset="1" stop-color="#6E8394"/></linearGradient>
@@ -1708,16 +1832,29 @@ const CONFIG = {
     list.forEach(([x, y, w]) => { o += `<rect x="${x}" y="${y}" width="${w}" height="${GY - y}" fill="#A9C1D3"/>`; for (let wy = y + 10; wy < GY - 8; wy += 16) o += `<rect x="${x + 8}" y="${wy}" width="${w - 16}" height="4" fill="#C6D7E3"/>`; });
     return `<g opacity=".75">${o}</g>`;
   }
-  function faceSVG(cx, cy, k) {
-    k = k || 1;
-    return `<g transform="translate(${cx} ${cy}) scale(${k})"><g class="face">
-      <ellipse class="eye" cx="-23" cy="0" rx="13" ry="15" fill="#fff" stroke="#1B2631" stroke-width="2"/><ellipse class="eye" cx="23" cy="0" rx="13" ry="15" fill="#fff" stroke="#1B2631" stroke-width="2"/>
-      <circle cx="-19" cy="3" r="6" fill="#1B2631"/><circle cx="27" cy="3" r="6" fill="#1B2631"/><circle cx="-17" cy="0" r="2" fill="#fff"/><circle cx="29" cy="0" r="2" fill="#fff"/>
-      <path class="brow" d="M-37 -22 q12 -10 26 -4" stroke="#1B2631" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path class="m-idle" d="M-15 34 q15 12 30 0" stroke="#1B2631" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <path class="m-happy" d="M-19 30 q19 26 38 0 z" fill="#1B2631"/>
-      <path class="m-puzzled" d="M-15 38 q8 -7 15 0 t15 0" stroke="#1B2631" stroke-width="4" fill="none" stroke-linecap="round"/>
-      <ellipse cx="-41" cy="26" rx="8" ry="5" fill="#FF8B7A" opacity=".55"/><ellipse cx="41" cy="26" rx="8" ry="5" fill="#FF8B7A" opacity=".55"/></g></g>`;
+  /* v1.0 — Bob's face (retour 2), shared by the scenes, the intro, the narration avatar and the summary.
+     One group per eye — sclera, iris, pupil, glints — clipped to the eye shape (#eyeClip, objectBoundingBox, one copy in #svgDefs),
+     with a lid in the container's colour that drops over the whole eye to blink. Pupils centred, same gaze on both sides;
+     brows symmetric (right = mirror of left), one shape per mood (n = neutral, h = happy, p = puzzled); cheeks discreet and low. */
+  const BROWS = { n: 'M-33 -20 Q-23 -26 -11 -22', h: 'M-33 -24 Q-23 -32 -11 -27', p: 'M-33 -19 Q-23 -22 -11 -29' };
+  function faceSVG(cx, cy, k, lid) {
+    k = k || 1; lid = lid || 'var(--c-box)';
+    const eye = side => { const x = side * 22;
+      return `<g class="eye ${side < 0 ? 'eye-l' : 'eye-r'}"><g clip-path="url(#eyeClip)">
+        <ellipse cx="${x}" cy="0" rx="12" ry="13.5" fill="url(#gSclera)"/>
+        <circle cx="${x}" cy="1" r="7.4" fill="url(#gIris)"/><circle cx="${x}" cy="1" r="7.4" fill="none" stroke="#1A120B" stroke-width="1" opacity=".55"/>
+        <circle cx="${x}" cy="1" r="3.4" fill="#0B0F12"/><circle cx="${x - 2.6}" cy="-2.2" r="1.9" fill="#fff" opacity=".95"/><circle cx="${x + 2.3}" cy="3.4" r=".9" fill="#fff" opacity=".5"/>
+        <path d="M${x - 12} -13.5 h24 v4 Q${x} -15 ${x - 12} -9.5 z" fill="#000" opacity=".12"/>
+        <g class="lid"><rect x="${x - 12}" y="-13.5" width="24" height="27" fill="${lid}"/><rect x="${x - 12}" y="-13.5" width="24" height="27" fill="#000" opacity=".08"/><rect x="${x - 12}" y="11.4" width="24" height="2.1" fill="#1B2631" opacity=".8"/></g></g>
+        <ellipse cx="${x}" cy="0" rx="12" ry="13.5" fill="none" stroke="#1B2631" stroke-width="1.6"/>
+        <path d="M${x - 11} -12.5 Q${x} -20 ${x + 11} -12.5" fill="none" stroke="#1B2631" stroke-width="1" opacity=".3"/></g>`; };
+    const brow = cls => `<g class="br br-${cls}"><path d="${BROWS[cls]}"/><path d="${BROWS[cls]}" transform="scale(-1 1)"/></g>`;
+    return `<g transform="translate(${cx} ${cy}) scale(${k})"><g class="face bface">
+      ${eye(-1)}${eye(1)}${brow('n')}${brow('h')}${brow('p')}
+      <path class="m m-idle" d="M-12 29 Q0 36.5 12 29" fill="none" stroke="#2B1C12" stroke-width="3" stroke-linecap="round"/>
+      <g class="m m-happy"><path d="M-15 27 Q0 45 15 27 Q0 31.5 -15 27 Z" fill="#3B1D14"/><path d="M-8 36.6 Q0 41.2 8 36.6 Q0 34 -8 36.6 Z" fill="#B8544A"/><path d="M-13 27.6 Q0 31 13 27.6" fill="none" stroke="#F4EFE6" stroke-width="1.8"/></g>
+      <path class="m m-puzzled" d="M-11 33 Q-5.5 28.5 0 32 T11 30.5" fill="none" stroke="#2B1C12" stroke-width="3" stroke-linecap="round"/>
+      <g opacity=".18" fill="#C8492F"><ellipse cx="-37" cy="23" rx="6.5" ry="3.6"/><ellipse cx="37" cy="23" rx="6.5" ry="3.6"/></g></g></g>`;
   }
   const boxDims = c => ({ w: c.len === 20 ? 236 : 470, h: c.hc ? 152 : 136 });
   function machine(x, y, w, h) {   // generic heavy machine (out-of-gauge cargo)
@@ -1730,7 +1867,8 @@ const CONFIG = {
   function boxSVG(c, o) {
     o = o || {};
     const { w, h } = boxDims(c), f = c.family, t = c.id, small = c.len === 20;
-    const corners = [[0, 0], [w - 10, 0], [0, h - 10], [w - 10, h - 10]].map(([x, y]) => `<rect x="${x}" y="${y}" width="10" height="10" fill="${f === 'reefer' ? '#7C8B97' : 'var(--c-box-dark)'}"/>`).join('');
+    // v1.0: ISO corner castings with their oval apertures (side face)
+    const corners = [[0, 0], [w - 10, 0], [0, h - 10], [w - 10, h - 10]].map(([x, y]) => `<rect x="${x}" y="${y}" width="10" height="10" rx="1" fill="${f === 'reefer' ? '#7C8B97' : 'url(#gCast)'}"/><ellipse cx="${x + 5}" cy="${y + 5}" rx="2.9" ry="1.7" fill="#15181B"/>`).join('');
     const num = (fill) => `<text x="${small ? w / 2 - 10 : w / 2 - 30}" y="30" text-anchor="middle" font-size="${small ? 14 : 20}" font-weight="800" fill="${fill}" opacity=".92" letter-spacing="${small ? 1 : 2}">${esc(CONTAINER_NO)}</text>`;
     const plate = o.plate === false ? '' : `<g><rect x="10" y="${h - 54}" width="${small ? 112 : 126}" height="44" rx="3" fill="#fff" opacity=".92"/>
       <text x="16" y="${h - 40}" font-size="10" fill="#1B2631">MAX GROSS ${fmt(c.mgm)} KG</text><text x="16" y="${h - 27}" font-size="10" fill="#1B2631">TARE ${fmt(c.tare)} KG</text><text x="16" y="${h - 14}" font-size="10" fill="#1B2631">${esc(c.iso)} · ${esc(c.short)}</text></g>`;
@@ -1752,7 +1890,14 @@ const CONFIG = {
     } else {
       g += `<rect x="0" y="0" width="${w}" height="${h}" rx="3" fill="#2A3036"/>${o.inside || ''}`;
       const wallFill = f === 'reefer' ? 'url(#gReefer)' : 'url(#gBox)', pat = f === 'reefer' ? 'url(#ribs)' : 'url(#corr)';
-      const wall = attr => `<g class="wall" ${attr || ''}><rect x="0" y="0" width="${w}" height="${h}" rx="3" fill="${wallFill}" stroke="${f === 'reefer' ? '#8996A2' : 'var(--c-box-dark)'}" stroke-width="2"/><rect x="0" y="0" width="${w}" height="${h}" fill="${pat}"/></g>`;
+      // v1.0 (retour 2/6): corrugated steel with top/bottom rails, corner posts, light grime and dirt towards the bottom
+      const rail = f === 'reefer' ? '#A9B5BF' : 'var(--c-box-dark)';
+      const wall = attr => `<g class="wall" ${attr || ''}><rect x="0" y="0" width="${w}" height="${h}" rx="2" fill="${wallFill}"/><rect x="0" y="0" width="${w}" height="${h}" fill="${pat}"/>
+        <rect x="0" y="0" width="${w}" height="${h}" fill="url(#grime)" opacity="${f === 'reefer' ? .35 : 1}"/><rect x="0" y="${h * .5}" width="${w}" height="${h * .5}" fill="url(#gDirt)" opacity="${f === 'reefer' ? .5 : 1}"/>
+        <rect x="0" y="0" width="${w}" height="7" fill="${rail}" opacity=".75"/><rect x="0" y="7" width="${w}" height="1.4" fill="#000" opacity=".22"/>
+        <rect x="0" y="${h - 9}" width="${w}" height="9" fill="${rail}" opacity=".8"/><rect x="0" y="${h - 10.4}" width="${w}" height="1.4" fill="#fff" opacity=".16"/>
+        <rect x="0" y="0" width="9" height="${h}" fill="${rail}" opacity=".7"/><rect x="${w - 9}" y="0" width="9" height="${h}" fill="${rail}" opacity=".7"/>
+        <rect x="0" y="0" width="${w}" height="${h}" rx="2" fill="none" stroke="${f === 'reefer' ? '#8996A2' : 'var(--c-box-dark)'}" stroke-width="1.5"/></g>`;
       g += wall(o.wallAttr) + (o.wall2Attr ? wall(o.wall2Attr) : '');
       g += num(f === 'reefer' ? '#33424F' : '#fff') + plate + corners;
       if (f === 'reefer') g += `<g><rect x="${w - 62}" y="4" width="58" height="${h - 8}" rx="4" fill="#5B6670" stroke="#3F4750"/>
@@ -1761,7 +1906,8 @@ const CONFIG = {
         <circle class="blink" cx="${w - 15}" cy="${h - 16}" r="3.5" fill="#7CF0A8"/></g>`;
       if (t === '40OT') g += `<path class="tarp" ${o.tarpAttr || ''} d="M0 2 Q${w / 4} -16 ${w / 2} -6 T${w} 2 L${w} 12 L0 12 Z" fill="#3E6E9E" stroke="#24486B" stroke-width="2"/>`;
     }
-    return `<g class="body">${g}${o.face === false ? '' : faceSVG(fx, fy, small ? .8 : 1)}</g>`;
+    const lid = f === 'reefer' ? '#E2E8ED' : f === 'tank' ? '#C3CDD5' : t === '40FR' ? '#DDA82A' : 'var(--c-box)';
+    return `<g class="body">${g}${o.face === false ? '' : faceSVG(fx, fy, small ? .8 : 1, lid)}</g>`;
   }
   // Small container for landscape and map scenes.
   function miniBox(c, x, y, w, h) {
@@ -1903,11 +2049,6 @@ const CONFIG = {
       <rect x="-3" y="-3" width="8" height="5" fill="#2B3238"/><rect x="${bw - 5}" y="-3" width="8" height="5" fill="#2B3238"/>
       <path d="M-3 -10 l-5 -6 h5 z M${bw + 3} -10 l5 -6 h-5 z" fill="#6B5410"/>`;
   }
-  function landscape(o) {  // shared by pre-carriage (step 3) and on-carriage (step 10)
-    return `<rect x="-700" y="296" width="2360" height="170" fill="url(#gSea)"/><g class="waves">${Array.from({ length: 30 }, (_, i) => `<path d="M${-200 + (i % 15) * 90} ${318 + Math.floor(i / 15) * 40} q10 -6 20 0 t20 0" stroke="#fff" stroke-width="1.5" fill="none" opacity=".5"/>`).join('')}</g>
-      <polygon points="-700,214 ${o.landTo || 250},214 ${(o.landTo || 250) + 28},300 -700,300" fill="url(#gGrass)"/>
-      <polygon points="${o.islandFrom || 796},262 1660,262 1660,470 ${(o.islandFrom || 796) + 20},470" fill="var(--c-sky-bottom)" opacity=".001"/>`;
-  }
   const SCENES = {};
 
   /* --- Step 1: depot & booking --- */
@@ -1987,38 +2128,101 @@ const CONFIG = {
   };
 
   /* --- Steps 3 & 10: inland transport landscapes --- */
+  /* v1.0 (retour 4) — inland legs drawn terminal to terminal (steps 3 and 10).
+     Truck: door → port terminal (step 3) or port terminal → door (step 10) in one go.
+     Rail / barge: the train or the barge runs the WHOLE way between two terminals. A gantry crane moves the box between the
+     truck and the wagon / barge; a truck does the first mile (step 3) or the last mile (step 10 — the usual case: few
+     consignees have their own rail siding [TO VERIFY:v99]). The box is ONE object whose moves are nested (chain), so it rides
+     the truck, is lifted, then rides the train or the barge without ever jumping between copies.
+     Depth (back → front): buildings (base y 214) · rail (y 250) · road (y 294) · river / sea (y > 318). */
   function inland(s, o) {
-    const c = container(), r = route(), key = o.key, modes = (key === 'mode' ? r.modes : r.onModes) || ['truck'];
-    const toRight = 'start:0,0;' + o.travel + ':640,0~3000';
-    const small = (x, y, w, h) => `<g>${miniBox(c, x, y, w, h)}</g>`;
-    const bridge = o.bridge ? `${Array.from({ length: 11 }, (_, i) => `<rect x="${290 + i * 49}" y="294" width="6" height="56" fill="#7D8891"/>`).join('')}<line x1="258" y1="283" x2="806" y2="283" stroke="#7D8891" stroke-width="2"/>` : '';
-    const left = o.leftTerminal ? `<g><rect x="0" y="200" width="250" height="14" fill="#55616D"/>${[0, 1, 2, 3].map(k => `<rect x="${16 + k * 52}" y="168" width="48" height="16" fill="${PALETTE[k]}" stroke="#55616D"/><rect x="${16 + k * 52}" y="184" width="48" height="16" fill="${PALETTE[k + 2]}" stroke="#55616D"/>`).join('')}
-        <text x="120" y="234" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(o.leftLabel)}</text></g>`
-      : `<g><polygon points="18,140 66,112 114,140" fill="url(#gRoof)"/><rect x="22" y="140" width="88" height="74" fill="url(#gWall)" stroke="#97A4AF"/><text x="66" y="182" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(o.leftLabel)}</text></g>`;
-    const right = o.rightTerminal
-      ? `<g><polygon points="796,262 1660,262 1660,470 816,470" fill="#C6CFD7"/><rect x="796" y="262" width="864" height="6" fill="#55616D"/>
-        ${[0, 1, 2, 3, 4, 5].map(i => `<rect x="${812 + (i % 3) * 46}" y="${244 - Math.floor(i / 3) * 18}" width="42" height="16" fill="${PALETTE[i % 5]}" stroke="#55616D"/>`).join('')}
-        ${[870, 924].map(x => `<rect x="${x}" y="150" width="6" height="112" fill="#3F4750"/><rect x="${x + 24}" y="150" width="6" height="112" fill="#3F4750"/><rect x="${x - 50}" y="146" width="96" height="8" fill="#3F4750"/>`).join('')}
-        <text x="878" y="292" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(o.rightLabel)}</text></g>`
-      : `<g><polygon points="796,262 1660,262 1660,470 816,470" fill="url(#gGrass)"/><polygon points="812,198 880,160 948,198" fill="url(#gRoof)"/><rect x="816" y="196" width="128" height="66" fill="url(#gWall)" stroke="#97A4AF"/>
-        <text x="880" y="234" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(o.rightLabel)}</text></g>`;
-    return `${svgOpen(s)}${landscape(o)}
-      <line x1="0" y1="246" x2="236" y2="246" stroke="#4B555E" stroke-width="2"/><line x1="0" y1="250" x2="236" y2="250" stroke="#4B555E" stroke-width="2"/>
-      <rect x="0" y="286" width="262" height="8" fill="#5B6670"/>${o.bridge ? '<rect x="258" y="286" width="548" height="8" fill="#5B6670"/>' : `<rect x="258" y="286" width="548" height="8" fill="#5B6670" opacity="0"/>`}
-      ${bridge}${left}${right}
-      ${!o.bridge ? `<rect x="250" y="286" width="560" height="8" fill="#5B6670"/><g>${Array.from({ length: 8 }, (_, i) => `<rect x="${280 + i * 70}" y="294" width="6" height="40" fill="#7D8891"/>`).join('')}</g>` : ''}
-      <g data-ch="${key}:truck"><g data-tx="${toRight}" class="rig">${small(34, 261, 62, 21)}<rect x="30" y="282" width="74" height="4" fill="#3F4750"/><rect x="28" y="281" width="3" height="5" fill="#C0392B"/>
+    const c = container(), r = route(), key = o.key, pre = key === 'mode', T = o.travel;
+    const bw = c.len === 20 ? 32 : 62, bh = 21, BOXY = { road: 261, rail: 211, water: 315 };
+    const box = (x, y) => `<g>${miniBox(c, x, y, bw, bh)}</g>`;
+    const generic = (x, y, i) => `<rect x="${x}" y="${y}" width="62" height="${bh}" fill="${PALETTE[i % PALETTE.length]}" stroke="#55616D"/><rect x="${x}" y="${y}" width="62" height="${bh}" fill="url(#corr)"/>`;
+    const truck = (tx, attrs) => `<g ${attrs || ''}><g transform="translate(${tx} 0)" class="rig"><rect x="30" y="282" width="74" height="4" fill="#3F4750"/><rect x="28" y="281" width="3" height="5" fill="#C0392B"/>
         <path d="M102 287 V268 q0 -4 4 -4 h11 q4 0 5 4 l3 11 v8 z" fill="url(#gCab)" stroke="#06293A" stroke-width="1"/><path d="M113 267 h5 q2 0 3 3 l2 8 h-10 z" fill="url(#gGlass)"/><rect x="103" y="258" width="2" height="8" fill="#55616D"/>
-        ${wheel(40, 288, 5)}${wheel(52, 288, 5)}${wheel(108, 288, 5)}${wheel(120, 288, 5)}</g></g>
-      <g data-ch="${key}:barge"><g data-tx="start:0,0;${o.travel}:600,0~3200"><g class="bob"><polygon points="20,332 180,332 170,350 30,350" fill="#4B5A66"/>${small(40, 316, 32, 16)}<rect x="74" y="316" width="32" height="16" fill="#8FA3B3" stroke="#55616D"/>${small(108, 316, 32, 16)}<rect x="150" y="314" width="18" height="18" fill="#E4EEF4" stroke="#55616D"/></g></g></g>
-      <g data-ch="${key}:rail"><g data-tx="start:-170,0;${o.travel}:20,0~3000" class="rig"><rect x="16" y="222" width="36" height="20" rx="3" fill="var(--c-primary)"/><rect x="56" y="238" width="58" height="4" fill="#3F4750"/>${small(58, 222, 54, 16)}<rect x="118" y="238" width="58" height="4" fill="#3F4750"/>${small(120, 222, 54, 16)}${wheel(26, 244, 4)}${wheel(66, 244, 4)}${wheel(104, 244, 4)}${wheel(128, 244, 4)}${wheel(166, 244, 4)}</g></g>
-      ${o.extra || ''}
+        ${wheel(40, 288, 5)}${wheel(52, 288, 5)}${wheel(108, 288, 5)}${wheel(120, 288, 5)}</g></g>`;
+    const wagon = (x, load) => `<rect x="${x}" y="232" width="66" height="4" fill="#3F4750"/><rect x="${x + 4}" y="236" width="58" height="3" fill="#2B3238"/>${load || ''}${wheel(x + 9, 245, 4)}${wheel(x + 19, 245, 4)}${wheel(x + 47, 245, 4)}${wheel(x + 57, 245, 4)}`;
+    const loco = x => `<path d="M${x} 236 V214 h34 l10 8 v14 z" fill="var(--c-primary)" stroke="#06293A"/><rect x="${x + 30}" y="217" width="8" height="7" fill="url(#gGlass)"/><rect x="${x + 4}" y="219" width="22" height="3" fill="#fff" opacity=".35"/>${wheel(x + 9, 245, 4)}${wheel(x + 21, 245, 4)}${wheel(x + 33, 245, 4)}`;
+    const barge = (x, ours) => `<polygon points="${x},336 ${x + 230},336 ${x + 218},356 ${x + 12},356" fill="#3C4A55"/><rect x="${x}" y="333" width="230" height="4" fill="#55616D"/>
+        <rect x="${x + 202}" y="306" width="22" height="27" fill="#E4EEF4" stroke="#55616D"/><rect x="${x + 206}" y="311" width="14" height="6" fill="url(#gGlass)"/>
+        ${generic(x + 8, BOXY.water, 3)}${ours ? '' : generic(x + 74, BOXY.water, 1)}${generic(x + 140, BOXY.water, 5)}`;
+    const gantry = (x1, x2, foot, label, ch) => `<g ${ch ? `data-ch="${ch}"` : ''}><rect x="${x1}" y="124" width="8" height="${foot - 124}" fill="#E8C33A" stroke="#6B5410"/><rect x="${x2}" y="124" width="8" height="${foot - 124}" fill="#E8C33A" stroke="#6B5410"/>
+        <rect x="${x1 - 10}" y="116" width="${x2 - x1 + 28}" height="12" fill="#E8C33A" stroke="#6B5410"/><rect x="${x1 - 4}" y="${foot - 8}" width="20" height="8" fill="#2B3238"/><rect x="${x2 - 4}" y="${foot - 8}" width="20" height="8" fill="#2B3238"/>
+        <text x="${(x1 + x2) / 2 + 4}" y="110" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(label)}</text></g>`;
+    // the box and the crane's spreader follow the same nested moves; the spreader goes back up once the box is set down
+    const moves = (list, inner) => chain(list.map(m => 'start:0,0;' + m), inner);
+    const spreader = (x, y) => `<rect x="${x - 2}" y="${y - 6}" width="${bw + 4}" height="5" fill="#2B3238"/><line x1="${x + bw / 2 - 6}" y1="${y - 6}" x2="${x + bw / 2 - 6}" y2="${y - 400}" stroke="#2B3238" stroke-width="1.5"/><line x1="${x + bw / 2 + 6}" y1="${y - 6}" x2="${x + bw / 2 + 6}" y2="${y - 400}" stroke="#2B3238" stroke-width="1.5"/>`;
+
+    // ---------- terrain ----------
+    const bridge = !!o.bridge, landR = bridge ? 300 : 1660;
+    let terr = `<rect x="-700" y="206" width="2360" height="270" fill="url(#gSea)"/>
+      <g class="waves" opacity=".5">${Array.from({ length: 14 }, (_, i) => `<rect x="${-200 + (i * 173) % 1500}" y="${330 + (i * 37) % 120}" width="${60 + (i * 29) % 90}" height="1.6" rx=".8" fill="#fff"/>`).join('')}</g>
+      <polygon points="-700,200 ${landR},200 ${landR + (bridge ? 26 : 0)},318 -700,318" fill="url(#gGrass)"/><rect x="-700" y="316" width="${landR + 700 + (bridge ? 26 : 0)}" height="5" fill="#8C8A6E"/>
+      <rect x="-700" y="286" width="${bridge ? 1000 : 2360}" height="9" fill="#5B6670"/><rect x="-700" y="289.5" width="${bridge ? 1000 : 2360}" height="1" fill="#E8E8E0" opacity=".6"/>
+      <g>${Array.from({ length: bridge ? 56 : 132 }, (_, i) => `<rect x="${-700 + i * 18}" y="249" width="3" height="4" fill="#6E5A44"/>`).join('')}</g>
+      <rect x="-700" y="249" width="${bridge ? 1000 : 2360}" height="1.6" fill="#4B555E"/><rect x="-700" y="252" width="${bridge ? 1000 : 2360}" height="1.6" fill="#4B555E"/>`;
+    if (bridge) terr += `<rect x="300" y="286" width="500" height="8" fill="#5B6670"/>${Array.from({ length: 8 }, (_, i) => `<rect x="${318 + i * 64}" y="294" width="6" height="${60 + i * 2}" fill="#7D8891"/>`).join('')}`;
+
+    // ---------- ends of the scene ----------
+    const warehouse = (x, label) => `<g><polygon points="${x - 6},150 ${x + 60},112 ${x + 126},150" fill="url(#gRoof)"/><rect x="${x}" y="150" width="120" height="64" fill="url(#gWall)" stroke="#97A4AF"/>
+        <rect x="${x + 70}" y="176" width="34" height="38" fill="#55616D"/><text x="${x + 60}" y="168" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(label)}</text></g>`;
+    const portLeft = label => `<g><rect x="-700" y="198" width="940" height="120" fill="#C6CFD7"/><rect x="-700" y="198" width="940" height="3" fill="#fff" opacity=".4"/>
+        ${[0, 1, 2, 3].map(k => `${generic(-40 + k * 66, 156, k)}${generic(-40 + k * 66, 177, k + 2)}`).join('')}
+        <text x="70" y="146" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(label)}</text></g>`;
+    const portRight = label => `<g><polygon points="${bridge ? 780 : 796},250 1660,250 1660,470 ${bridge ? 800 : 816},470" fill="#C6CFD7"/><rect x="${bridge ? 780 : 796}" y="250" width="864" height="5" fill="#55616D"/>
+        ${[0, 1, 2, 3, 4, 5].map(i => generic(830 + (i % 3) * 66, 228 - Math.floor(i / 3) * 21, i)).join('')}
+        ${[880, 1010].map(x => `<rect x="${x}" y="120" width="6" height="130" fill="#3F4750"/><rect x="${x + 30}" y="120" width="6" height="130" fill="#3F4750"/><rect x="${x - 60}" y="114" width="150" height="8" fill="#3F4750"/>`).join('')}
+        <text x="900" y="276" text-anchor="middle" font-size="11" font-weight="800" fill="#1B2631">${esc(label)}</text></g>`;
+
+    let ends, vehicles;
+    if (pre) {
+      // STEP 3 — shipper (left) → export terminal (right). Barge / rail: first mile by truck to a river / rail terminal (x 170–320).
+      const dxT = 180, dxB = 400, dxR = 520;
+      ends = warehouse(6, o.leftLabel) + portRight(o.rightLabel)
+        + gantry(170, 320, 318, plain(C.ui.riverTerminal || 'RIVER TERMINAL'), `${key}:barge`)
+        + gantry(170, 320, 300, plain(C.ui.railTerminal || 'RAIL TERMINAL'), `${key}:rail`);
+      vehicles = `
+        <g data-ch="${key}:truck">${truck(0, `data-tx="start:0,0;${T}:640,0~3000"`)}<g data-tx="start:0,0;${T}:640,0~3000">${box(34, BOXY.road)}</g></g>
+        <g data-ch="${key}:barge">
+          <g data-tx="start:0,0;${T}:${dxB},0@2600~2400"><g class="bob">${barge(140, true)}</g></g>
+          ${truck(0, `data-tx="start:0,0;${T}:${dxT},0~1100"`)}
+          ${moves([`${T}:${dxT},0~1100`, `${T}:0,-50@1150~500`, `${T}:0,104@1700~800`, `${T}:${dxB},0@2600~2400`], box(34, BOXY.road))}
+          ${moves([`${T}:${dxT},0~1100`, `${T}:0,-50@1150~500`, `${T}:0,104@1700~800`, `${T}:0,-170@2550~600`], `<g data-at="${T}" clip-path="url(#inlClip)">${spreader(34, BOXY.road)}</g>`)}</g>
+        <g data-ch="${key}:rail">
+          <g data-tx="start:0,0;${T}:${dxR},0@2400~2600">${wagon(190, '')}${loco(258)}</g>
+          ${truck(0, `data-tx="start:0,0;${T}:${dxT},0~1100"`)}
+          ${moves([`${T}:${dxT},0~1100`, `${T}:0,-60@1150~500`, `${T}:-22,10@1700~600`, `${T}:${dxR},0@2400~2600`], box(34, BOXY.road))}</g>
+        ${tag(250, 380, plain(C.ui.firstMile || 'FIRST MILE BY TRUCK'), `data-ch="${key}:barge|rail" data-at="${T}" data-until="${T}"`, '#0B4F6C')}`;
+    } else {
+      // STEP 10 — import terminal (left) → consignee (right). Rail / barge run to an inland terminal (x 520–690), then the last mile by truck.
+      const dxR = 540, dxB = 540, dxL = 180;
+      ends = portLeft(o.leftLabel) + warehouse(840, o.rightLabel)
+        + gantry(520, 690, 300, plain(C.ui.inlandRail || 'INLAND RAIL TERMINAL'), `${key}:rail`)
+        + gantry(520, 690, 318, plain(C.ui.inlandRiver || 'INLAND RIVER TERMINAL'), `${key}:barge`);
+      const lastTruck = truck(522, `data-tx="start:0,0;deliver:${dxL},0@1500~1300"`);
+      vehicles = `
+        <g data-ch="${key}:truck">${truck(20, `data-tx="start:0,0;${T}:690,0~3000"`)}<g data-tx="start:0,0;${T}:690,0~3000">${box(54, BOXY.road)}</g></g>
+        <g data-ch="${key}:rail">
+          <g data-tx="start:0,0;${T}:${dxR},0~3000">${wagon(-60, generic(-58, BOXY.rail, 2))}${wagon(10, '')}${loco(80)}</g>
+          ${lastTruck}
+          ${moves([`${T}:${dxR},0~3000`, 'deliver:0,-40~600', 'deliver:4,90@650~800', `deliver:${dxL},0@1500~1300`], box(12, BOXY.rail))}
+          ${moves([`${T}:${dxR},0~3000`, 'deliver:0,-40~600', 'deliver:4,90@650~800', 'deliver:0,-118@1500~600'], `<g data-at="deliver" clip-path="url(#inlClip)">${spreader(12, BOXY.rail)}</g>`)}</g>
+        <g data-ch="${key}:barge">
+          <g data-tx="start:0,0;${T}:${dxB},0~3000"><g class="bob">${barge(-60, true)}</g></g>
+          ${lastTruck}
+          ${moves([`${T}:${dxB},0~3000`, 'deliver:0,-100~700', 'deliver:0,46@750~700', `deliver:${dxL},0@1500~1300`], box(16, BOXY.water))}
+          ${moves([`${T}:${dxB},0~3000`, 'deliver:0,-100~700', 'deliver:0,46@750~700', 'deliver:0,-120@1500~600'], `<g data-at="deliver" clip-path="url(#inlClip)">${spreader(16, BOXY.water)}</g>`)}</g>
+        ${tag(700, 380, plain(C.ui.lastMile || 'LAST MILE BY TRUCK'), `data-ch="${key}:barge|rail" data-at="deliver"`, '#0B4F6C')}`;
+    }
+    return `${svgOpen(s)}<defs><clipPath id="inlClip"><rect x="-700" y="126" width="2400" height="400"/></clipPath></defs>${terr}${ends}${vehicles}${o.extra || ''}
       ${tag(o.tagX || 711, 228, o.tagText, `data-at="${o.tagAt}"`)}
     </svg>`;
   }
-  SCENES.precarriage = s => { const r = route(); return inland(s, { key: 'mode', travel: 'travel', bridge: !!r.bridge, leftLabel: plain(C.ui.shipper), rightTerminal: true, rightLabel: r.polTerminal, tagAt: 'approach', tagText: plain(C.ui.preAdvice),
-    extra: (r.modes || []).includes('barge') ? `<text x="420" y="410" font-size="11" font-weight="800" fill="#fff">${esc(plain(C.ui.bargeRoute))}</text>` : '' }); };
-  SCENES.oncarriage = s => { const r = route(); return inland(s, { key: 'onMode', travel: 'travel', bridge: false, leftTerminal: true, leftLabel: r.podTerminal, rightTerminal: false, rightLabel: plain(C.ui.consignee), tagAt: 'deliver', tagText: plain(C.ui.delivered), tagX: 830 }); };
+  SCENES.precarriage = s => { const r = route(); return inland(s, { key: 'mode', travel: 'travel', bridge: !!r.bridge, leftLabel: plain(C.ui.shipper), rightLabel: r.polTerminal, tagAt: 'approach', tagText: plain(C.ui.preAdvice),
+    extra: (r.modes || []).includes('barge') ? `<text x="420" y="420" font-size="11" font-weight="800" fill="#fff" data-ch="mode:barge">${esc(plain(C.ui.bargeRoute))}</text>` : '' }); };
+  SCENES.oncarriage = s => { const r = route(); return inland(s, { key: 'onMode', travel: 'travel', leftLabel: r.podTerminal, rightLabel: plain(C.ui.consignee), tagAt: 'deliver', tagText: plain(C.ui.delivered), tagX: 900 }); };
 
   /* --- Steps 4 & 9: the "paper journey" as 4 illustrated stations; the container walks from one to the next --- */
   const ICONS = {
@@ -2202,11 +2406,14 @@ const CONFIG = {
   };
 
   // Narrator avatar (also used in the menu).
-  function avatar(w) {
-    return `<svg viewBox="0 0 120 90" width="${w}" aria-hidden="true"><rect x="6" y="14" width="108" height="62" rx="6" fill="var(--c-box)" stroke="var(--c-box-dark)" stroke-width="3"/>
-      ${[22, 38, 54, 70, 86, 102].map(x => `<line x1="${x}" y1="18" x2="${x}" y2="72" stroke="#000" opacity=".12" stroke-width="4"/>`).join('')}
-      <ellipse cx="44" cy="40" rx="8" ry="9" fill="#fff"/><ellipse cx="76" cy="40" rx="8" ry="9" fill="#fff"/><circle cx="46" cy="42" r="4" fill="#1B2631"/><circle cx="78" cy="42" r="4" fill="#1B2631"/>
-      <path d="M46 56 q14 10 28 0" stroke="#1B2631" stroke-width="3.5" fill="none" stroke-linecap="round"/></svg>`;
+  // Narrator avatar (narration bubble, menu, summary) — v1.0: the realistic Bob (steel wall, castings, new face).
+  function avatar(w, mood) {
+    return `<svg viewBox="0 0 120 90" width="${w}" aria-hidden="true" class="${mood ? 'face-' + mood : ''}">
+      <rect x="4" y="16" width="112" height="62" rx="2" fill="url(#bobGrad)"/><rect x="4" y="16" width="112" height="62" fill="url(#corr)"/><rect x="4" y="16" width="112" height="62" fill="url(#gDirt)"/>
+      <rect x="4" y="16" width="112" height="5" fill="var(--c-box-dark)" opacity=".8"/><rect x="4" y="72" width="112" height="6" fill="var(--c-box-dark)" opacity=".85"/>
+      <rect x="4" y="16" width="6" height="62" fill="var(--c-box-dark)" opacity=".75"/><rect x="110" y="16" width="6" height="62" fill="var(--c-box-dark)" opacity=".75"/>
+      ${[[4, 16], [109, 16], [4, 71], [109, 71]].map(([x, y]) => `<rect x="${x}" y="${y}" width="7" height="7" rx="1" fill="url(#gCast)"/><ellipse cx="${x + 3.5}" cy="${y + 3.5}" rx="2" ry="1.2" fill="#15181B"/>`).join('')}
+      ${faceSVG(60, 44, .9)}</svg>`;
   }
 
   /* ---------- Start-up ---------- */
@@ -2226,7 +2433,7 @@ const CONFIG = {
   window.__cj = { state: () => S, C, renderIntro, goStep, go, openQuestion, startQuiz, renderSummary, renderMenu, consult,
     answerRight: () => { const s = step(); answer(R(s.question).options.find(o => o.correct).id); },
     consultAll: () => { essentials(step()).forEach(h => { const arr = S.consulted[S.step] || (S.consulted[S.step] = []); if (!arr.includes(h.id)) arr.push(h.id); }); save(); renderHs(); renderBar(); },
-    footprint: () => footprint(), closeXfer, resultItems: () => resultItems(), results: () => loadResults(),
+    footprint: () => footprint(), meter: () => meterTotals(), depart: () => depart(), openMeter: () => openMeter(), nudgeNow: () => nudgeNow(), closeXfer, resultItems: () => resultItems(), results: () => loadResults(),
     reset: () => { try { localStorage.removeItem(STORE); } catch (e) {} location.reload(); } };
 })();
 </script>

@@ -137,7 +137,14 @@
     "1": "Careful: the seller still pays the freight to {pod}. With the C rules, the risk passes first and the costs later.",
     "2": "C-rule trap: the risk has passed at origin, but the seller still pays the main carriage to {pod} — two different points, two different moments."
    }
-  }
+  },
+  "gateNudge": "Open the ★ items first ({n}/{t})",
+  "riverTerminal": "RIVER TERMINAL",
+  "railTerminal": "RAIL TERMINAL",
+  "inlandRail": "INLAND RAIL TERMINAL",
+  "inlandRiver": "INLAND RIVER TERMINAL",
+  "firstMile": "FIRST MILE BY TRUCK",
+  "lastMile": "LAST MILE BY TRUCK"
  },
  "levels": [
   {
@@ -2292,6 +2299,36 @@
    "id": "v93",
    "claim": "Exchange rate used for freight indices: ≈ 0.86 € per US$ (November 2026).",
    "source": "ECB euro reference rates"
+  },
+  {
+   "id": "v94",
+   "claim": "Maritime container terminal ≈ 10.7 kg CO₂e per container (ambient; ≈ 12.6 kg for mixed-temperature terminals), GLEC default from the GILA market study of 15 terminals. The value covers the whole terminal visit (gate, yard, quay crane) and is not split by activity, so it is counted once per terminal: origin (step 6), transshipment hub (step 7) and destination (step 8). A transshipped box counts twice in port throughput statistics; one value per terminal visit is used here (assumption).",
+   "source": "GLEC Framework v3.1 (2024), Table 3 'Logistics hubs emission intensity values' (Fraunhofer IML / GILA); terminal operator's own ISO 14083 data"
+  },
+  {
+   "id": "v95",
+   "claim": "Stuffing and unstuffing counted as a 'transshipment' logistics hub (ISO 14083 hub operation): ≈ 1.3 kg CO₂e per tonne handled (ambient) and ≈ 2.5 kg per tonne for mixed-temperature sites (used for reefer cargo). Small samples (99 and 8 sites).",
+   "source": "GLEC Framework v3.1, Table 3; Fraunhofer IML 'Average emission intensity values for logistics sites' (2024)"
+  },
+  {
+   "id": "v96",
+   "claim": "Empty box from the depot to the shipper: distance assumed equal to the pre-carriage distance (empty depots are usually near the port: ≈ 120 km Shanghai, ≈ 40 km Ho Chi Minh City, ≈ 150 km Ecuador). Counted as tare-only tonne-km with the truck factor, like the empty return (simplification: a vehicle-based calculation would give more).",
+   "source": "Depot location from the carrier's equipment control; haulier fuel data; GLEC Framework (empty running)"
+  },
+  {
+   "id": "v97",
+   "claim": "Reefer plug-in time on land, prorated by step (assumption): export terminal 2.5 days in the yard + 0.5 day until loading; transshipment hub ≈ 7 days (Singapore transshipment dwell ≈ 7–8 days in early 2026, EconDB data); import terminal 1 day after discharge + 2 days waiting for customs release. On-board energy is inside the reefer ship factor; genset fuel on road legs and refrigerant leaks are not counted.",
+   "source": "Terminal reefer monitoring data (plug-in / plug-out times); EconDB port dwell statistics; GLEC Framework (temperature control)"
+  },
+  {
+   "id": "v98",
+   "claim": "Inland legs by barge or rail run terminal to terminal: on-carriage ends at an inland terminal (e.g. Gennevilliers, Paris, served by barge and rail from Le Havre), then a truck does the last kilometres (≈ 20 km Paris region; ≈ 10 km in Belgium). Distances are estimates: Seine barge Le Havre → Paris region ≈ 350 km, rail ≈ 230 km, Antwerp → Belgian inland terminal ≈ 50 km. Pre-carriage by barge starts with a truck to a river terminal (≈ 15 km + barge ≈ 130 km near Shanghai; ≈ 10 km + barge ≈ 40 km near Ho Chi Minh City).",
+   "source": "Barge and rail operator schedules (HAROPA PORT inland terminals, Antwerp-Bruges barge network, Yangtze / Mekong delta feeders); route planners"
+  },
+  {
+   "id": "v99",
+   "claim": "Most containers carried inland by rail finish their trip by truck from an inland rail terminal; few consignees have a private rail siding.",
+   "source": "Rail operators and inland terminal operators; national intermodal statistics"
   }
  ],
  "quiz": {
@@ -2887,58 +2924,95 @@
   "date": "November 2026",
   "currency": "€",
   "tip": "Indicative cost and CO₂e of the journey so far — click for the details",
-  "intro": "The two counters add up, step by step, what your container's journey costs and emits. **Orders of magnitude only**: real prices depend on the contract, the date and the carrier.",
-  "note": "Indicative, November 2026. Freight from public spot indices (Drewry WCI, Xeneta) converted at ≈ 0.86 € per US$ [TO VERIFY:v93]; terminal handling and fees from published tariffs; inland legs are estimates. **Not included:** duties and VAT, cargo insurance, demurrage & detention, peak-season or emergency surcharges. The seller / buyer split follows the Incoterm's cost transfer point (export clearance: {exportBy}; import clearance: {importBy}). Under C rules, destination THC is often billed to the buyer unless the freight contract includes it. CO₂e = distance × GLEC default intensity factor (ISO 14083 / GLEC method); a 40' counts as 2 TEU; reefers use the reefer factor at sea plus plug-in energy on land.",
+  "intro": "The two counters add up, step by step, what your container's journey costs and emits. The CO₂ counter moves as soon as a truck, a crane, a ship or a forklift does the work, not only at the end of the step. **Orders of magnitude only**: real prices depend on the contract, the date and the carrier.",
+  "note": "Indicative, November 2026. Freight from public spot indices (Drewry WCI, Xeneta) converted at ≈ 0.86 € per US$ [TO VERIFY:v93]; terminal handling and fees from published tariffs; inland legs are estimates. **Not included:** duties and VAT, cargo insurance, demurrage & detention, peak-season or emergency surcharges. The seller / buyer split follows the Incoterm's cost transfer point (export clearance: {exportBy}; import clearance: {importBy}). Under C rules, destination THC is often billed to the buyer unless the freight contract includes it. **CO₂e** follows the GLEC Framework / ISO 14083 logic: transport legs = distance × default intensity factor (tonne-km on land, TEU-km at sea, a 40' counts as 2 TEU); hubs (stuffing, terminals, unstuffing) = GLEC hub default per tonne or per container; reefers add plug-in energy on land, prorated by days. Genset fuel on road legs and refrigerant leaks are not counted [TO VERIFY:v97].",
   "labels": {
    "pre": "Pre-carriage by {mode} (cargo + tare)",
    "on": "On-carriage by {mode} (cargo + tare)",
    "ret": "Empty return by truck (tare only)",
    "plugO": "Reefer plugged in at the export terminal",
-   "plugD": "Reefer plugged in at the import terminal"
+   "plugD": "Reefer plugged in at the import terminal",
+   "empty": "Empty box, depot → shipper by truck (tare only)",
+   "stuff": "Stuffing at the shipper: forklifts, dock and warehouse (ISO 14083 hub)",
+   "first": "Truck from the shipper to the {mode} terminal (first mile, cargo + tare)",
+   "termO": "Origin terminal: gate, yard and quay crane (one value per container)",
+   "hub": "Transshipment in {hub}: discharge, yard, reload (one value per container)",
+   "termD": "Destination terminal: quay crane, yard and gate-out (one value per container)",
+   "plug": "Reefer plugged in — {place} ({days} days)",
+   "last": "Truck from the inland {mode} terminal to the consignee (last mile, cargo + tare)",
+   "unstuff": "Unstuffing at the consignee: forklifts, dock and warehouse (ISO 14083 hub)"
   },
   "factors": {
    "ship": {
     "kg": 0.0664,
     "unit": "TEU-km",
     "label": "Container ship, deep-sea, dry",
-    "v": "v89"
+    "v": "v89",
+    "short": "ship"
    },
    "shipReefer": {
     "kg": 0.134,
     "unit": "TEU-km",
     "label": "Container ship, reefer",
-    "v": "v89"
+    "v": "v89",
+    "short": "reefer ship"
    },
    "feeder": {
     "kg": 0.128,
     "unit": "TEU-km",
     "label": "Feeder ship, dry",
     "reeferX": 2,
-    "v": "v90"
+    "v": "v90",
+    "short": "feeder"
    },
    "truck": {
     "kg": 0.073,
     "unit": "t-km",
     "label": "Articulated truck 34–40 t, container",
-    "v": "v91"
+    "v": "v91",
+    "short": "truck"
    },
    "barge": {
     "kg": 0.016,
     "unit": "t-km",
     "label": "Inland container barge",
-    "v": "v91"
+    "v": "v91",
+    "short": "barge"
    },
    "rail": {
     "kg": 0.011,
     "unit": "t-km",
     "label": "Electric rail, container",
-    "v": "v91"
+    "v": "v91",
+    "short": "rail"
    },
    "reeferDay": {
     "kg": 40,
     "unit": "day",
     "label": "Reefer plugged in on land",
-    "v": "v92"
+    "v": "v92",
+    "short": "plug-in"
+   },
+   "terminal": {
+    "kg": 10.7,
+    "unit": "container",
+    "label": "Maritime container terminal, whole visit (GLEC default, ambient)",
+    "short": "terminal",
+    "v": "v94"
+   },
+   "stuffing": {
+    "kg": 1.3,
+    "unit": "t",
+    "label": "Transshipment-type logistics hub, ambient (stuffing / unstuffing)",
+    "short": "hub",
+    "v": "v95"
+   },
+   "stuffingCold": {
+    "kg": 2.5,
+    "unit": "t",
+    "label": "Transshipment-type logistics hub, mixed temperature (reefer cargo)",
+    "short": "hub",
+    "v": "v95"
    }
   },
   "routes": {
@@ -2951,9 +3025,47 @@
      {
       "kind": "ship",
       "km": 19500,
-      "label": "Shanghai → Le Havre via Suez (≈ 19,500 km) [TO VERIFY:v88]"
+      "label": "Shanghai → Le Havre via Suez (≈ 19,500 km) [TO VERIFY:v88]",
+      "split": [
+       {
+        "beat": "canal",
+        "share": 0.7,
+        "label": "Shanghai → Suez Canal"
+       },
+       {
+        "beat": "ocean",
+        "share": 0.19,
+        "label": "Suez → Gibraltar"
+       },
+       {
+        "beat": "arrive",
+        "share": 0.11,
+        "label": "Gibraltar → Le Havre"
+       }
+      ]
      }
-    ]
+    ],
+    "depotKm": 120,
+    "firstKm": {
+     "barge": 15
+    },
+    "preKmBy": {
+     "barge": 130
+    },
+    "onKmBy": {
+     "rail": 230,
+     "barge": 350
+    },
+    "lastKm": {
+     "rail": 20,
+     "barge": 20
+    },
+    "plug": {
+     "5": 2.5,
+     "6": 0.5,
+     "8": 1,
+     "9": 2
+    }
    },
    "HCM-SIN-LEH": {
     "preKm": 40,
@@ -2964,14 +3076,60 @@
      {
       "kind": "feeder",
       "km": 1200,
-      "label": "Feeder Ho Chi Minh City → Singapore (≈ 1,200 km) [TO VERIFY:v88]"
+      "label": "Feeder Ho Chi Minh City → Singapore (≈ 1,200 km) [TO VERIFY:v88]",
+      "split": [
+       {
+        "beat": "hub",
+        "share": 1,
+        "label": "Cat Lai → Singapore"
+       }
+      ]
      },
      {
       "kind": "ship",
       "km": 15600,
-      "label": "Singapore → Le Havre via Suez (≈ 15,600 km) [TO VERIFY:v88]"
+      "label": "Singapore → Le Havre via Suez (≈ 15,600 km) [TO VERIFY:v88]",
+      "split": [
+       {
+        "beat": "canal",
+        "share": 0.62,
+        "label": "Singapore → Suez Canal"
+       },
+       {
+        "beat": "ocean",
+        "share": 0.24,
+        "label": "Suez → Gibraltar"
+       },
+       {
+        "beat": "arrive",
+        "share": 0.14,
+        "label": "Gibraltar → Le Havre"
+       }
+      ]
      }
-    ]
+    ],
+    "depotKm": 40,
+    "firstKm": {
+     "barge": 10
+    },
+    "preKmBy": {
+     "barge": 40
+    },
+    "onKmBy": {
+     "rail": 230,
+     "barge": 350
+    },
+    "lastKm": {
+     "rail": 20,
+     "barge": 20
+    },
+    "plug": {
+     "5": 2.5,
+     "6": 0.5,
+     "7": 7,
+     "8": 1,
+     "9": 2
+    }
    },
    "GYE-ANR": {
     "preKm": 150,
@@ -2982,9 +3140,43 @@
      {
       "kind": "ship",
       "km": 10500,
-      "label": "Posorja → Antwerp-Bruges via Panama (≈ 10,500 km) [TO VERIFY:v88]"
+      "label": "Posorja → Antwerp-Bruges via Panama (≈ 10,500 km) [TO VERIFY:v88]",
+      "split": [
+       {
+        "beat": "canal",
+        "share": 0.13,
+        "label": "Posorja → Panama Canal"
+       },
+       {
+        "beat": "ocean",
+        "share": 0.77,
+        "label": "Panama → English Channel"
+       },
+       {
+        "beat": "arrive",
+        "share": 0.1,
+        "label": "Channel → Antwerp-Bruges"
+       }
+      ]
      }
-    ]
+    ],
+    "depotKm": 150,
+    "firstKm": {},
+    "preKmBy": {},
+    "onKmBy": {
+     "rail": 50,
+     "barge": 50
+    },
+    "lastKm": {
+     "rail": 10,
+     "barge": 10
+    },
+    "plug": {
+     "5": 2.5,
+     "6": 0.5,
+     "8": 1,
+     "9": 2
+    }
    }
   },
   "costs": [
@@ -3106,6 +3298,144 @@
      "GYE-ANR": 450
     },
     "v": "v87"
+   }
+  ],
+  "calc": {
+   "tkm": "{name} {km} km × {t} t × {f} kg/t-km",
+   "teukm": "{name} {km} km × {teu} TEU × {f} kg/TEU-km",
+   "hub": "{t} t handled × {f} kg/t",
+   "terminal": "1 container × {f} kg/container",
+   "plug": "{days} days × {f} kg/day"
+  },
+  "ui": {
+   "stepRow": "Step {n} · {title}",
+   "stepKg": "+{kg} this step",
+   "cumKg": "{kg} so far",
+   "upcoming": "upcoming",
+   "delta": "+{kg} CO₂e"
+  },
+  "zero": {
+   "4": {
+    "title": "+0 kg — paperwork only",
+    "text": "Shipping instructions, B/L draft and export declaration are data and documents: the box does not move in this step, so no CO₂e is added. A customs scan or physical inspection would add moves — not in this scenario."
+   },
+   "5": {
+    "title": "+0 kg here — counted at step 6",
+    "text": "Gate-in and yard moves are part of the terminal's footprint. The GLEC default gives one value per container for the whole terminal visit (gate, yard and quay crane) and cannot be split, so it is counted once, at step 6. [TO VERIFY:v94]"
+   },
+   "9": {
+    "title": "+0 kg — paperwork only",
+    "text": "Customs clearance, B/L surrender and the release order are paperwork: no CO₂e is added. A customs scan or physical inspection would add moves — not in this scenario. A reefer stays plugged in while it waits: that energy is counted."
+   }
+  },
+  "lines": [
+   {
+    "step": 1,
+    "beat": "depart",
+    "calc": "empty",
+    "km": "depotKm",
+    "label": "empty"
+   },
+   {
+    "step": 2,
+    "beat": "stuff",
+    "calc": "hub",
+    "label": "stuff"
+   },
+   {
+    "step": 3,
+    "beat": "travel",
+    "calc": "first",
+    "label": "first"
+   },
+   {
+    "step": 3,
+    "beat": "travel",
+    "calc": "pre",
+    "label": "pre"
+   },
+   {
+    "step": 5,
+    "beat": "yard",
+    "calc": "plug",
+    "place": "export terminal yard"
+   },
+   {
+    "step": 6,
+    "beat": "load",
+    "calc": "terminal",
+    "label": "termO"
+   },
+   {
+    "step": 6,
+    "beat": "load",
+    "calc": "plug",
+    "place": "export terminal, until loading"
+   },
+   {
+    "step": 7,
+    "calc": "sea"
+   },
+   {
+    "step": 7,
+    "beat": "hub",
+    "calc": "terminal",
+    "label": "hub",
+    "when": {
+     "transship": true
+    }
+   },
+   {
+    "step": 7,
+    "beat": "hub",
+    "calc": "plug",
+    "place": "hub yard, between the two ships",
+    "when": {
+     "transship": true
+    }
+   },
+   {
+    "step": 8,
+    "beat": "discharge",
+    "calc": "terminal",
+    "label": "termD"
+   },
+   {
+    "step": 8,
+    "beat": "yard",
+    "calc": "plug",
+    "place": "import terminal yard"
+   },
+   {
+    "step": 9,
+    "beat": "declare",
+    "calc": "plug",
+    "place": "import terminal, waiting for customs release"
+   },
+   {
+    "step": 10,
+    "beat": "travel",
+    "calc": "on",
+    "label": "on"
+   },
+   {
+    "step": 10,
+    "beat": "deliver",
+    "calc": "last",
+    "label": "last"
+   },
+   {
+    "step": 11,
+    "beat": "unstuff",
+    "calc": "hub",
+    "label": "unstuff"
+   },
+   {
+    "step": 11,
+    "beat": "return",
+    "calc": "empty",
+    "km": "returnKm",
+    "label": "ret"
    }
   ]
  }

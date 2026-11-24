@@ -2,9 +2,9 @@
 
 Read this file first. It replaces the long history of the first project ("AI" project, Oct–Nov 2026).
 
-## State (20 Nov 2026, v0.5)
+## State (24 Nov 2026, v1.0 in progress — final delivery 26 Nov)
 - Playable game: `index.html` (single file, offline). Source in `src/` — edit the JSON, not the built file.
-- v0.5 changes: see "v0.5 — what changed" below.
+- v1.0 work plan and progress: see "v1.0 — progress" below (read it first when resuming). v0.5 changes: further down.
 - Build: `python3 src/build.py` → `dist/container-journey_v0.3.html` → copy to `index.html`, commit, push. The build fails if a `[TO VERIFY:vNN]` id or a `[[term]]` is missing.
 - Hosting: GitHub `robing-jpg/bob-s-adventure` (main). Vercel import pending (static site, `vercel.json` included).
 
@@ -26,6 +26,25 @@ Read this file first. It replaces the long history of the first project ("AI" pr
 - Cartons and vehicles are separate objects: loose cargo moves only while the vehicle is parked and is hidden before it leaves.
 - When asked for a change, edit files and show only the modified parts.
 - End every answer with an approximate token usage line (input / output / models).
+
+## v1.0 — progress (brief: project doc `claude/07_prompt-v1.0-design-and-fixes.md`)
+| Block | Content | Status |
+|---|---|---|
+| A | Retours 1–4: CO₂ step by step, Bob's eyes, essentials nudge, rail/barge to inland terminals | **done** (24 Nov) |
+| B | Retour 5: real world map (Natural Earth) at step 7 | to do |
+| C | Retour 6: realism. Pilot = step 6 + intro sea, 2 screenshots, **wait for OK**; then 7, 1, 2, 3+10, 5, 8, 11, 4+9, menu + intro (one push per group) | to do |
+| — | Final: v1.0 in CONFIG / README / HANDOFF; 4 test journeys (L1 reefer GYE→ANR · L2 20' HCM→SIN→LEH CIF rail · L3 flat rack SHA→LEH DAP · L2 tank SHA→LEH FCA), 0 console errors | to do |
+
+### Block A — what changed (24 Nov)
+1. **CO₂ by step** — `global.json → footprint.lines` lists every emission source (step, beat, calc type); the engine only does the arithmetic. New sources: empty truck depot → shipper (step 1), stuffing (2, GLEC hub 1.3 kg/t; 2.5 kg/t for reefer cargo), first mile by truck for barge/rail (3), maritime terminal 10.7 kg/container at origin (6), hub (7, transshipment) and destination (8), sea legs split over the map beats (`sea[].split`), last mile by truck (10), unstuffing (11), reefer plug-in per step (`routes[].plug`, days). Steps 4 and 9: "+0 kg — paperwork only" (`footprint.zero`), except reefer plug-in at 9. Step 5: GLEC gives one terminal value per container, not splittable → counted at step 6, explained in the panel (`zero["5"]`).
+   The counter moves when the beat is played (`S.mGi[step]` = highest beat played), with a "+X kg CO₂e" chip; kg below 1,000 kg, then tonnes with 1 decimal. Panel: per step "+X this step / Y so far", one-line calculation per row. New TO VERIFY ids **v94–v99**.
+2. **Bob's eyes** — `faceSVG(cx, cy, k, lid)`: one group per eye (sclera, iris, pupil, glints) clipped by `#eyeClip` (objectBoundingBox, in `#svgDefs`), lid in the box colour drops over the whole eye (`lidblink`). Symmetric brows per mood (`BROWS`), discreet cheeks. Same face in intro, scenes, narration avatar, summary (new). Intro Bob = realistic 20' (22G1) in 3/4 view: corrugation, roof, door end with locking bars, CSC plate, castings, wear, shadows; cartoon arms/feet removed.
+3. **Essentials nudge** — after 5 s the closed ★ items of the scene shake (0.6 s) and the counter pulses, then every 6 s (max 5); paused while a sheet/doc/question/transfer is open; reduced motion = halo + "!" badge. The locked "Next" uses `aria-disabled` (still clickable): click = immediate nudge + "Open the ★ items first (n/t)" (`ui.gateNudge`).
+4. **Rail / barge** — `inland()` rewritten: train and barge run terminal to terminal (inland rail / river terminal with a gantry), the box is one object moved by nested `chain()` moves, last mile by truck (step 10), first mile by truck to a river/rail terminal (step 3). Narrations updated (steps 3 and 10, `travel` ms 5000 / `deliver` ms 2800).
+
+**New JSON keys (for the mobile port — no key or id removed or renamed):** `ui.gateNudge`, `ui.riverTerminal`, `ui.railTerminal`, `ui.inlandRail`, `ui.inlandRiver`, `ui.firstMile`, `ui.lastMile`; `footprint.lines`, `footprint.calc`, `footprint.ui`, `footprint.zero`, `footprint.labels.{empty,stuff,first,termO,hub,termD,plug,last,unstuff}`, `footprint.factors.{terminal,stuffing,stuffingCold}` and `short` on every factor; `footprint.routes[*].{depotKm,firstKm,preKmBy,onKmBy,lastKm,plug}` and `sea[].split`; verification v94–v99. Changed values: step03 `travel.ms`, step10 `deliver.ms`, narrations of step03/step10 `travel`.
+
+**Tests (Block A):** script over 3 routes × 4 families (20DV, 40RF, 40FR, 20TK): CO₂ rises at steps 1, 2, 3, 6, 7, 8, 10, 11, and at 5 and 9 for reefers only; flat at 4 (and 5, 9 for non-reefers, by design); final total = panel total = sum of step subtotals; 0 console errors. Nudge checked with and without reduced motion.
 
 ## v0.5 — what changed
 1. **Texture bug fixed at the root**: the gradients existed twice (in every scene and in a hidden `<svg>` of the start menu); `url(#…)` resolved to the hidden copy → empty cartons, cab, sea, hull. Now one `#svgDefs` for the page; `stop-color` with CSS variables moved to `style`.
