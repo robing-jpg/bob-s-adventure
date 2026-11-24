@@ -1,0 +1,12 @@
+{
+  "name": "bob-map-tools",
+  "private": true,
+  "type": "module",
+  "description": "Build-time only: generates src/content/world.json (Natural Earth coastlines, projected) for the step-7 map.",
+  "devDependencies": {
+    "d3-geo": "^3.1.1",
+    "topojson-client": "^3.1.0",
+    "topojson-simplify": "^3.0.3",
+    "world-atlas": "^2.0.2"
+  }
+}

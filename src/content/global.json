@@ -39,7 +39,7 @@
   "delivered": "DELIVERED ✓ POD SIGNED",
   "bargeRoute": "RIVER BARGE ROUTE",
   "arrivalNotice": "ARRIVAL NOTICE SENT ✓",
-  "mapNote": "Schematic map — not to scale. Routings vary by service and season.",
+  "mapNote": "Coastlines: Natural Earth (public domain). Sea lanes drawn for teaching, not for navigation — routings vary by service and season.",
   "incoNote": "Incoterms 2020 apply only if the sales contract refers to them, ideally as \"[rule] [named place] Incoterms 2020\". Named places in this module are examples. [TO VERIFY:v14]",
   "misconceptions": {
    "1": [
@@ -490,7 +490,299 @@
     "days": [
      640,
      70
-    ]
+    ],
+    "geo": {
+     "path": [
+      "SHA",
+      [
+       29.6,
+       123.0
+      ],
+      [
+       26.5,
+       121.2
+      ],
+      [
+       24.2,
+       119.6
+      ],
+      [
+       22.0,
+       116.2
+      ],
+      [
+       18.0,
+       112.5
+      ],
+      [
+       12.0,
+       110.5
+      ],
+      [
+       7.0,
+       107.0
+      ],
+      [
+       2.6,
+       105.0
+      ],
+      [
+       1.45,
+       104.55
+      ],
+      [
+       1.27,
+       104.3
+      ],
+      "SGS",
+      [
+       1.22,
+       103.62
+      ],
+      [
+       1.75,
+       102.4
+      ],
+      "MAL",
+      [
+       4.6,
+       99.0
+      ],
+      [
+       6.0,
+       96.2
+      ],
+      [
+       5.6,
+       89.0
+      ],
+      [
+       5.6,
+       81.0
+      ],
+      [
+       7.5,
+       74.0
+      ],
+      [
+       13.5,
+       56.0
+      ],
+      [
+       13.0,
+       52.0
+      ],
+      [
+       12.4,
+       46.0
+      ],
+      [
+       12.1,
+       44.5
+      ],
+      [
+       12.3,
+       43.6
+      ],
+      "BAB",
+      [
+       13.3,
+       42.9
+      ],
+      [
+       15.0,
+       41.8
+      ],
+      [
+       20.0,
+       38.4
+      ],
+      [
+       25.0,
+       35.4
+      ],
+      [
+       27.75,
+       33.85
+      ],
+      [
+       28.6,
+       33.0
+      ],
+      [
+       29.4,
+       32.65
+      ],
+      [
+       29.9,
+       32.56
+      ],
+      "SUEZ",
+      [
+       31.27,
+       32.32
+      ],
+      [
+       31.6,
+       32.3
+      ],
+      [
+       33.0,
+       28.5
+      ],
+      [
+       34.4,
+       24.0
+      ],
+      [
+       36.2,
+       15.8
+      ],
+      [
+       37.4,
+       11.6
+      ],
+      [
+       37.6,
+       8.0
+      ],
+      [
+       36.7,
+       2.0
+      ],
+      [
+       36.05,
+       -2.6
+      ],
+      "GIB",
+      [
+       36.2,
+       -7.3
+      ],
+      [
+       37.0,
+       -9.6
+      ],
+      [
+       40.0,
+       -10.1
+      ],
+      [
+       43.4,
+       -10.0
+      ],
+      [
+       46.2,
+       -7.3
+      ],
+      [
+       48.4,
+       -5.6
+      ],
+      "CHN",
+      [
+       49.75,
+       -0.4
+      ],
+      "LEH"
+     ],
+     "at": {
+      "depart": "SHA",
+      "canal": "SUEZ",
+      "ocean": "GIB",
+      "arrive": "LEH"
+     },
+     "alt": [
+      [
+       5.6,
+       81.0
+      ],
+      [
+       -5.0,
+       70.0
+      ],
+      [
+       -20.0,
+       60.0
+      ],
+      [
+       -28.0,
+       47.0
+      ],
+      [
+       -30.5,
+       42.0
+      ],
+      [
+       -34.0,
+       31.0
+      ],
+      [
+       -36.0,
+       24.0
+      ],
+      [
+       -35.4,
+       20.0
+      ],
+      "CGH",
+      [
+       -32.0,
+       15.5
+      ],
+      [
+       -15.0,
+       7.0
+      ],
+      [
+       3.0,
+       -12.0
+      ],
+      [
+       10.0,
+       -20.0
+      ],
+      [
+       18.0,
+       -21.0
+      ],
+      [
+       27.0,
+       -19.5
+      ],
+      [
+       31.0,
+       -17.0
+      ],
+      [
+       37.0,
+       -11.0
+      ],
+      [
+       43.4,
+       -10.0
+      ]
+     ],
+     "altLabelAt": [
+      -25.0,
+      4.0
+     ],
+     "ports": [
+      "SHA",
+      "SGS",
+      "MAL",
+      "BAB",
+      "SUEZ",
+      "GIB",
+      "CHN",
+      "LEH",
+      "CGH"
+     ],
+     "inland": [
+      33,
+      34
+     ]
+    }
    }
   },
   {
@@ -714,7 +1006,295 @@
     "days": [
      640,
      70
-    ]
+    ],
+    "geo": {
+     "feeder": [
+      "CLI",
+      [
+       10.55,
+       106.85
+      ],
+      [
+       10.32,
+       107.08
+      ],
+      [
+       9.0,
+       107.6
+      ],
+      [
+       6.0,
+       106.0
+      ],
+      [
+       2.6,
+       105.0
+      ],
+      [
+       1.45,
+       104.55
+      ],
+      [
+       1.27,
+       104.3
+      ],
+      "SGS",
+      "SIN"
+     ],
+     "path": [
+      "SIN",
+      [
+       1.2,
+       103.65
+      ],
+      [
+       1.75,
+       102.4
+      ],
+      "MAL",
+      [
+       4.6,
+       99.0
+      ],
+      [
+       6.0,
+       96.2
+      ],
+      [
+       5.6,
+       89.0
+      ],
+      [
+       5.6,
+       81.0
+      ],
+      [
+       7.5,
+       74.0
+      ],
+      [
+       13.5,
+       56.0
+      ],
+      [
+       13.0,
+       52.0
+      ],
+      [
+       12.4,
+       46.0
+      ],
+      [
+       12.1,
+       44.5
+      ],
+      [
+       12.3,
+       43.6
+      ],
+      "BAB",
+      [
+       13.3,
+       42.9
+      ],
+      [
+       15.0,
+       41.8
+      ],
+      [
+       20.0,
+       38.4
+      ],
+      [
+       25.0,
+       35.4
+      ],
+      [
+       27.75,
+       33.85
+      ],
+      [
+       28.6,
+       33.0
+      ],
+      [
+       29.4,
+       32.65
+      ],
+      [
+       29.9,
+       32.56
+      ],
+      "SUEZ",
+      [
+       31.27,
+       32.32
+      ],
+      [
+       31.6,
+       32.3
+      ],
+      [
+       33.0,
+       28.5
+      ],
+      [
+       34.4,
+       24.0
+      ],
+      [
+       36.2,
+       15.8
+      ],
+      [
+       37.4,
+       11.6
+      ],
+      [
+       37.6,
+       8.0
+      ],
+      [
+       36.7,
+       2.0
+      ],
+      [
+       36.05,
+       -2.6
+      ],
+      "GIB",
+      [
+       36.2,
+       -7.3
+      ],
+      [
+       37.0,
+       -9.6
+      ],
+      [
+       40.0,
+       -10.1
+      ],
+      [
+       43.4,
+       -10.0
+      ],
+      [
+       46.2,
+       -7.3
+      ],
+      [
+       48.4,
+       -5.6
+      ],
+      "CHN",
+      [
+       49.75,
+       -0.4
+      ],
+      "LEH"
+     ],
+     "at": {
+      "hub": "SIN",
+      "canal": "SUEZ",
+      "ocean": "GIB",
+      "arrive": "LEH"
+     },
+     "alt": [
+      [
+       5.6,
+       81.0
+      ],
+      [
+       -5.0,
+       70.0
+      ],
+      [
+       -20.0,
+       60.0
+      ],
+      [
+       -28.0,
+       47.0
+      ],
+      [
+       -30.5,
+       42.0
+      ],
+      [
+       -34.0,
+       31.0
+      ],
+      [
+       -36.0,
+       24.0
+      ],
+      [
+       -35.4,
+       20.0
+      ],
+      "CGH",
+      [
+       -32.0,
+       15.5
+      ],
+      [
+       -15.0,
+       7.0
+      ],
+      [
+       3.0,
+       -12.0
+      ],
+      [
+       10.0,
+       -20.0
+      ],
+      [
+       18.0,
+       -21.0
+      ],
+      [
+       27.0,
+       -19.5
+      ],
+      [
+       31.0,
+       -17.0
+      ],
+      [
+       37.0,
+       -11.0
+      ],
+      [
+       43.4,
+       -10.0
+      ]
+     ],
+     "altLabelAt": [
+      -25.0,
+      4.0
+     ],
+     "ports": [
+      "CLI",
+      "SIN",
+      "MAL",
+      "BAB",
+      "SUEZ",
+      "GIB",
+      "CHN",
+      "LEH",
+      "CGH"
+     ],
+     "feederInland": [
+      0,
+      1
+     ],
+     "inland": [
+      22,
+      23
+     ]
+    }
    }
   },
   {
@@ -851,7 +1431,119 @@
     "days": [
      300,
      300
-    ]
+    ],
+    "geo": {
+     "path": [
+      "POS",
+      [
+       -2.85,
+       -80.75
+      ],
+      [
+       -1.5,
+       -81.3
+      ],
+      [
+       2.0,
+       -80.2
+      ],
+      [
+       5.5,
+       -79.9
+      ],
+      [
+       7.6,
+       -79.3
+      ],
+      [
+       8.88,
+       -79.52
+      ],
+      "PAN",
+      [
+       9.38,
+       -79.92
+      ],
+      [
+       11.0,
+       -78.8
+      ],
+      [
+       14.5,
+       -74.0
+      ],
+      [
+       17.0,
+       -69.0
+      ],
+      [
+       18.3,
+       -67.95
+      ],
+      [
+       20.5,
+       -65.5
+      ],
+      [
+       28.0,
+       -55.0
+      ],
+      [
+       36.0,
+       -40.0
+      ],
+      [
+       42.0,
+       -26.0
+      ],
+      [
+       46.5,
+       -12.0
+      ],
+      [
+       48.6,
+       -5.8
+      ],
+      "CHN",
+      [
+       50.6,
+       0.9
+      ],
+      [
+       51.15,
+       1.6
+      ],
+      [
+       51.45,
+       2.6
+      ],
+      [
+       51.45,
+       3.55
+      ],
+      "ANR"
+     ],
+     "at": {
+      "depart": "POS",
+      "canal": "PAN",
+      "ocean": [
+       36.0,
+       -40.0
+      ],
+      "arrive": "ANR"
+     },
+     "ports": [
+      "POS",
+      "PAN",
+      "CHN",
+      "ANR"
+     ],
+     "inland": [
+      6,
+      7,
+      23
+     ]
+    }
    }
   }
  ],
@@ -2329,6 +3021,11 @@
    "id": "v99",
    "claim": "Most containers carried inland by rail finish their trip by truck from an inland rail terminal; few consignees have a private rail siding.",
    "source": "Rail operators and inland terminal operators; national intermodal statistics"
+  },
+  {
+   "id": "v100",
+   "claim": "Map: port and passage coordinates (decimal degrees) and the sea-lane waypoints are approximations drawn for teaching, not a navigation route; coastlines from Natural Earth 1:50m (public domain), Natural Earth projection. The Suez / Cape choice depends on the Red Sea security situation.",
+   "source": "Natural Earth; NGA World Port Index (Pub. 150) for port positions; carrier service maps"
   }
  ],
  "quiz": {
@@ -3029,17 +3726,17 @@
       "split": [
        {
         "beat": "canal",
-        "share": 0.7,
+        "share": 0.693,
         "label": "Shanghai → Suez Canal"
        },
        {
         "beat": "ocean",
-        "share": 0.19,
+        "share": 0.191,
         "label": "Suez → Gibraltar"
        },
        {
         "beat": "arrive",
-        "share": 0.11,
+        "share": 0.116,
         "label": "Gibraltar → Le Havre"
        }
       ]
@@ -3092,17 +3789,17 @@
       "split": [
        {
         "beat": "canal",
-        "share": 0.62,
+        "share": 0.612,
         "label": "Singapore → Suez Canal"
        },
        {
         "beat": "ocean",
-        "share": 0.24,
+        "share": 0.241,
         "label": "Suez → Gibraltar"
        },
        {
         "beat": "arrive",
-        "share": 0.14,
+        "share": 0.147,
         "label": "Gibraltar → Le Havre"
        }
       ]
@@ -3144,18 +3841,18 @@
       "split": [
        {
         "beat": "canal",
-        "share": 0.13,
+        "share": 0.138,
         "label": "Posorja → Panama Canal"
        },
        {
         "beat": "ocean",
-        "share": 0.77,
-        "label": "Panama → English Channel"
+        "share": 0.485,
+        "label": "Panama → mid-Atlantic"
        },
        {
         "beat": "arrive",
-        "share": 0.1,
-        "label": "Channel → Antwerp-Bruges"
+        "share": 0.377,
+        "label": "mid-Atlantic → Antwerp-Bruges"
        }
       ]
      }
@@ -3438,5 +4135,178 @@
     "label": "ret"
    }
   ]
- }
+ },
+ "mapPlaces": {
+  "SHA": {
+   "name": "Shanghai (Yangshan)",
+   "lat": 30.62,
+   "lon": 122.07,
+   "kind": "port",
+   "label": "l"
+  },
+  "CLI": {
+   "name": "Cat Lai (Ho Chi Minh City)",
+   "lat": 10.76,
+   "lon": 106.79,
+   "kind": "port",
+   "label": "r"
+  },
+  "SIN": {
+   "name": "Singapore",
+   "lat": 1.24,
+   "lon": 103.78,
+   "kind": "hub",
+   "label": "b"
+  },
+  "SGS": {
+   "name": "Singapore Strait",
+   "lat": 1.19,
+   "lon": 104.1,
+   "kind": "passage",
+   "label": "r"
+  },
+  "MAL": {
+   "name": "Strait of Malacca",
+   "lat": 3.0,
+   "lon": 100.7,
+   "kind": "passage",
+   "label": "tl"
+  },
+  "BAB": {
+   "name": "Bab-el-Mandeb",
+   "lat": 12.5,
+   "lon": 43.3,
+   "kind": "passage",
+   "label": "bl"
+  },
+  "SUEZ": {
+   "name": "Suez Canal",
+   "lat": 30.6,
+   "lon": 32.33,
+   "kind": "passage",
+   "label": "r"
+  },
+  "GIB": {
+   "name": "Strait of Gibraltar",
+   "lat": 35.95,
+   "lon": -5.6,
+   "kind": "passage",
+   "label": "t"
+  },
+  "CHN": {
+   "name": "English Channel",
+   "lat": 50.05,
+   "lon": -1.6,
+   "kind": "passage",
+   "label": "tl"
+  },
+  "LEH": {
+   "name": "Le Havre",
+   "lat": 49.47,
+   "lon": 0.12,
+   "kind": "port",
+   "label": "r"
+  },
+  "POS": {
+   "name": "Posorja (Guayaquil)",
+   "lat": -2.71,
+   "lon": -80.25,
+   "kind": "port",
+   "label": "l"
+  },
+  "PAN": {
+   "name": "Panama Canal",
+   "lat": 9.12,
+   "lon": -79.72,
+   "kind": "passage",
+   "label": "r"
+  },
+  "ANR": {
+   "name": "Antwerp-Bruges",
+   "lat": 51.28,
+   "lon": 4.32,
+   "kind": "port",
+   "label": "r"
+  },
+  "CGH": {
+   "name": "Cape of Good Hope",
+   "lat": -34.6,
+   "lon": 18.35,
+   "kind": "passage",
+   "label": "r"
+  }
+ },
+ "mapSeas": [
+  {
+   "name": "PACIFIC OCEAN",
+   "lat": 12,
+   "lon": -110
+  },
+  {
+   "name": "PACIFIC OCEAN",
+   "lat": 24,
+   "lon": 140
+  },
+  {
+   "name": "ATLANTIC OCEAN",
+   "lat": 30,
+   "lon": -42
+  },
+  {
+   "name": "ATLANTIC OCEAN",
+   "lat": -20,
+   "lon": -20
+  },
+  {
+   "name": "INDIAN OCEAN",
+   "lat": -12,
+   "lon": 78
+  },
+  {
+   "name": "Arabian Sea",
+   "lat": 17.5,
+   "lon": 63.0
+  },
+  {
+   "name": "Bay of Bengal",
+   "lat": 13.0,
+   "lon": 89.6
+  },
+  {
+   "name": "South China Sea",
+   "lat": 15.5,
+   "lon": 115.0
+  },
+  {
+   "name": "Red Sea",
+   "lat": 21.6,
+   "lon": 37.2,
+   "rot": 58
+  },
+  {
+   "name": "Mediterranean Sea",
+   "lat": 34.4,
+   "lon": 18
+  },
+  {
+   "name": "Caribbean Sea",
+   "lat": 15,
+   "lon": -75
+  },
+  {
+   "name": "North Sea",
+   "lat": 56,
+   "lon": 3.5
+  },
+  {
+   "name": "Bay of Biscay",
+   "lat": 45.4,
+   "lon": -5.5
+  },
+  {
+   "name": "East China Sea",
+   "lat": 25.0,
+   "lon": 127.5
+  }
+ ]
 }

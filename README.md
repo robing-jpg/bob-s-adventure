@@ -20,7 +20,9 @@ index.html              the built game (single self-contained file)
 src/engine.html         HTML, CSS and JavaScript engine + CONFIG (branding, colours, illustrative tariff)
 src/content/global.json menu texts, Bob's intro, containers, routes, Incoterms, glossary, verification list, final quiz
 src/content/stepNN.json one file per step, all 3 levels
+src/content/world.json  generated coastlines for the step-7 map (do not edit by hand)
 src/build.py            merges engine + content → dist/container-journey_v0.3.html
+tools/build-map.mjs     build-time only: projects Natural Earth coastlines into world.json and checks the sea lanes
 ```
 
 ## Editing
@@ -30,7 +32,11 @@ src/build.py            merges engine + content → dist/container-journey_v0.3.
 
 The build checks that every `[TO VERIFY]` id exists in the verification list and every `[[term]]` exists in the glossary.
 
+**World map (step 7).** Ports, passages and sea lanes are lat/lon in `global.json` (`mapPlaces`, `routes[].map.geo`). After changing them, run `cd tools && npm install && node build-map.mjs`: it regenerates `src/content/world.json` (Natural Earth 1:50m coastlines, Natural Earth projection, ≈ 150 KB), checks that no lane crosses land (canals and rivers are listed in `geo.inland`) and prints the distance shares used by the CO₂ split per map beat. The game itself loads nothing from the internet.
+
 ## Before production use
 All companies, vessels, references and figures are fictional or illustrative. Every item flagged **TO VERIFY** (list in the game: ☰ → Verification list) must be validated by a qualified colleague. Set `showVerifyMarkers: false` in `CONFIG` once validated.
 
-Built entirely with Claude (Anthropic) for an AI course project.
+## Credits
+- Map data: **Natural Earth** (public domain), via the `world-atlas` package; projection with `d3-geo` at build time only.
+- Built entirely with Claude (Anthropic) for an AI course project.

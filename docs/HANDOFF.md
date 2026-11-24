@@ -31,7 +31,7 @@ Read this file first. It replaces the long history of the first project ("AI" pr
 | Block | Content | Status |
 |---|---|---|
 | A | Retours 1–4: CO₂ step by step, Bob's eyes, essentials nudge, rail/barge to inland terminals | **done** (24 Nov) |
-| B | Retour 5: real world map (Natural Earth) at step 7 | to do |
+| B | Retour 5: real world map (Natural Earth) at step 7 | **done** (24 Nov) |
 | C | Retour 6: realism. Pilot = step 6 + intro sea, 2 screenshots, **wait for OK**; then 7, 1, 2, 3+10, 5, 8, 11, 4+9, menu + intro (one push per group) | to do |
 | — | Final: v1.0 in CONFIG / README / HANDOFF; 4 test journeys (L1 reefer GYE→ANR · L2 20' HCM→SIN→LEH CIF rail · L3 flat rack SHA→LEH DAP · L2 tank SHA→LEH FCA), 0 console errors | to do |
 
@@ -45,6 +45,12 @@ Read this file first. It replaces the long history of the first project ("AI" pr
 **New JSON keys (for the mobile port — no key or id removed or renamed):** `ui.gateNudge`, `ui.riverTerminal`, `ui.railTerminal`, `ui.inlandRail`, `ui.inlandRiver`, `ui.firstMile`, `ui.lastMile`; `footprint.lines`, `footprint.calc`, `footprint.ui`, `footprint.zero`, `footprint.labels.{empty,stuff,first,termO,hub,termD,plug,last,unstuff}`, `footprint.factors.{terminal,stuffing,stuffingCold}` and `short` on every factor; `footprint.routes[*].{depotKm,firstKm,preKmBy,onKmBy,lastKm,plug}` and `sea[].split`; verification v94–v99. Changed values: step03 `travel.ms`, step10 `deliver.ms`, narrations of step03/step10 `travel`.
 
 **Tests (Block A):** script over 3 routes × 4 families (20DV, 40RF, 40FR, 20TK): CO₂ rises at steps 1, 2, 3, 6, 7, 8, 10, 11, and at 5 and 9 for reefers only; flat at 4 (and 5, 9 for non-reefers, by design); final total = panel total = sum of step subtotals; 0 console errors. Nudge checked with and without reduced motion.
+
+### Block B — what changed (24 Nov)
+- Step 7 map redrawn from **Natural Earth 1:50m** coastlines (public domain). `tools/build-map.mjs` (npm: world-atlas, topojson, d3-geo — build time only) projects them (Natural Earth projection, scale 420), clips to lon −125…180 / lat −60…77, simplifies to ≈ 144 KB and writes `src/content/world.json`; `build.py` injects it as `content.world`. The engine projects the lat/lon waypoints with the same formula (`neProject`) and fits the frame to each route.
+- `global.json`: `mapPlaces` (14 ports / passages with lat/lon and label side), `mapSeas` (sea names), `routes[].map.geo` (`path`, `feeder`, `alt` = Cape alternative, `at` = beat anchors, `inland` / `feederInland` = canal or river segments, `ports`, `altLabelAt`). The old schematic `map.path/at/ports/alt` and `mapLand` are kept (unused on desktop) for the mobile version. New TO VERIFY **v100** (coordinates are teaching approximations).
+- Lanes checked against the 1:50m land at build time: 0 crossings (Suez, Panama, Saigon River and Scheldt drawn as waterways). Lane lengths: SHA→LEH 19,170 km, Cat Lai→SIN 1,220 km, SIN→LEH 15,179 km, Posorja→ANR 10,433 km — consistent with v88. CO₂ `sea[].split` shares now come from these lengths.
+- Ocean: depth gradient + coastal shelf shading, discreet 15° graticule, sea names with collision check. Top-down ship follows the lane with its heading (`data-heading` in `paint()`), bow wave and wake while moving.
 
 ## v0.5 — what changed
 1. **Texture bug fixed at the root**: the gradients existed twice (in every scene and in a hidden `<svg>` of the start menu); `url(#…)` resolved to the hidden copy → empty cartons, cab, sea, hull. Now one `#svgDefs` for the page; `stop-color` with CSS variables moved to `style`.
